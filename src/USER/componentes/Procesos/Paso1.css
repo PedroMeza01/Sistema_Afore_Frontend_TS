@@ -1,0 +1,459 @@
+.retiro-container {
+  max-width: 720px;
+  margin: 40px auto;
+  font-family: Arial, sans-serif;
+}
+
+/* ===== STEPS ===== */
+.retiro-steps {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.step {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  background: #e9eef3;
+  border-radius: 20px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.step.active {
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+}
+
+/* ===== CARD ===== */
+.retiro-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.retiro-title {
+  margin-bottom: 20px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* ===== FORM ===== */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #374151;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+}
+
+/* ===== ACTIONS ===== */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn-cancel {
+  background: #f3f4f6;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-next {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-col {
+  flex: 1;
+}
+
+.sub-label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.checkbox-row {
+  height: 38px; /* mismo alto que inputs/selects */
+  display: flex;
+  align-items: center;
+}
+
+/* =========================
+   CHECKBOXES – DASHBOARD
+   ========================= */
+
+.checks-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.check-inline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px; /* mismo alto que inputs */
+  font-weight: 600;
+  color: var(--grisOscuro);
+  cursor: pointer;
+}
+
+/* normaliza tamaño del checkbox */
+.check-inline input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+}
+
+/* mejora visual cuando está deshabilitado */
+.check-inline input[type='checkbox']:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* hover sutil */
+.check-inline:hover {
+  color: var(--azul);
+}
+
+/* =========================
+   PREPARACIÓN / ESTATUS
+   ========================= */
+
+.prep-banner {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(112, 112, 112, 0.18);
+  background: #fff;
+  margin-bottom: 14px;
+}
+
+.prep-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.prep-title {
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--azul);
+  letter-spacing: 0.2px;
+}
+
+.prep-sub {
+  font-size: 13px;
+  color: var(--grisOscuro);
+  opacity: 0.9;
+}
+
+.prep-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  font-size: 12px;
+  font-weight: 800;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(112, 112, 112, 0.18);
+  user-select: none;
+}
+
+.chip.ok {
+  color: #0f5132;
+  background: rgba(44, 173, 110, 0.12); /* verde */
+  border-color: rgba(44, 173, 110, 0.35);
+}
+
+.chip.bad {
+  color: #7a1b1b;
+  background: rgba(160, 28, 72, 0.1); /* rojo */
+  border-color: rgba(160, 28, 72, 0.32);
+}
+
+.prep-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.prep-score {
+  width: 74px;
+  height: 54px;
+  border-radius: 14px;
+  background: rgba(0, 72, 124, 0.06);
+  border: 1px solid rgba(0, 72, 124, 0.18);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.score-num {
+  font-size: 16px;
+  font-weight: 1000;
+  color: var(--azul);
+  line-height: 1;
+}
+
+.score-lab {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--grisOscuro);
+  opacity: 0.8;
+}
+
+.prep-actions-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 160px;
+}
+
+.mini-btn {
+  height: 34px;
+  border-radius: 12px;
+  border: 1px solid rgba(112, 112, 112, 0.18);
+  background: #fff;
+  color: var(--grisOscuro);
+  font-weight: 900;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0 10px;
+  text-align: left;
+}
+
+.mini-btn:hover {
+  border-color: rgba(0, 72, 124, 0.35);
+  background: rgba(0, 72, 124, 0.05);
+  color: var(--azul);
+}
+
+.prep-ready {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 1000;
+  color: var(--verde);
+  background: rgba(44, 173, 110, 0.12);
+  border: 1px solid rgba(44, 173, 110, 0.35);
+  padding: 10px 12px;
+  border-radius: 14px;
+  white-space: nowrap;
+}
+
+.ready-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--verde);
+}
+
+/* Estados del banner (borde / sombra sutil) */
+.prep-banner.LISTO_PARA_SOLICITAR {
+  border-color: rgba(44, 173, 110, 0.35);
+  box-shadow: 0 8px 18px rgba(44, 173, 110, 0.1);
+}
+
+.prep-banner.VINCULAR_APP,
+.prep-banner.ACTUALIZAR_EXPEDIENTE,
+.prep-banner.CAPTURAR_CITA,
+.prep-banner.INCOMPLETO {
+  border-color: rgba(236, 164, 0, 0.35); /* amarillo */
+  box-shadow: 0 8px 18px rgba(236, 164, 0, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 720px) {
+  .prep-banner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .prep-right {
+    justify-content: space-between;
+  }
+
+  .prep-actions-mini {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .mini-btn {
+    text-align: center;
+  }
+}
+
+/* ===== SECTIONS (Trámite / Cobro / Estatus) ===== */
+.section {
+  margin-top: 14px;
+  border: 1px solid rgba(112, 112, 112, 0.16);
+  border-radius: 14px;
+  padding: 12px;
+  background: #fff;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.section-title {
+  font-weight: 900;
+  color: var(--azul);
+  font-size: 14px;
+}
+
+.section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.section-hint {
+  color: rgba(112, 112, 112, 0.85);
+  font-size: 12px;
+}
+
+.file-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px dashed rgba(112, 112, 112, 0.35);
+  background: rgba(243, 243, 243, 0.7);
+}
+
+.file-meta {
+  margin-top: 6px;
+  font-size: 12px;
+  color: rgba(112, 112, 112, 0.9);
+}
+
+/* ===== Bono pill ===== */
+.money-pill {
+  border-radius: 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(44, 173, 110, 0.25);
+  background: rgba(134, 240, 173, 0.18);
+}
+
+.money-title {
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--verde);
+}
+
+.money-value {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--verde);
+  line-height: 1.2;
+  margin-top: 2px;
+}
+
+.money-sub {
+  font-size: 12px;
+  color: rgba(112, 112, 112, 0.9);
+  margin-top: 4px;
+}
+
+/* ===== Status pill ===== */
+.status-pill {
+  font-size: 12px;
+  font-weight: 900;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(112, 112, 112, 0.18);
+}
+
+.status-pill.ACTIVO {
+  background: rgba(44, 173, 110, 0.14);
+  color: var(--verde);
+  border-color: rgba(44, 173, 110, 0.25);
+}
+
+.status-pill.CANCELADO {
+  background: rgba(160, 28, 72, 0.12);
+  color: var(--rojo);
+  border-color: rgba(160, 28, 72, 0.25);
+}
+
+.status-pill.BLOQUEADO {
+  background: rgba(245, 133, 73, 0.14);
+  color: var(--naranja);
+  border-color: rgba(245, 133, 73, 0.25);
+}
+
+.tiny-note {
+  margin-top: 6px;
+  font-size: 12px;
+  color: rgba(112, 112, 112, 0.88);
+}
+
+/* ===== Dangerous actions ===== */
+.danger-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.btn-block {
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 900;
+  cursor: pointer;
+  background: rgba(245, 133, 73, 0.18);
+  color: var(--naranja);
+  border: 1px solid rgba(245, 133, 73, 0.25);
+}
+
+.btn-block:hover {
+  filter: brightness(0.98);
+}
+
+.btn-block:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

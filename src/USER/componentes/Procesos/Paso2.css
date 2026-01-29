@@ -1,0 +1,124 @@
+.dp-wrap {
+  max-width: 760px;
+  margin: 40px auto;
+  font-family: Arial, sans-serif;
+}
+
+.dp-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+.dp-header {
+  background: #eef2f6;
+  padding: 14px 18px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dp-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.dp-tabs {
+  display: flex;
+  gap: 22px;
+  padding: 10px 18px 0 18px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dp-tab {
+  border: none;
+  background: transparent;
+  padding: 10px 8px 12px 8px;
+  font-size: 14px;
+  color: #6b7280;
+  cursor: pointer;
+  position: relative;
+}
+
+.dp-tab.active {
+  color: #111827;
+  font-weight: 700;
+}
+
+.dp-tab.active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 3px;
+  background: #1d4ed8;
+  border-radius: 3px 3px 0 0;
+}
+
+.dp-table {
+  width: 100%;
+}
+
+.dp-row {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr 0.6fr 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dp-row:last-child {
+  border-bottom: none;
+}
+
+.dp-col.doc {
+  font-weight: 700;
+  color: #111827;
+}
+
+.dp-status {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.dp-status.pending {
+  color: #16a34a; /* verde tipo screenshot */
+}
+
+.dp-link {
+  border: none;
+  background: transparent;
+  color: #1d4ed8;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 0;
+}
+
+.dp-upload {
+  width: 100%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  background: #1d4ed8;
+  color: #fff;
+  font-weight: 800;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.dp-upload.light {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.dp-caret {
+  font-size: 14px;
+  line-height: 1;
+}
