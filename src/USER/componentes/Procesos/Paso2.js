@@ -6,18 +6,18 @@ import usuariosAxios from '../../../config/axios';
 import './Paso2.css';
 
 const REQUIRED_DOCS = [
-  { key: 'INE_FRENTE', label: 'INE Frente', categoria: 'DOCUMENTO_CLIENTE' },
-  { key: 'INE_POSTERIOR', label: 'INE Posterior', categoria: 'DOCUMENTO_CLIENTE' },
-  { key: 'ESTADO_CUENTA', label: 'Estado de Cuenta', categoria: 'DOCUMENTO_CLIENTE' },
-  { key: 'COMPROBANTE_DOM', label: 'Comprobante de Domicilio', categoria: 'DOCUMENTO_CLIENTE' },
-  { key: 'CONTRATO_PAGARE', label: 'Contrato/Pagare', categoria: 'DOCUMENTO_CLIENTE' }
+  { key: 'INE_FRENTE', label: 'INE Frente', categoria: 'INE_FRENTE' },
+  { key: 'INE_POSTERIOR', label: 'INE Posterior', categoria: 'INE_POSTERIOR' },
+  { key: 'ESTADO_CUENTA', label: 'Estado de Cuenta', categoria: 'ESTADO_CUENTA' },
+  { key: 'COMPROBANTE_DOM', label: 'Comprobante de Domicilio', categoria: 'COMPROBANTE_DOM' },
+  { key: 'CONTRATO_PAGARE', label: 'Contrato / Pagaré', categoria: 'CONTRATO_PAGARE' }
 ];
 
 export default function Paso2() {
   const [auth] = useContext(CRMContext);
   const history = useHistory();
   const { id_cliente, id_proceso } = useParams();
-
+  console.log(id_proceso);
   const headers = useMemo(() => ({ Authorization: auth?.token ? `Bearer ${auth.token}` : '' }), [auth?.token]);
 
   const [loading, setLoading] = useState(false);
@@ -90,7 +90,7 @@ export default function Paso2() {
   };
 
   const onBack = () => history.push(`/clientes/${id_cliente}/procesos/${id_proceso}/editar/paso1`);
-  const onFinish = () => history.push(`/clientes/${id_cliente}/procesos/${id_proceso}`);
+  const onFinish = () => history.push(`/proceso/cliente/${id_cliente}}`);
 
   const faltantes = useMemo(() => docsUI.filter(d => d.estado !== 'Subido').length, [docsUI]);
 

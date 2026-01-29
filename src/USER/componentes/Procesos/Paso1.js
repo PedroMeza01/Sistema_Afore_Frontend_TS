@@ -4,6 +4,7 @@ import { CRMContext } from '../../../context/CRMContext';
 import { useHistory, useParams } from 'react-router-dom';
 import usuariosAxios from '../../../config/axios';
 import './Paso1.css';
+import { swalError } from '../../../helpers/swal';
 
 export default function Paso1() {
   const history = useHistory();
@@ -39,7 +40,7 @@ export default function Paso1() {
     app_vinculada: false,
 
     tramite_solicitado: false,
-    resultado_tramite: 'LISTO',
+    resultado_tramite: 'SOLICITADO',
     observacion_tramite: '',
 
     listo_para_cobro: false,
@@ -242,27 +243,63 @@ export default function Paso1() {
     });
   };
 
-  const validateOrThrow = () => {
-    if (!form.id_afore) throw new Error('Selecciona una Afore.');
-    if (!form.id_asesor) throw new Error('Selecciona un Asesor.');
+  const validateOrSwal = () => {
+    if (!form.id_afore) {
+      swalError('Selecciona una Afore.');
+      return false;
+    }
 
-    if (form.requiere_cita_afore && !form.cita_afore) throw new Error('La cita Afore es requerida.');
-    if (!form.expediente_actualizado) throw new Error('Falta marcar "Expediente Actualizado".');
-    if (!form.app_vinculada) throw new Error('Falta marcar "App Vinculada".');
+    if (!form.id_asesor) {
+      swalError('Selecciona un Asesor.');
+      return false;
+    }
 
+    if (form.requiere_cita_afore && !form.cita_afore) {
+      swalError('La cita Afore es requerida.');
+      return false;
+    }
+
+    // REGLA: no permitir trámite solicitado si faltan banderas
     if (form.tramite_solicitado) {
-      if (!form.resultado_tramite) throw new Error('Selecciona el resultado del trámite.');
+      if (!form.expediente_actualizado || !form.app_vinculada) {
+        swalError('Para solicitar trámite debes marcar "Expediente actualizado" y "App vinculada".');
+        return false;
+      }
+
+      if (!form.resultado_tramite) {
+        swalError('Selecciona el resultado del trámite.');
+        return false;
+      }
+
       if (form.resultado_tramite === 'RECHAZADO' && !safeStr(form.observacion_tramite)) {
-        throw new Error('Si el trámite está RECHAZADO, captura una observación.');
+        swalError('Si el trámite está RECHAZADO, captura una observación.');
+        return false;
       }
     }
 
     if (form.listo_para_cobro) {
-      if (!form.fecha_cobro) throw new Error('Captura la fecha de cobro.');
-      if (!form.tipo_cobro) throw new Error('Selecciona el tipo de cobro.');
-      if (!isPositiveNumber(form.monto_cobrar)) throw new Error('Captura un monto válido a cobrar.');
-      if (!isNonNegativeNumber(form.comision_asesora)) throw new Error('Captura una comisión válida (0 o mayor).');
+      if (!form.fecha_cobro) {
+        swalError('Captura la fecha de cobro.');
+        return false;
+      }
+
+      if (!form.tipo_cobro) {
+        swalError('Selecciona el tipo de cobro.');
+        return false;
+      }
+
+      if (!isPositiveNumber(form.monto_cobrar)) {
+        swalError('Captura un monto válido a cobrar.');
+        return false;
+      }
+
+      if (!isNonNegativeNumber(form.comision_asesora)) {
+        swalError('Captura una comisión válida (0 o mayor).');
+        return false;
+      }
     }
+
+    return true; // ✅ todo OK
   };
 
   const buildPayload = () => ({
@@ -301,7 +338,7 @@ export default function Paso1() {
   });
 
   const saveCreateOrPatch = async () => {
-    validateOrThrow();
+    if (!validateOrSwal()) return;
     const payload = buildPayload();
 
     if (!isEdit) {
@@ -338,6 +375,9 @@ export default function Paso1() {
   };
 
   const onNext = async () => {
+    // ⛔ corta antes de guardar y antes de navegar
+    if (!validateOrSwal()) return;
+
     setSaving(true);
     setError('');
     try {
@@ -540,6 +580,7 @@ export default function Paso1() {
                     onChange={onChange('resultado_tramite')}
                     disabled={loading || saving}
                   >
+                    <option value="SOLICITADO">SOLCITADO</option>
                     <option value="LISTO">LISTO</option>
                     <option value="RECHAZADO">RECHAZADO</option>
                   </select>

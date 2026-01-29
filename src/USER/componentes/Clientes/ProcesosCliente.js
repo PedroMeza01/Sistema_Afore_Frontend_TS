@@ -17,7 +17,6 @@ export default function ProcesosCliente() {
   const [loadingCliente, setLoadingCliente] = useState(false);
   const [loadingProcesos, setLoadingProcesos] = useState(false);
   const [error, setError] = useState('');
-
   useEffect(() => {
     if (!auth?.token || !id_cliente) return;
     fetchCliente();

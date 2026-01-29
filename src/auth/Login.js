@@ -19,9 +19,10 @@ function Login() {
     try {
       // console.log(credenciales);
       const { data } = await usuariosAxios.post('/usuarios/iniciarSesion', credenciales);
+      console.log(data);
       const { usuario, rol, mensaje } = data || {};
-      console.log(usuario);
-      console.log(rol);
+      //console.log(data);
+      //console.log(rol);
       if (!usuario) {
         throw new Error('Respuesta inválida del servidor');
       }
@@ -45,7 +46,7 @@ function Login() {
       if (rolStr === '1') {
         history.push('/organizaciones');
       } else if (rolStr === '2') {
-        history.push('/dashboard'); 
+        history.push('/dashboard');
       } else {
         history.push('/'); // fallback
       }
