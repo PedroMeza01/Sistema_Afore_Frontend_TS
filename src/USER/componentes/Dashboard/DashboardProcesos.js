@@ -150,7 +150,7 @@ export default function ProcesosDashboard() {
     <div className="db-page">
       <div className="db-head">
         <div>
-          <div className="db-title">Dashboard de Procesos</div>
+          <div className="db-title">Dashboard de Procesos sssss</div>
           <div className="db-sub">Estatus, fechas y pendientes críticos</div>
         </div>
 
