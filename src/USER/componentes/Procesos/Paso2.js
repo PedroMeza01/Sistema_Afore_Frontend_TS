@@ -1,6 +1,6 @@
 // src/pages/Clientes/Procesos/Paso2.jsx
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory, useParams, useLocation } from 'react-router-dom';
 import { CRMContext } from '../../../context/CRMContext';
 import usuariosAxios from '../../../config/axios';
 import './Paso2.css';
@@ -12,12 +12,20 @@ const REQUIRED_DOCS = [
   { key: 'COMPROBANTE_DOM', label: 'Comprobante de Domicilio', categoria: 'COMPROBANTE_DOM' },
   { key: 'CONTRATO_PAGARE', label: 'Contrato / Pagaré', categoria: 'CONTRATO_PAGARE' }
 ];
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 
 export default function Paso2() {
   const [auth] = useContext(CRMContext);
   const history = useHistory();
-  const { id_cliente, id_proceso } = useParams();
-  console.log(id_proceso);
+  const { id_cliente, id_proceso: idProcesoParam } = useParams();
+
+  const q = useQuery();
+  const idProcesoQuery = q.get('idProceso');
+
+  const idProceso = idProcesoParam || idProcesoQuery; // PRIORIDAD: params
+  console.log(idProceso);
   const headers = useMemo(() => ({ Authorization: auth?.token ? `Bearer ${auth.token}` : '' }), [auth?.token]);
 
   const [loading, setLoading] = useState(false);
@@ -27,17 +35,18 @@ export default function Paso2() {
   const [archivos, setArchivos] = useState([]);
 
   useEffect(() => {
-    if (!auth?.token || !id_proceso) return;
+    if (!auth?.token || !idProceso) return;
     fetchArchivos();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth?.token, id_proceso]);
+  }, [auth?.token, idProceso]);
 
   const fetchArchivos = async () => {
     setLoading(true);
     setError('');
     try {
-      const { data } = await usuariosAxios.get(`/procesos/${id_proceso}/archivos`, { headers });
+      const { data } = await usuariosAxios.get(`/procesos/${idProceso}/archivos`, { headers });
       const list = Array.isArray(data?.mensaje) ? data.mensaje : Array.isArray(data) ? data : [];
+      console.log(list);
       setArchivos(list);
     } catch (e) {
       setError(getErrMsg(e, 'Error al cargar archivos'));
@@ -48,17 +57,19 @@ export default function Paso2() {
   };
 
   const docsUI = useMemo(() => {
-    // Heurística por nombre: se recomienda agregar "codigo_documento" en BD.
     return REQUIRED_DOCS.map(d => {
-      const found = archivos.find(a => {
-        const name = (a?.nombre_original || '').toUpperCase();
-        return a?.categoria === d.categoria && name.includes(d.key);
-      });
+      const found = archivos.find(a => a?.categoria === d.categoria && a?.activo !== false);
       return { ...d, estado: found ? 'Subido' : 'Pendiente', archivo: found || null };
     });
   }, [archivos]);
 
   const onUpload = doc => async e => {
+    const already = archivos.some(a => a?.categoria === doc.categoria);
+    if (already) {
+      setError(`La categoría ${doc.label} ya fue subida. Si necesitas reemplazarla, usa "Reemplazar".`);
+      e.target.value = '';
+      return;
+    }
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -73,7 +84,7 @@ export default function Paso2() {
       const renamed = new File([file], `${doc.key}_${file.name}`, { type: file.type });
       fd.append('file', renamed);
 
-      await usuariosAxios.post(`/procesos/${id_proceso}/archivos`, fd, {
+      await usuariosAxios.post(`/procesos/${idProceso}/archivos`, fd, {
         headers: {
           Authorization: headers.Authorization,
           'Content-Type': 'multipart/form-data'
@@ -89,7 +100,7 @@ export default function Paso2() {
     }
   };
 
-  const onBack = () => history.push(`/clientes/${id_cliente}/procesos/${id_proceso}/editar/paso1`);
+  const onBack = () => history.push(`/clientes/${id_cliente}/procesos/${idProceso}/editar/paso1`);
   const onFinish = () => history.push(`/proceso/cliente/${id_cliente}}`);
 
   const faltantes = useMemo(() => docsUI.filter(d => d.estado !== 'Subido').length, [docsUI]);
@@ -131,7 +142,7 @@ export default function Paso2() {
                     <a className="dp-link" href={d.archivo.public_url} target="_blank" rel="noreferrer">
                       Ver
                     </a>
-                  ) : d.archivo?.storage_path ? (
+                  ) : d.archivo?.public_url ? (
                     <span className="dp-muted">Subido</span>
                   ) : (
                     <span className="dp-muted">—</span>
@@ -139,15 +150,19 @@ export default function Paso2() {
                 </div>
 
                 <div className="dp-col subir">
-                  <label className={`dp-upload ${d.estado === 'Subido' ? 'light' : ''}`}>
-                    {uploadingKey === d.key ? 'Subiendo...' : 'Subir Archivo'}
-                    <input
-                      type="file"
-                      onChange={onUpload(d)}
-                      disabled={uploadingKey !== ''}
-                      style={{ display: 'none' }}
-                    />
-                  </label>
+                  {d.archivo ? (
+                    <span className="dp-muted">Ya existe</span>
+                  ) : (
+                    <label className="dp-upload">
+                      {uploadingKey === d.key ? 'Subiendo...' : 'Subir Archivo'}
+                      <input
+                        type="file"
+                        onChange={onUpload(d)}
+                        disabled={uploadingKey !== '' || !!d.archivo}
+                        style={{ display: 'none' }}
+                      />
+                    </label>
+                  )}
                 </div>
               </div>
             ))}

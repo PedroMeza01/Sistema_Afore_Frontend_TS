@@ -394,7 +394,7 @@ export default function Paso1() {
     }
   };
 
-  const onCancel = () => history.goBack();
+  const onCancel = () => history.push(`/clientes/${id_cliente}/procesos/${id_proceso}`);
 
   // =========================
   // UI

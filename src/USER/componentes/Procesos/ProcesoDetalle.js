@@ -118,6 +118,10 @@ export default function ProcesoDetalle() {
     const id = archivo?.id_proceso_archivo;
     const file = fileDrafts[id];
 
+    if (!id) {
+      setError('Falta id_proceso_archivo.');
+      return;
+    }
     if (!file) {
       setError('Selecciona un archivo primero.');
       return;
@@ -129,13 +133,14 @@ export default function ProcesoDetalle() {
     try {
       const form = new FormData();
       form.append('file', file);
-      form.append('id_proceso_archivo', id);
-
-      // si quieres mantener misma categoría (recomendado)
+      // opcional: manda categoría para mantenerla/actualizarla
       form.append('categoria', archivo?.categoria || '');
 
       await usuariosAxios.put(`/procesos/archivos/${id}`, form, {
-        headers: { ...headers, 'Content-Type': 'multipart/form-data' }
+        headers: {
+          Authorization: headers.Authorization,
+          'Content-Type': 'multipart/form-data'
+        }
       });
 
       clearDraft(id);
@@ -159,7 +164,12 @@ export default function ProcesoDetalle() {
     setError('');
 
     try {
-      await usuariosAxios.post(`/clientes/${id_cliente}/finalizar`, {}, { headers });
+      await usuariosAxios.delete(`/procesos/finalizar/${id_cliente}/${id_proceso}`, {
+        headers: {
+          Authorization: headers.Authorization,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       history.push('/clientes');
     } catch (e) {
       setError(getErrMsg(e, 'Error al finalizar cliente'));
