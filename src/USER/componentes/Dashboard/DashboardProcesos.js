@@ -21,7 +21,7 @@ export default function ProcesosDashboard() {
         tramite_solicitado: 14,
         tramite_sin_resultado: 6,
         listos_para_cobro: 9,
-        monto_total_cobrar: 154320.5,
+        pendientes_por_cobrar: 2,
         comision_total: 18750.0,
         bono_total: 4200.0,
         docs_completos: 17,
@@ -150,7 +150,8 @@ export default function ProcesosDashboard() {
     <div className="db-page">
       <div className="db-head">
         <div>
-          <div className="db-title">Dashboard de Procesos sssss</div>
+          <div className="db-title">Dashboard de Procesos</div>
+          <br></br>
           <div className="db-sub">Estatus, fechas y pendientes críticos</div>
         </div>
 
@@ -165,7 +166,7 @@ export default function ProcesosDashboard() {
       </div>
 
       {/* FILTROS */}
-      <div className="db-filters">
+      {/* <div className="db-filters">
         <div className="db-filter">
           <label>Desde</label>
           <input type="date" value={from} onChange={e => setFrom(e.target.value)} />
@@ -206,23 +207,16 @@ export default function ProcesosDashboard() {
           </button>
           <button className="db-btn">Aplicar (mock)</button>
         </div>
-      </div>
+      </div> */}
 
       {/* KPI ROW 1 */}
       <div className="db-grid">
-        <KpiCard title="Procesos activos" value={k.activos} tone="ok" sub={`Rango: ${from} → ${to}`} />
-        <KpiCard title="Bloqueados" value={k.bloqueados} tone="warn" sub="Requieren acción" />
+        <KpiCard title="Procesos activos" value={k.activos} tone="ok"  />
+        <KpiCard title="Bloqueados" value={k.bloqueados} tone="warn" />
         <KpiCard
-          title="Docs incompletos"
+          title="Tramites con docs pendientes"
           value={k.docs_incompletos}
           tone="warn"
-          sub={`Completos: ${k.docs_completos}`}
-        />
-        <KpiCard
-          title="$ Total a cobrar"
-          value={money(k.monto_total_cobrar)}
-          tone="ok"
-          sub={`Listos: ${k.listos_para_cobro}`}
         />
       </div>
 
@@ -232,22 +226,14 @@ export default function ProcesosDashboard() {
           title="Trámite solicitado"
           value={k.tramite_solicitado}
           tone="muted"
-          sub={`Sin resultado: ${k.tramite_sin_resultado}`}
         />
-        <KpiCard title="Citas (7 días)" value={k.citas_proximas_7} tone="muted" sub={`Vencidas: ${k.citas_vencidas}`} />
+        <KpiCard title="Citas (7 días)" value={k.citas_proximas_7} tone="muted" />
         <KpiCard
           title="46 días (7 días)"
           value={k.dias46_proximos_7}
           tone="muted"
-          sub={`Vencidos: ${k.dias46_vencidos}`}
         />
-        <KpiCard
-          title="Inconsistencias"
-          value={k.inconsistencia_tramite}
-          tone={k.inconsistencia_tramite > 0 ? 'bad' : 'ok'}
-          sub="Trámite sin Expediente/App"
-        />
-      </div>
+     </div>
 
       {/* CONTENIDO */}
       <div className="db-two">
@@ -298,7 +284,6 @@ export default function ProcesosDashboard() {
               <div className="db-list-row" key={d.doc}>
                 <div className="db-list-left">
                   <div className="db-doc-label">{d.label}</div>
-                  <div className="db-doc-code">{d.doc}</div>
                 </div>
                 <div className="db-list-right">
                   <span className="db-pill">{d.count}</span>
@@ -307,10 +292,10 @@ export default function ProcesosDashboard() {
             ))}
           </div>
 
-          <div className="db-note">
+          {/* <div className="db-note">
             Recomendación: marca categorías reales en ProcesoArchivo (INE_FRENTE, INE_POSTERIOR, etc.) para eliminar
             heurísticas.
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -321,7 +306,7 @@ export default function ProcesosDashboard() {
             <div className="db-modal-head">
               <div>
                 <div className="db-modal-title">Calendario de actividades</div>
-                <div className="db-modal-sub">Eventos del rango seleccionado (mock)</div>
+                {/* <div className="db-modal-sub">Eventos del rango seleccionado (mock)</div> */}
               </div>
               <button className="db-btn sm" onClick={() => setCalOpen(false)}>
                 Cerrar
@@ -337,7 +322,15 @@ export default function ProcesosDashboard() {
                     <div className="db-day-title">{g.date}</div>
                     <div className="db-day-list">
                       {g.items.map(ev => (
-                        <div className="db-event" key={ev.id}>
+                        <div
+                          className={`db-event 
+    ${isPast(ev.date) ? 'is-past' : ''} 
+    ${isToday(ev.date) ? 'is-today' : ''} 
+    ${isCritical(ev.tipo) ? 'is-critical' : ''}
+  `}
+                          key={ev.id}
+                        >
+
                           <div className={`db-dot ${eventTone(ev.tipo)}`} />
                           <div className="db-event-main">
                             <div className="db-event-title">{ev.titulo}</div>
@@ -407,4 +400,17 @@ function LegendItem({ tone, label }) {
       <span>{label}</span>
     </div>
   );
+}
+function isToday(dateStr) {
+  const today = new Date().toISOString().slice(0, 10);
+  return dateStr === today;
+}
+
+function isPast(dateStr) {
+  const today = new Date().toISOString().slice(0, 10);
+  return dateStr < today;
+}
+
+function isCritical(tipo) {
+  return ['DOCS_PENDIENTES', 'DIAS_46'].includes(tipo);
 }

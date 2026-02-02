@@ -123,9 +123,7 @@ export default function Afores() {
       <div className="afores-header">
         <h2>Catálogo de AFORES</h2>
         <div className="afores-actions">
-          <button className="btn-secondary" onClick={fetchAfores} disabled={loading || saving}>
-            Recargar
-          </button>
+          
           <button className="btn-primary" onClick={openCreate} disabled={saving}>
             + Nueva AFORE
           </button>

@@ -2,13 +2,17 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useHistory } from 'react-router-dom';
 import { CRMContext } from '../context/CRMContext';
 
-const NavAdmin = () => {
+const NavAdmin = ({ collapsed, setCollapsed }) => {
   const [auth, guardarAuth] = useContext(CRMContext);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); // mobile drawer
   const location = useLocation();
   const history = useHistory();
 
-  // Cerrar al cambiar de ruta
+  /* =====================
+     EFECTOS
+  ===================== */
+
+  // Cerrar drawer mobile al cambiar ruta
   useEffect(() => {
     setOpen(false);
   }, [location.pathname]);
@@ -16,19 +20,29 @@ const NavAdmin = () => {
   // Cerrar con ESC
   useEffect(() => {
     const onKeyDown = e => {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Escape') {
+        setOpen(false);
+      }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
-  const idrol_user = String(auth?.rol ?? ''); // <- usa el mismo campo del segundo
+  /* =====================
+     DATA
+  ===================== */
+
+  const idrol_user = String(auth?.rol ?? '');
 
   const tituloRol = useMemo(() => {
-    if (idrol_user === '1') return '';
-    if (idrol_user === '2') return '';
-    return '';
+    if (idrol_user === '1') return 'Administrador';
+    if (idrol_user === '2') return 'Operación';
+    return 'Usuario';
   }, [idrol_user]);
+
+  /* =====================
+     ACTIONS
+  ===================== */
 
   const cerrarSesion = () => {
     guardarAuth({
@@ -39,94 +53,119 @@ const NavAdmin = () => {
 
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('rol');
-    setOpen(false);
     history.push('/');
   };
 
-  // Helper para clase active (opcional)
-  const isActive = path => (location.pathname === path ? ' is-active' : '');
+  const isActive = path =>
+    location.pathname === path ? ' is-active' : '';
 
   if (!auth?.auth) return null;
 
+  /* =====================
+     RENDER
+  ===================== */
+
   return (
     <>
-      {/* Topbar */}
+      {/* ===== TOPBAR (mobile) ===== */}
       <header className="navadm-topbar">
-        <button className="navadm-burger" onClick={() => setOpen(true)} aria-label="Abrir menú">
+        <button
+          className="navadm-burger"
+          onClick={() => setOpen(true)}
+          aria-label="Abrir menú"
+        >
           <span />
           <span />
           <span />
         </button>
 
-        <div className="navadm-top-title">
-          <span className="navadm-role">{tituloRol}</span>
-        </div>
+        <span className="navadm-role">{tituloRol}</span>
       </header>
 
-      {/* Overlay */}
-      <div className={`navadm-overlay ${open ? 'is-open' : ''}`} onClick={() => setOpen(false)} />
+      {/* ===== OVERLAY (mobile) ===== */}
+      <div
+        className={`navadm-overlay ${open ? 'is-open' : ''}`}
+        onClick={() => setOpen(false)}
+      />
 
-      {/* Drawer */}
-      <aside className={`navadm-drawer ${open ? 'is-open' : ''}`}>
+      {/* ===== SIDEBAR ===== */}
+      <aside
+        className={`navadm-drawer ${open ? 'is-open' : ''}`}
+      >
+        {/* HEADER SIDEBAR */}
         <div className="navadm-drawer-head">
-          <div className="navadm-drawer-title">{tituloRol}</div>
-          <button className="navadm-close" onClick={() => setOpen(false)} aria-label="Cerrar menú">
+        
+
+          {!collapsed && (
+            <span className="navadm-drawer-title">
+              {tituloRol}
+            </span>
+          )}
+
+          {/* Cerrar solo en mobile */}
+          <button
+            className="navadm-close"
+            onClick={() => setOpen(false)}
+            aria-label="Cerrar menú"
+          >
             ✕
           </button>
         </div>
 
+        {/* LINKS */}
         <nav className="navadm-links">
-          {/* =====================
-              MENU POR ROL
-          ===================== */}
 
-          {idrol_user === '1' ? (
+          {idrol_user === '1' && (
             <>
               <Link to="/organizaciones" className={`navadm-link${isActive('/organizaciones')}`}>
-                Organizaciones
+                <span className="navadm-text">Organizaciones</span>
               </Link>
               <Link to="/usuarios" className={`navadm-link${isActive('/usuarios')}`}>
-                Usuarios
-              </Link>
-            </>
-          ) : idrol_user === '2' ? (
-            <>
-              <Link to="/dashboard" className={`navadm-link${isActive('/dashboard')}`}>
-                Dashboard
-              </Link>
-              <Link to="/asesores" className={`navadm-link${isActive('/asesores')}`}>
-                Asesores
-              </Link>
-              <Link to="/clientes" className={`navadm-link${isActive('/clientes')}`}>
-                Clientes
-              </Link>
-              <Link to="/Afores" className={`navadm-link${isActive('/afores')}`}>
-                Afores
-              </Link>
-              <Link to="/procesos" className={`navadm-link${isActive('/procesos')}`}>
-                Procesos
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link to="/Client_ar" className={`navadm-link${isActive('/Client_ar')}`}>
-                Catálogo
-              </Link>
-              <Link to="/perfil" className={`navadm-link${isActive('/perfil')}`}>
-                Perfil
-              </Link>
-              <Link to="/misPedidos" className={`navadm-link${isActive('/misPedidos')}`}>
-                Pedidos
+                <span className="navadm-text">Usuarios</span>
               </Link>
             </>
           )}
+
+          {idrol_user === '2' && (
+            <>
+              <Link to="/dashboard" className={`navadm-link${isActive('/dashboard')}`}>
+                <span className="navadm-text">Dashboard</span>
+              </Link>
+              <Link to="/asesores" className={`navadm-link${isActive('/asesores')}`}>
+                <span className="navadm-text">Asesores</span>
+              </Link>
+              <Link to="/clientes" className={`navadm-link${isActive('/clientes')}`}>
+                <span className="navadm-text">Clientes</span>
+              </Link>
+              <Link to="/afores" className={`navadm-link${isActive('/afores')}`}>
+                <span className="navadm-text">Afores</span>
+              </Link>
+              <Link to="/procesos" className={`navadm-link${isActive('/procesos')}`}>
+                <span className="navadm-text">Procesos</span>
+              </Link>
+            </>
+          )}
+
+          {idrol_user !== '1' && idrol_user !== '2' && (
+            <>
+              <Link to="/Client_ar" className={`navadm-link${isActive('/Client_ar')}`}>
+                <span className="navadm-text">Catálogo</span>
+              </Link>
+              <Link to="/perfil" className={`navadm-link${isActive('/perfil')}`}>
+                <span className="navadm-text">Perfil</span>
+              </Link>
+              <Link to="/misPedidos" className={`navadm-link${isActive('/misPedidos')}`}>
+                <span className="navadm-text">Pedidos</span>
+              </Link>
+            </>
+          )}
+
         </nav>
 
-        {/* Logout */}
+        {/* LOGOUT */}
         <div className="navadm-logout">
           <button className="navadm-logout-btn" onClick={cerrarSesion}>
-            <i className="far fa-times-circle" />
-            <span>Cerrar sesión</span>
+            <span className="navadm-text">Cerrar sesión</span>
           </button>
         </div>
       </aside>
