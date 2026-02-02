@@ -172,11 +172,11 @@ export default function Asesores() {
   return (
     <div className="asesores-page">
       <div className="asesores-header">
-        <h2>Catálogo de Asesores</h2>
+        <h2>Asesores</h2>
         <div className="asesores-actions">
-          <button className="btn-secondary" onClick={fetchAsesores} disabled={loading || saving}>
+          {/* <button className="btn-secondary" onClick={fetchAsesores} disabled={loading || saving}>
             Recargar
-          </button>
+          </button> */}
           <button className="btn-primary" onClick={openCreate} disabled={saving}>
             + Nuevo Asesor
           </button>

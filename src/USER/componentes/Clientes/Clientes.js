@@ -279,12 +279,13 @@ export default function Clientes() {
         </div>
       </div>
 
-      {error ? <div className="clientes-alert">{error}</div> : null}
+      
 
       {loading ? (
         <div className="clientes-loading">Cargando...</div>
       ) : (
         <>
+        <div className="table-wrapper">
           <table className="clientes-table">
             <thead>
               <tr>
@@ -342,7 +343,7 @@ export default function Clientes() {
               })}
             </tbody>
           </table>
-
+          </div>
           {/* PAGINACIÓN */}
           {totalPages > 1 && (
             <div className="clientes-pagination">
@@ -359,7 +360,7 @@ export default function Clientes() {
             <div className="modal-head">
               <div>
                 <h3>{editCliente ? 'Editar Cliente' : 'Nuevo Cliente'}</h3>
-                <p className="modal-sub">Los clientes se guardan dentro de tu organización (por token)</p>
+                {/* <p className="modal-sub">Los clientes se guardan dentro de tu organización (por token)</p> */}
               </div>
               <button className="icon-btn" onClick={closeModal} disabled={saving} aria-label="Cerrar">
                 ✕
@@ -367,6 +368,7 @@ export default function Clientes() {
             </div>
 
             <div className="modal-body">
+              {error ? <div className="clientes-alert">{error}</div> : null}
               <div className="form-grid">
                 {/* Asesor */}
                 <div className="field field-full">

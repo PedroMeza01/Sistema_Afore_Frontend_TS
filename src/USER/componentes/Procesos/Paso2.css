@@ -16,6 +16,35 @@
   background: #eef2f6;
   padding: 14px 18px;
   border-bottom: 1px solid #e5e7eb;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* ← esto es la clave */
+}
+.dp-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.dp-pill {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  border: 1px solid transparent;
+}
+/* COMPLETO */
+.dp-pill.ok {
+  background: #e7f8ee;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+/* FALTANTES */
+.dp-pill.bad {
+  background: #fdecec;
+  color: #b91c1c;
+  border-color: #fecaca;
 }
 
 .dp-header h3 {

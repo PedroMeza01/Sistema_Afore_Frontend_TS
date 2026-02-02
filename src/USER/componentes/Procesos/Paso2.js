@@ -117,12 +117,18 @@ export default function Paso2() {
       <div className="dp-wrap">
         <div className="dp-card">
           <div className="dp-header">
-            <h3>Documentos del Proceso</h3>
+            <h3>Informacion de los documentos del proceso</h3>
+
             <div className="dp-right">
-              <span className="dp-pill">{faltantes === 0 ? 'Completo' : `Faltan ${faltantes}`}</span>
-              <button className="dp-refresh" onClick={fetchArchivos} disabled={loading || uploadingKey !== ''}>
+              <span
+                className={`dp-pill ${faltantes === 0 ? 'ok' : 'bad'}`}
+              >
+                {faltantes === 0 ? 'Completo' : `Faltan ${faltantes}`}
+              </span>
+
+              {/* <button className="dp-refresh" onClick={fetchArchivos} disabled={loading || uploadingKey !== ''}>
                 {loading ? 'Cargando...' : 'Actualizar'}
-              </button>
+              </button> */}
             </div>
           </div>
 

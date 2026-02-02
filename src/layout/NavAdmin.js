@@ -140,9 +140,9 @@ const NavAdmin = ({ collapsed, setCollapsed }) => {
               <Link to="/afores" className={`navadm-link${isActive('/afores')}`}>
                 <span className="navadm-text">Afores</span>
               </Link>
-              <Link to="/procesos" className={`navadm-link${isActive('/procesos')}`}>
+              {/* <Link to="/procesos" className={`navadm-link${isActive('/procesos')}`}>
                 <span className="navadm-text">Procesos</span>
-              </Link>
+              </Link> */}
             </>
           )}
 

@@ -23,11 +23,12 @@
 }
 
 .pd-btn {
-  border: 1px solid #d9d9d9;
+  border: 1px solid #d9d9d9; 
   background: #fff;
   padding: 10px 12px;
   border-radius: 12px;
   cursor: pointer;
+  margin-right: 8px; /* separación */
 }
 .pd-btn.primary {
   background: #00487c;

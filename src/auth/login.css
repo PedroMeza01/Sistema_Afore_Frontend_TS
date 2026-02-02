@@ -1,0 +1,138 @@
+/* ================== RESET ================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+/* ================== CONTENEDOR PRINCIPAL ================== */
+.login {
+  margin-top: 5px;
+  min-height: 75vh;
+  background: linear-gradient(135deg, #e9f0ff, #f5f8ff);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ================== TITULO ================== */
+.login h2 {
+  margin-bottom: 55px;
+  font-size: 30px;
+  font-weight: 800;
+  color: #1446cf;
+  letter-spacing: 0.5px;
+}
+
+/* ================== CARD ================== */
+.contenedor-formulario {
+  background: #ffffff;
+  width: 420px;
+  padding: 40px 45px;
+  border-radius: 18px;
+  box-shadow: 0 20px 50px rgba(30, 58, 138, 0.2);
+}
+
+/* ================== CAMPOS ================== */
+.campo {
+  margin-bottom: 22px;
+}
+
+.campo label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* ================== INPUTS ================== */
+.campo input {
+  width: 100%;
+  padding: 13px 15px;
+  border-radius: 12px;
+  border: 1px solid #d1d9f0;
+  background-color: #f6f9ff;
+  font-size: 14px;
+  transition: all 0.25s ease;
+}
+
+.campo input::placeholder {
+  color: #94a3b8;
+}
+
+.campo input:focus {
+  outline: none;
+  border-color: #2563eb;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+}
+
+/* ================== INPUT CON ICONO ================== */
+.input-contenedor {
+  position: relative;
+}
+
+.input-contenedor input {
+  padding-right: 48px;
+}
+
+/* ================== BOTON OJO ================== */
+.ver-contrasena-btn {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #64748b;
+  transition: color 0.2s ease;
+}
+
+.ver-contrasena-btn:hover {
+  color: #2563eb;
+}
+
+/* ================== BOTONES ================== */
+.btn {
+  border: none;
+  padding: 14px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* ================== BOTON LOGIN ================== */
+.btn-verde {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: #ffffff;
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.4);
+}
+
+.btn-verde:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px rgba(37, 99, 235, 0.5);
+}
+
+/* ================== BOTON BLOQUE ================== */
+.btn-block {
+  width: 100%;
+  margin-top: 15px;
+}
+
+/* ================== RESPONSIVE ================== */
+@media (max-width: 480px) {
+  .contenedor-formulario {
+    width: 90%;
+    padding: 30px 25px;
+  }
+
+  .login h2 {
+    font-size: 24px;
+  }
+}

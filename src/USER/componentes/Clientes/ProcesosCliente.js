@@ -119,11 +119,11 @@ export default function ProcesosCliente() {
 
       <div className="pc-card">
         <div className="pc-card-head">
-          <h3>Procesos</h3>
+          <h3>Información del proceso</h3>
 
-          <button className="pc-btn" onClick={fetchProcesos} disabled={loadingProcesos}>
+          {/* <button className="pc-btn" onClick={fetchProcesos} disabled={loadingProcesos}>
             {loadingProcesos ? 'Actualizando...' : 'Actualizar'}
-          </button>
+          </button> */}
         </div>
 
         {loading ? (

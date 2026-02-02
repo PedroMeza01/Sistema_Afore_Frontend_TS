@@ -3,6 +3,7 @@ import Swal from 'sweetalert2';
 import { withRouter, useHistory } from 'react-router-dom';
 import usuariosAxios from '../config/axios';
 import { FaRegEyeSlash, FaRegEye } from 'react-icons/fa'; // Importa los íconos
+import './login.css';
 
 //context
 import { CRMContext } from '../context/CRMContext';

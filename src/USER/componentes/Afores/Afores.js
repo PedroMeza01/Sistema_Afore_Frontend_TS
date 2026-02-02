@@ -121,7 +121,7 @@ export default function Afores() {
   return (
     <div className="afores-page">
       <div className="afores-header">
-        <h2>Catálogo de AFORES</h2>
+        <h2>Afore</h2>
         <div className="afores-actions">
           
           <button className="btn-primary" onClick={openCreate} disabled={saving}>

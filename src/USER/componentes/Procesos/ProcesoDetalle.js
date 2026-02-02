@@ -187,22 +187,22 @@ export default function ProcesoDetalle() {
     <div className="pd-page">
       <div className="pd-topbar">
         <button className="pd-btn" onClick={goBack}>
-          ← Volver
+          Volver
         </button>
 
         <div className="pd-title">
-          <div className="pd-h1">Detalle del Proceso</div>
-          <div className="pd-sub">ID: {id_proceso}</div>
+          <div className="pd-h1">Detalle del Procesoss</div>
+          {/* <div className="pd-sub">ID: {id_proceso}</div> */}
         </div>
 
         <div className="pd-actions">
-          <button className="pd-btn" onClick={verArchivos} disabled={!proceso}>
+          {/* <button className="pd-btn" onClick={verArchivos} disabled={!proceso}>
             {showArchivos ? 'Ocultar archivos' : 'Ver archivos'}
-          </button>
+          </button> */}
 
-          <button className="pd-btn" onClick={actualizarArchivos} disabled={!proceso || loadingArchivos}>
+          {/* <button className="pd-btn" onClick={actualizarArchivos} disabled={!proceso || loadingArchivos}>
             {loadingArchivos ? 'Actualizando...' : 'Actualizar archivos'}
-          </button>
+          </button> */}
 
           <button className="pd-btn primary" onClick={goModificar} disabled={!proceso}>
             Modificar
@@ -299,7 +299,7 @@ export default function ProcesoDetalle() {
           {showArchivos ? (
             <div className="pd-card" ref={filesRef}>
               <div className="pd-card-head">
-                <span>Archivos</span>
+                <span>Archivos  </span>
                 <span className="pd-muted">{archivos.length} archivo(s)</span>
               </div>
 
