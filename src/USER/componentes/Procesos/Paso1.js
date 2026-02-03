@@ -19,16 +19,17 @@ export default function Paso1() {
   const [loading, setLoading] = useState(false); // catálogos + precarga proceso
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const todayStr = new Date().toISOString().slice(0, 10);
 
   const [form, setForm] = useState({
-    fecha_firma: '2024-02-12',
+    fecha_firma: todayStr,
     tipo_firma: 'Oficina',
 
     id_afore: '',
     id_asesor: '',
 
-    fecha_baja_imss: '2024-02-12',
-    fecha_46_dias: '2024-02-12',
+    fecha_baja_imss: todayStr,
+    fecha_46_dias: todayStr,
 
     requiere_cita_afore: false,
     cita_afore: null,
@@ -343,7 +344,7 @@ export default function Paso1() {
 
     if (!isEdit) {
       const createdRes = await usuariosAxios.post('/procesos', payload, { headers });
-      const created = createdRes?.data?.mensaje ?? createdRes?.data;
+      const created = createdRes?.data?.data ?? createdRes?.data;
       const pid = created?.id_proceso;
       if (!pid) throw new Error('No regresó id_proceso');
 
@@ -723,6 +724,7 @@ export default function Paso1() {
                   disabled={loading || saving}
                 >
                   <option value="ACTIVO">ACTIVO</option>
+                  <option value="FINALIZADO">FINALIZADO</option>
                   <option value="CANCELADO">CANCELADO</option>
                   <option value="BLOQUEADO">BLOQUEADO</option>
                 </select>

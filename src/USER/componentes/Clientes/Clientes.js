@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { CRMContext } from '../../../context/CRMContext';
 import { useHistory } from 'react-router-dom';
 import usuariosAxios from '../../../config/axios';
@@ -26,7 +26,7 @@ const initialForm = {
 export default function Clientes() {
   const [auth] = useContext(CRMContext);
   const history = useHistory();
-
+  const didInitSearch = useRef(false);
   const headers = useMemo(() => ({ Authorization: auth?.token ? `Bearer ${auth.token}` : '' }), [auth?.token]);
 
   const [clientes, setClientes] = useState([]);
@@ -45,18 +45,6 @@ export default function Clientes() {
   const [pageSize] = useState(5); // o editable
 
   const [search, setSearch] = useState('');
-
-  useEffect(() => {
-    if (!auth?.token) {
-      history.push('/iniciar-sesion');
-      return;
-    }
-    // Carga inicial
-    fetchClientes();
-    fetchAsesores();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth?.token]);
-
   // =========================
   // API
   // =========================
@@ -92,25 +80,17 @@ export default function Clientes() {
   useEffect(() => {
     if (!auth?.token) return;
 
+    if (!didInitSearch.current) {
+      didInitSearch.current = true;
+      return;
+    }
+
     const t = setTimeout(() => {
-      // al terminar de escribir 1s => busca y regresa a página 1
       fetchClientes(1, search);
-    }, 1000);
+    }, 600);
 
     return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, auth?.token]);
-
-  const fetchAsesores = async () => {
-    try {
-      // Ideal: backend también filtra asesores por org desde token
-      const { data } = await usuariosAxios.get('/asesores', { headers });
-      const list = Array.isArray(data) ? data : (data?.mensaje ?? []);
-      setAsesores(list);
-    } catch (e) {
-      console.error('Error al cargar asesores', e);
-    }
-  };
 
   // =========================
   // Helpers

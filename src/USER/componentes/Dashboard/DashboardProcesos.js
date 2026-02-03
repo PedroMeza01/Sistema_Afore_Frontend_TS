@@ -1,150 +1,97 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
+import usuariosAxios from '../../../config/axios';
 import './DashboardProcesos.css';
+import { CRMContext } from '../../../context/CRMContext';
 
 export default function ProcesosDashboard() {
   const history = useHistory();
-
-  // ===== MOCK "respuesta BD" =====
-  const mockResponse = useMemo(
-    () => ({
-      filtros: {
-        from: '2026-01-01',
-        to: '2026-01-28',
-        id_asesor: 'ALL',
-        estatus: 'ALL'
-      },
-      kpis: {
-        activos: 28,
-        bloqueados: 5,
-        cancelados: 2,
-        tramite_solicitado: 14,
-        tramite_sin_resultado: 6,
-        listos_para_cobro: 9,
-        pendientes_por_cobrar: 2,
-        comision_total: 18750.0,
-        bono_total: 4200.0,
-        docs_completos: 17,
-        docs_incompletos: 11,
-        citas_proximas_7: 4,
-        citas_vencidas: 2,
-        dias46_proximos_7: 3,
-        dias46_vencidos: 1,
-        inconsistencia_tramite: 1 // tramite_solicitado=true pero (expediente_actualizado/app_vinculada=false)
-      },
-      pendientesCriticos: [
-        {
-          tipo: 'TRAMITE_SIN_RESULTADO',
-          titulo: 'Trámite solicitado sin resultado',
-          count: 6,
-          severidad: 'warn',
-          accion: { label: 'Ver lista', route: '/procesos?f=tramite_sin_resultado' }
-        },
-        {
-          tipo: 'DOCS_INCOMPLETOS',
-          titulo: 'Expedientes incompletos',
-          count: 11,
-          severidad: 'warn',
-          accion: { label: 'Ver lista', route: '/procesos?f=docs_incompletos' }
-        },
-        {
-          tipo: 'CITAS_VENCIDAS',
-          titulo: 'Citas Afore vencidas',
-          count: 2,
-          severidad: 'bad',
-          accion: { label: 'Ver lista', route: '/procesos?f=citas_vencidas' }
-        },
-        {
-          tipo: 'DIAS46_VENCIDOS',
-          titulo: '46 días vencidos',
-          count: 1,
-          severidad: 'bad',
-          accion: { label: 'Ver lista', route: '/procesos?f=46_vencidos' }
-        },
-        {
-          tipo: 'INCONSISTENCIA_TRAMITE',
-          titulo: 'Trámite marcado sin Expediente/App',
-          count: 1,
-          severidad: 'bad',
-          accion: { label: 'Revisar', route: '/procesos?f=inconsistencia_tramite' }
-        }
-      ],
-      calendario: [
-        {
-          id: 'ev1',
-          date: '2026-01-29',
-          tipo: 'CITA_AFORE',
-          titulo: 'Cita Afore – Juan Pérez',
-          id_proceso: 'P-001',
-          id_cliente: 'C-001',
-          estatus: 'ACTIVO'
-        },
-        {
-          id: 'ev2',
-          date: '2026-01-30',
-          tipo: 'DIAS_46',
-          titulo: 'Fecha 46 días – María López',
-          id_proceso: 'P-002',
-          id_cliente: 'C-002',
-          estatus: 'ACTIVO'
-        },
-        {
-          id: 'ev3',
-          date: '2026-02-01',
-          tipo: 'COBRO',
-          titulo: 'Cobro – Carlos Ruiz',
-          id_proceso: 'P-007',
-          id_cliente: 'C-007',
-          estatus: 'ACTIVO'
-        },
-        {
-          id: 'ev4',
-          date: '2026-01-28',
-          tipo: 'DOCS_PENDIENTES',
-          titulo: 'Docs pendientes – Ana Torres',
-          id_proceso: 'P-003',
-          id_cliente: 'C-003',
-          estatus: 'ACTIVO'
-        }
-      ],
-      topFaltantes: [
-        { doc: 'INE_FRENTE', label: 'INE Frente', count: 7 },
-        { doc: 'INE_POSTERIOR', label: 'INE Posterior', count: 6 },
-        { doc: 'ESTADO_CUENTA', label: 'Estado de Cuenta', count: 4 },
-        { doc: 'COMPROBANTE_DOM', label: 'Comprobante de Domicilio', count: 3 },
-        { doc: 'CONTRATO_PAGARE', label: 'Contrato/Pagaré', count: 2 }
-      ]
-    }),
-    []
-  );
-
-  // ===== filtros (solo UI, no pega a BD) =====
-  const [from, setFrom] = useState(mockResponse.filtros.from);
-  const [to, setTo] = useState(mockResponse.filtros.to);
-  const [asesor, setAsesor] = useState(mockResponse.filtros.id_asesor);
-  const [estatus, setEstatus] = useState(mockResponse.filtros.estatus);
+  const [auth] = useContext(CRMContext);
 
   // ===== calendario modal =====
   const [calOpen, setCalOpen] = useState(false);
 
-  const k = mockResponse.kpis;
+  // ===== DATA DEL BACKEND =====
+  const [dash, setDash] = useState({
+    kpis: {
+      activos: 0,
+      bloqueados: 0,
+      cancelados: 0,
+      tramite_solicitado: 0,
+      tramite_sin_resultado: 0,
+      listos_para_cobro: 0,
+      pendientes_por_cobrar: 0,
+      comision_total: 0,
+      bono_total: 0,
+      docs_completos: 0,
+      docs_incompletos: 0,
+      citas_proximas_7: 0,
+      citas_vencidas: 0,
+      dias46_proximos_7: 0,
+      dias46_vencidos: 0,
+      inconsistencia_tramite: 0
+    },
+    pendientesCriticos: [],
+    calendario: [],
+    topFaltantes: []
+  });
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    (async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const { data } = await usuariosAxios.get('/dashboard', {
+          headers: { Authorization: `Bearer ${auth.token}` }
+        });
+
+        if (!mounted) return;
+
+        setDash({
+          kpis: data?.kpis ?? dash.kpis,
+          pendientesCriticos: Array.isArray(data?.pendientesCriticos) ? data.pendientesCriticos : [],
+          calendario: Array.isArray(data?.calendario) ? data.calendario : [],
+          topFaltantes: Array.isArray(data?.topFaltantes) ? data.topFaltantes : []
+        });
+      } catch (e) {
+        if (!mounted) return;
+        setError(e?.response?.data?.message || e?.message || 'Error cargando dashboard');
+      } finally {
+        if (!mounted) return;
+        setLoading(false);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [auth?.token]);
+
+  const k = dash.kpis;
 
   const money = n => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(Number(n || 0));
 
   const openProceso = (id_proceso, id_cliente) => {
-    // ajusta la ruta real de tu sistema
     history.push(`/clientes/${id_cliente}/procesos/${id_proceso}`);
   };
 
   const groupedEvents = useMemo(() => {
     const map = {};
-    for (const ev of mockResponse.calendario) {
+    for (const ev of dash.calendario || []) {
+      if (!ev?.date) continue;
       if (!map[ev.date]) map[ev.date] = [];
       map[ev.date].push(ev);
     }
     const dates = Object.keys(map).sort();
     return dates.map(d => ({ date: d, items: map[d] }));
-  }, [mockResponse.calendario]);
+  }, [dash.calendario]);
 
   return (
     <div className="db-page">
@@ -153,6 +100,9 @@ export default function ProcesosDashboard() {
           <div className="db-title">Dashboard de Procesos</div>
           <br></br>
           <div className="db-sub">Estatus, fechas y pendientes críticos</div>
+          {/* si quieres indicador sin cambiar layout, descomenta */}
+          {/* {loading ? <div className="db-sub">Cargando...</div> : null}
+          {error ? <div className="db-sub">Error: {error}</div> : null} */}
         </div>
 
         <div className="db-head-actions">
@@ -165,75 +115,19 @@ export default function ProcesosDashboard() {
         </div>
       </div>
 
-      {/* FILTROS */}
-      {/* <div className="db-filters">
-        <div className="db-filter">
-          <label>Desde</label>
-          <input type="date" value={from} onChange={e => setFrom(e.target.value)} />
-        </div>
-        <div className="db-filter">
-          <label>Hasta</label>
-          <input type="date" value={to} onChange={e => setTo(e.target.value)} />
-        </div>
-        <div className="db-filter">
-          <label>Asesor</label>
-          <select value={asesor} onChange={e => setAsesor(e.target.value)}>
-            <option value="ALL">Todos</option>
-            <option value="A-001">Asesor 1</option>
-            <option value="A-002">Asesor 2</option>
-          </select>
-        </div>
-        <div className="db-filter">
-          <label>Estatus</label>
-          <select value={estatus} onChange={e => setEstatus(e.target.value)}>
-            <option value="ALL">Todos</option>
-            <option value="ACTIVO">ACTIVO</option>
-            <option value="BLOQUEADO">BLOQUEADO</option>
-            <option value="CANCELADO">CANCELADO</option>
-          </select>
-        </div>
-
-        <div className="db-filter-actions">
-          <button
-            className="db-btn ghost"
-            onClick={() => {
-              setFrom(mockResponse.filtros.from);
-              setTo(mockResponse.filtros.to);
-              setAsesor(mockResponse.filtros.id_asesor);
-              setEstatus(mockResponse.filtros.estatus);
-            }}
-          >
-            Reset
-          </button>
-          <button className="db-btn">Aplicar (mock)</button>
-        </div>
-      </div> */}
-
       {/* KPI ROW 1 */}
       <div className="db-grid">
-        <KpiCard title="Procesos activos" value={k.activos} tone="ok"  />
+        <KpiCard title="Procesos activos" value={k.activos} tone="ok" />
         <KpiCard title="Bloqueados" value={k.bloqueados} tone="warn" />
-        <KpiCard
-          title="Tramites con docs pendientes"
-          value={k.docs_incompletos}
-          tone="warn"
-        />
+        <KpiCard title="Tramites con docs pendientes" value={k.docs_incompletos} tone="warn" />
       </div>
 
       {/* KPI ROW 2 */}
       <div className="db-grid">
-        <KpiCard
-          title="Trámite solicitado"
-          value={k.tramite_solicitado}
-          tone="muted"
-        />
+        <KpiCard title="Trámite solicitado" value={k.tramite_solicitado} tone="muted" />
         <KpiCard title="Citas (7 días)" value={k.citas_proximas_7} tone="muted" />
-        <KpiCard
-          title="46 días (7 días)"
-          value={k.dias46_proximos_7}
-          tone="muted"
-        />
-     </div>
+        <KpiCard title="46 días (7 días)" value={k.dias46_proximos_7} tone="muted" />
+      </div>
 
       {/* CONTENIDO */}
       <div className="db-two">
@@ -253,20 +147,33 @@ export default function ProcesosDashboard() {
               <div className="right">Acción</div>
             </div>
 
-            {mockResponse.pendientesCriticos.map(p => (
-              <div className="db-table-row" key={p.tipo}>
+            {(dash.pendientesCriticos || []).length === 0 ? (
+              <div className="db-table-row">
                 <div className="db-cell">
-                  <span className={`db-badge ${badgeClass(p.severidad)}`}>{p.severidad.toUpperCase()}</span>
-                  <span className="db-text">{p.titulo}</span>
+                  <span className={`db-badge ${badgeClass('OK')}`}>OK</span>
+                  <span className="db-text">Sin pendientes críticos</span>
                 </div>
-                <div className="right">{p.count}</div>
-                <div className="right">
-                  <button className="db-link" onClick={() => history.push(p.accion.route)}>
-                    {p.accion.label} →
-                  </button>
-                </div>
+                <div className="right">0</div>
+                <div className="right">-</div>
               </div>
-            ))}
+            ) : (
+              dash.pendientesCriticos.map(p => (
+                <div className="db-table-row" key={p.tipo}>
+                  <div className="db-cell">
+                    <span className={`db-badge ${badgeClass(p.severidad)}`}>
+                      {(p.severidad || 'muted').toUpperCase()}
+                    </span>
+                    <span className="db-text">{p.titulo}</span>
+                  </div>
+                  <div className="right">{p.count}</div>
+                  <div className="right">
+                    <button className="db-link" onClick={() => history.push(p.accion?.route || '/procesos')}>
+                      {p.accion?.label || 'Ver'} →
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -280,22 +187,28 @@ export default function ProcesosDashboard() {
           </div>
 
           <div className="db-list">
-            {mockResponse.topFaltantes.map(d => (
-              <div className="db-list-row" key={d.doc}>
+            {(dash.topFaltantes || []).length === 0 ? (
+              <div className="db-list-row">
                 <div className="db-list-left">
-                  <div className="db-doc-label">{d.label}</div>
+                  <div className="db-doc-label">Sin faltantes</div>
                 </div>
                 <div className="db-list-right">
-                  <span className="db-pill">{d.count}</span>
+                  <span className="db-pill">0</span>
                 </div>
               </div>
-            ))}
+            ) : (
+              dash.topFaltantes.map(d => (
+                <div className="db-list-row" key={d.doc}>
+                  <div className="db-list-left">
+                    <div className="db-doc-label">{d.label}</div>
+                  </div>
+                  <div className="db-list-right">
+                    <span className="db-pill">{d.count}</span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
-
-          {/* <div className="db-note">
-            Recomendación: marca categorías reales en ProcesoArchivo (INE_FRENTE, INE_POSTERIOR, etc.) para eliminar
-            heurísticas.
-          </div> */}
         </div>
       </div>
 
@@ -306,7 +219,6 @@ export default function ProcesosDashboard() {
             <div className="db-modal-head">
               <div>
                 <div className="db-modal-title">Calendario de actividades</div>
-                {/* <div className="db-modal-sub">Eventos del rango seleccionado (mock)</div> */}
               </div>
               <button className="db-btn sm" onClick={() => setCalOpen(false)}>
                 Cerrar
@@ -330,7 +242,6 @@ export default function ProcesosDashboard() {
   `}
                           key={ev.id}
                         >
-
                           <div className={`db-dot ${eventTone(ev.tipo)}`} />
                           <div className="db-event-main">
                             <div className="db-event-title">{ev.titulo}</div>
@@ -401,6 +312,7 @@ function LegendItem({ tone, label }) {
     </div>
   );
 }
+
 function isToday(dateStr) {
   const today = new Date().toISOString().slice(0, 10);
   return dateStr === today;

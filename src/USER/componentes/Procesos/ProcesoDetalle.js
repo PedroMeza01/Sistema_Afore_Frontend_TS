@@ -5,6 +5,18 @@ import usuariosAxios from '../../../config/axios';
 import './ProcesoDetalle.css';
 
 export default function ProcesoDetalle() {
+  const formatDate = dateStr => {
+    if (!dateStr) return '-';
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return '-';
+
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const yyyy = d.getFullYear();
+
+    return `${dd}/${mm}/${yyyy}`;
+  };
+
   const [auth] = useContext(CRMContext);
   const history = useHistory();
   const { id_cliente, id_proceso } = useParams();
@@ -36,12 +48,12 @@ export default function ProcesoDetalle() {
 
   const fetchProceso = async () => {
     const { data } = await usuariosAxios.get(`/procesos/${id_proceso}`, { headers });
-    return data?.mensaje ?? data;
+    return data?.data ?? data;
   };
 
   const fetchArchivos = async () => {
     const { data } = await usuariosAxios.get(`/procesos/${id_proceso}/archivos`, { headers });
-    return Array.isArray(data?.mensaje) ? data.mensaje : Array.isArray(data) ? data : [];
+    return Array.isArray(data?.data) ? data.data : Array.isArray(data) ? data : [];
   };
 
   const fetchAll = async () => {
@@ -272,17 +284,17 @@ export default function ProcesoDetalle() {
 
               <div className="pd-row">
                 <span className="pd-k">Fecha firma:</span>
-                <span className="pd-v">{proceso.fecha_firma || '-'}</span>
+                <span className="pd-v">{formatDate(proceso.fecha_firma) || '-'}</span>
               </div>
 
               <div className="pd-row">
                 <span className="pd-k">Baja IMSS:</span>
-                <span className="pd-v">{proceso.fecha_baja_imss || '-'}</span>
+                <span className="pd-v">{formatDate(proceso.fecha_baja_imss) || '-'}</span>
               </div>
 
               <div className="pd-row">
                 <span className="pd-k">46 días:</span>
-                <span className="pd-v">{proceso.fecha_46_dias || '-'}</span>
+                <span className="pd-v">{formatDate(proceso.fecha_46_dias) || '-'}</span>
               </div>
 
               <div className="pd-row">
@@ -292,7 +304,7 @@ export default function ProcesoDetalle() {
 
               <div className="pd-row">
                 <span className="pd-k">Cita Afore:</span>
-                <span className="pd-v">{proceso.cita_afore || '-'}</span>
+                <span className="pd-v">{formatDate(proceso.cita_afore) || '-'}</span>
               </div>
             </div>
           </div>

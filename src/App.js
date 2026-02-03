@@ -22,6 +22,7 @@ import Paso1 from './USER/componentes/Procesos/Paso1';
 import Paso2 from './USER/componentes/Procesos/Paso2';
 import DashboardProcesos from './USER/componentes/Dashboard/DashboardProcesos';
 import ProcesoDetalle from './USER/componentes/Procesos/ProcesoDetalle';
+import ProcesosList from './USER/componentes/Dashboard/ProcesosList';
 function App() {
   //UTILIZAR CONTEXT
   const [auth, guardarAuth] = useContext(CRMContext);
@@ -44,6 +45,7 @@ function App() {
                 <Route exact path="/asesores" component={Asesores} />
 
                 <Route exact path="/proceso/cliente/:id_cliente" component={ProcesosCliente} />
+                <Route exact path="/procesos" component={ProcesosList} />
                 <Route exact path="/clientes/:id_cliente/procesos/nuevo" component={Paso1} />
                 <Route exact path="/clientes/:id_cliente/procesos/nuevo2" component={Paso2} />
                 <Route exact path="/clientes/:id_cliente/procesos/:id_proceso/editar/paso1" component={Paso1} />

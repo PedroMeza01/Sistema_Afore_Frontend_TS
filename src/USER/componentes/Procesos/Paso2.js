@@ -101,7 +101,7 @@ export default function Paso2() {
   };
 
   const onBack = () => history.push(`/clientes/${id_cliente}/procesos/${idProceso}/editar/paso1`);
-  const onFinish = () => history.push(`/proceso/cliente/${id_cliente}}`);
+  const onFinish = () => history.push(`/proceso/cliente/${id_cliente}`);
 
   const faltantes = useMemo(() => docsUI.filter(d => d.estado !== 'Subido').length, [docsUI]);
 
