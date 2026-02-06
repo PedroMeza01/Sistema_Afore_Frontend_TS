@@ -1,10 +1,13 @@
 .afores-page {
-  padding: 20px;
-  background: #fff;
-  border-radius: 16px;
+ padding: 22px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  overflow-x: auto;
 }
 
 .afores-header {
+
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -13,8 +16,10 @@
 }
 
 .afores-header h2 {
-  margin: 0;
-  font-weight: 800;
+ margin: 0;
+  font-size: 20px;
+  font-weight: 900;
+  color: #0f172a;
 }
 
 .afores-actions {

@@ -8,15 +8,12 @@
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
   overflow-x: auto;
 }
-
-/* =========================
-   HEADER
-========================= */
 .asesores-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 18px;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
 .asesores-header h2 {
