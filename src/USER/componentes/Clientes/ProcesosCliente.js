@@ -44,7 +44,6 @@ export default function ProcesosCliente() {
       const { data } = await usuariosAxios.get(`/procesos/cliente/${id_cliente}`, { headers });
       const rows = Array.isArray(data?.data) ? data.data : Array.isArray(data) ? data : [];
       setProcesos(rows);
-      console.log(rows);
     } catch (e) {
       setError(getErrMsg(e, 'Error al cargar procesos'));
       setProcesos([]);

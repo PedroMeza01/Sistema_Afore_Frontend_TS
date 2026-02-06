@@ -1,0 +1,25 @@
+.retiro-steps {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.step {
+  padding: 10px 16px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  background-color: #e5e7eb;
+  color: #374151;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.step:hover {
+  background-color: #d1d5db;
+}
+
+.step.active {
+  background-color: #2563eb;
+  color: #ffffff;
+}

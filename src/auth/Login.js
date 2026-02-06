@@ -20,7 +20,6 @@ function Login() {
     try {
       // console.log(credenciales);
       const { data } = await usuariosAxios.post('/usuarios/iniciarSesion', credenciales);
-      console.log(data);
       const { usuario, rol, mensaje } = data || {};
       //console.log(data);
       //console.log(rol);

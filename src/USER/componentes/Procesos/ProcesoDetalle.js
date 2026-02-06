@@ -48,7 +48,7 @@ export default function ProcesoDetalle() {
 
   const fetchProceso = async () => {
     const { data } = await usuariosAxios.get(`/procesos/${id_proceso}`, { headers });
-    return data?.data ?? data;
+    return data.row;
   };
 
   const fetchArchivos = async () => {
@@ -311,7 +311,7 @@ export default function ProcesoDetalle() {
           {showArchivos ? (
             <div className="pd-card" ref={filesRef}>
               <div className="pd-card-head">
-                <span>Archivos  </span>
+                <span>Archivos </span>
                 <span className="pd-muted">{archivos.length} archivo(s)</span>
               </div>
 

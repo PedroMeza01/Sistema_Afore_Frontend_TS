@@ -1,9 +1,10 @@
-// src/pages/Clientes/Procesos/Paso2.jsx
+// src/pages/Clientes/Procesos/Documentos.jsx
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useHistory, useParams, useLocation } from 'react-router-dom';
 import { CRMContext } from '../../../context/CRMContext';
 import usuariosAxios from '../../../config/axios';
-import './Paso2.css';
+import './Documentos.css';
+import RetiroSteps from './RetiroSteps';
 
 const REQUIRED_DOCS = [
   { key: 'INE_FRENTE', label: 'INE Frente', categoria: 'INE_FRENTE' },
@@ -16,7 +17,7 @@ function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
-export default function Paso2() {
+export default function Documentos() {
   const [auth] = useContext(CRMContext);
   const history = useHistory();
   const { id_cliente, id_proceso: idProcesoParam } = useParams();
@@ -25,7 +26,7 @@ export default function Paso2() {
   const idProcesoQuery = q.get('idProceso');
 
   const idProceso = idProcesoParam || idProcesoQuery; // PRIORIDAD: params
-  console.log(idProceso);
+  // console.log(idProceso);
   const headers = useMemo(() => ({ Authorization: auth?.token ? `Bearer ${auth.token}` : '' }), [auth?.token]);
 
   const [loading, setLoading] = useState(false);
@@ -45,8 +46,15 @@ export default function Paso2() {
     setError('');
     try {
       const { data } = await usuariosAxios.get(`/procesos/${idProceso}/archivos`, { headers });
-      const list = Array.isArray(data?.mensaje) ? data.mensaje : Array.isArray(data) ? data : [];
-      console.log(list);
+      console.log(data);
+      const list = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.data)
+          ? data.data
+          : Array.isArray(data?.mensaje)
+            ? data.mensaje
+            : [];
+      // console.log(list);
       setArchivos(list);
     } catch (e) {
       setError(getErrMsg(e, 'Error al cargar archivos'));
@@ -107,12 +115,7 @@ export default function Paso2() {
 
   return (
     <div className="retiro-container">
-      <div className="retiro-steps">
-        <div className="step active">1 Seleccionar Cliente</div>
-        <div className="step active">2 Datos del Retiro</div>
-        <div className="step active">3 Documentos</div>
-        <div className="step">4 Confirmación</div>
-      </div>
+      <RetiroSteps />
 
       <div className="dp-wrap">
         <div className="dp-card">
@@ -120,9 +123,7 @@ export default function Paso2() {
             <h3>Informacion de los documentos del proceso</h3>
 
             <div className="dp-right">
-              <span
-                className={`dp-pill ${faltantes === 0 ? 'ok' : 'bad'}`}
-              >
+              <span className={`dp-pill ${faltantes === 0 ? 'ok' : 'bad'}`}>
                 {faltantes === 0 ? 'Completo' : `Faltan ${faltantes}`}
               </span>
 
@@ -148,7 +149,7 @@ export default function Paso2() {
                     <a className="dp-link" href={d.archivo.public_url} target="_blank" rel="noreferrer">
                       Ver
                     </a>
-                  ) : d.archivo?.public_url ? (
+                  ) : d.archivo ? (
                     <span className="dp-muted">Subido</span>
                   ) : (
                     <span className="dp-muted">—</span>

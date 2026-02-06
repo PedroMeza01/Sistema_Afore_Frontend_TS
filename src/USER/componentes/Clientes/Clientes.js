@@ -73,6 +73,24 @@ export default function Clientes() {
       setLoading(false);
     }
   };
+  useEffect(() => {
+    if (!auth?.token) return;
+    fetchAsesores();
+    fetchClientes();
+  }, [auth?.token]);
+
+  const fetchAsesores = async () => {
+    try {
+      //  console.log('Hizo asesores');
+      // Ideal: backend también filtra asesores por org desde token
+      const { data } = await usuariosAxios.get('/asesores', { headers });
+      const list = Array.isArray(data) ? data : (data?.mensaje ?? []);
+      setAsesores(list);
+      // console.log(list);
+    } catch (e) {
+      console.error('Error al cargar asesores', e);
+    }
+  };
   const handleSearchChange = e => {
     setSearch(e.target.value);
   };
@@ -259,70 +277,68 @@ export default function Clientes() {
         </div>
       </div>
 
-      
-
       {loading ? (
         <div className="clientes-loading">Cargando...</div>
       ) : (
         <>
-        <div className="table-wrapper">
-          <table className="clientes-table">
-            <thead>
-              <tr>
-                <th>NSS</th>
-                <th>Cliente</th>
-                <th>Asesor</th>
-                <th>CURP</th>
-                <th>Estatus</th>
-                <th>Procesos</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {clientes.length === 0 ? (
+          <div className="table-wrapper">
+            <table className="clientes-table">
+              <thead>
                 <tr>
-                  <td colSpan={6} className="empty">
-                    Sin registros
-                  </td>
+                  <th>NSS</th>
+                  <th>Cliente</th>
+                  <th>Asesor</th>
+                  <th>CURP</th>
+                  <th>Estatus</th>
+                  <th>Procesos</th>
+                  <th>Acciones</th>
                 </tr>
-              ) : null}
+              </thead>
 
-              {clientes.map(c => {
-                const activo = Boolean(c?.activo);
-                const nombreFull = [c?.nombre_cliente, c?.apellido_pat_cliente, c?.apellido_mat_cliente]
-                  .filter(Boolean)
-                  .join(' ');
-
-                return (
-                  <tr key={c?.id_cliente}>
-                    <td>{c?.nss_cliente}</td>
-                    <td>{nombreFull}</td>
-                    <td>{getNombreAsesor(c)}</td>
-                    <td>{c?.curp_cliente}</td>
-                    <td>
-                      <span className={activo ? 'tag activo' : 'tag inactivo'}>{activo ? 'Activo' : 'Inactivo'}</span>
-                    </td>
-
-                    <td className="procesos">
-                      <button className="btn-link" onClick={() => goToProcesos(c)} disabled={saving}>
-                        Ver procesos
-                      </button>
-                    </td>
-
-                    <td className="acciones">
-                      <button className="btn-link" onClick={() => openEdit(c)} disabled={saving}>
-                        Editar
-                      </button>
-                      <button className="btn-link danger" onClick={() => toggleActivo(c)} disabled={saving}>
-                        {activo ? 'Desactivar' : 'Activar'}
-                      </button>
+              <tbody>
+                {clientes.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="empty">
+                      Sin registros
                     </td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                ) : null}
+
+                {clientes.map(c => {
+                  const activo = Boolean(c?.activo);
+                  const nombreFull = [c?.nombre_cliente, c?.apellido_pat_cliente, c?.apellido_mat_cliente]
+                    .filter(Boolean)
+                    .join(' ');
+
+                  return (
+                    <tr key={c?.id_cliente}>
+                      <td>{c?.nss_cliente}</td>
+                      <td>{nombreFull}</td>
+                      <td>{getNombreAsesor(c)}</td>
+                      <td>{c?.curp_cliente}</td>
+                      <td>
+                        <span className={activo ? 'tag activo' : 'tag inactivo'}>{activo ? 'Activo' : 'Inactivo'}</span>
+                      </td>
+
+                      <td className="procesos">
+                        <button className="btn-link" onClick={() => goToProcesos(c)} disabled={saving}>
+                          Ver procesos
+                        </button>
+                      </td>
+
+                      <td className="acciones">
+                        <button className="btn-link" onClick={() => openEdit(c)} disabled={saving}>
+                          Editar
+                        </button>
+                        <button className="btn-link danger" onClick={() => toggleActivo(c)} disabled={saving}>
+                          {activo ? 'Desactivar' : 'Activar'}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
           {/* PAGINACIÓN */}
           {totalPages > 1 && (

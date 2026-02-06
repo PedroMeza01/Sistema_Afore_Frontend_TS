@@ -1,14 +1,16 @@
-// src/pages/Clientes/Procesos/Paso1/Paso1.jsx
+// src/pages/Clientes/Procesos/Datos_Del_Retiro/Datos_Del_Retiro.jsx
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { CRMContext } from '../../../context/CRMContext';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import usuariosAxios from '../../../config/axios';
-import './Paso1.css';
+import './Datos_Del_Retiro.css';
 import { swalError } from '../../../helpers/swal';
+import RetiroSteps from './RetiroSteps';
 
-export default function Paso1() {
+export default function Datos_Del_Retiro() {
   const history = useHistory();
-  const { id_cliente, id_proceso } = useParams(); // crear: solo id_cliente | editar: id_cliente + id_proceso
+  const location = useLocation();
+  const { id_cliente, id_proceso } = useParams(); // editar: trae id_proceso | nuevo: NO trae id_proceso
   const isEdit = Boolean(id_proceso);
 
   const [auth] = useContext(CRMContext);
@@ -19,8 +21,11 @@ export default function Paso1() {
   const [loading, setLoading] = useState(false); // catálogos + precarga proceso
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+
   const todayStr = new Date().toISOString().slice(0, 10);
 
+  // ============ FORM INIT ============
+  // NUEVO: valores iniciales (vacío donde debe ir vacío)
   const [form, setForm] = useState({
     fecha_firma: todayStr,
     tipo_firma: 'Oficina',
@@ -28,8 +33,8 @@ export default function Paso1() {
     id_afore: '',
     id_asesor: '',
 
-    fecha_baja_imss: todayStr,
-    fecha_46_dias: todayStr,
+    fecha_baja_imss: '',
+    fecha_46_dias: '',
 
     requiere_cita_afore: false,
     cita_afore: null,
@@ -49,7 +54,8 @@ export default function Paso1() {
     tipo_cobro: 'TRANSFERENCIA',
     evidencia_cobro_file: null,
     monto_cobrar: '',
-    comision_asesora: '',
+    // ✅ NUEVO: % de comisión (0-100)
+    comision_porcentaje: '',
     encuesta_aplicada: false,
 
     estatus_proceso: 'ACTIVO',
@@ -105,11 +111,14 @@ export default function Paso1() {
     setAsesores(asesList);
     setAfores(afoList);
 
-    setForm(prev => ({
-      ...prev,
-      id_asesor: prev.id_asesor || (asesList[0]?.id_asesor ?? ''),
-      id_afore: prev.id_afore || (afoList[0]?.id_afore ?? '')
-    }));
+    // SOLO en NUEVO: setear defaults si siguen vacíos
+    if (!isEdit) {
+      setForm(prev => ({
+        ...prev,
+        id_asesor: prev.id_asesor || (asesList[0]?.id_asesor ?? ''),
+        id_afore: prev.id_afore || (afoList[0]?.id_afore ?? '')
+      }));
+    }
   };
 
   // =========================
@@ -117,48 +126,58 @@ export default function Paso1() {
   // =========================
   const fetchProcesoToForm = async () => {
     const { data } = await usuariosAxios.get(`/procesos/${id_proceso}`, { headers });
-    const p = data?.mensaje ?? data;
+    const p = data.row;
     if (!p) throw new Error('No se encontró el proceso');
 
     setForm(prev => ({
       ...prev,
-      fecha_firma: p.fecha_firma || prev.fecha_firma,
-      tipo_firma: (p.tipo_firma || 'OFICINA') === 'ASESOR' ? 'Asesor' : 'Oficina',
 
-      id_afore: p.id_afore || prev.id_afore || '',
-      id_asesor: p.id_asesor || prev.id_asesor || '',
+      // ======= FECHAS / FIRMA =======
+      fecha_firma: p.fecha_firma,
+      tipo_firma: toUiTipoFirma(p.tipo_firma) || prev.tipo_firma,
 
+      // ======= RELACIONES =======
+      id_afore: p.id_afore ?? '',
+      id_asesor: p.id_asesor ?? '',
+
+      // ======= IMSS =======
       fecha_baja_imss: p.fecha_baja_imss || '',
       fecha_46_dias: p.fecha_46_dias || (p.fecha_baja_imss ? addDaysISO(p.fecha_baja_imss, 46) : ''),
 
+      // ======= CITA =======
       requiere_cita_afore: Boolean(p.requiere_cita_afore),
       cita_afore: p.cita_afore || null,
 
-      acompanamiento: (p.acompanamiento || 'SI') === 'NO' ? 'No' : 'Si',
-      modo_retiro: (p.modo_retiro || 'DISTANCIA') === 'PRESENCIAL' ? 'Presencial' : 'Distancia',
+      // ======= CONFIG =======
+      acompanamiento: toUiSiNo(p.acompanamiento) || 'Si',
+      modo_retiro: toUiModoRetiro(p.modo_retiro) || 'Distancia',
 
       expediente_actualizado: Boolean(p.expediente_actualizado),
       app_vinculada: Boolean(p.app_vinculada),
 
+      // ======= TRAMITE =======
       tramite_solicitado: Boolean(p.tramite_solicitado),
-      resultado_tramite: p.resultado_tramite || 'LISTO',
+      resultado_tramite: p.resultado_tramite || 'SOLICITADO',
       observacion_tramite: p.observacion_tramite || '',
 
+      // ======= COBRO =======
       listo_para_cobro: Boolean(p.listo_para_cobro),
       fecha_cobro: p.fecha_cobro || '',
       tipo_cobro: p.tipo_cobro || 'TRANSFERENCIA',
-      evidencia_cobro_file: null, // no se puede precargar input file
+      evidencia_cobro_file: null, // input file no precarga
       monto_cobrar: p.monto_cobrar ?? '',
-      comision_asesora: p.comision_asesora ?? '',
+      // ✅ NUEVO: % precarga
+      comision_porcentaje: p.comision_porcentaje ?? '',
       encuesta_aplicada: Boolean(p.encuesta_aplicada),
 
+      // ======= ESTATUS =======
       estatus_proceso: (p.estatus_proceso || 'ACTIVO').toString().toUpperCase(),
-      evidencia_bloqueo_file: null // no se puede precargar input file
+      evidencia_bloqueo_file: null // input file no precarga
     }));
   };
 
   // =========================
-  // DERIVADOS
+  // DERIVADOS: fecha 46 días
   // =========================
   useEffect(() => {
     setForm(prev => ({
@@ -167,7 +186,13 @@ export default function Paso1() {
     }));
   }, [form.fecha_baja_imss]);
 
-  const bono_asesora = getBonoAsesora(form.tipo_firma, form.encuesta_aplicada);
+  // ✅ NUEVO: bono = tipo firma + encuesta + (monto * %)
+  const bono_asesora = getBonoAsesora({
+    tipoFirma: form.tipo_firma,
+    encuestaAplicada: form.encuesta_aplicada,
+    montoCobrar: form.monto_cobrar,
+    comisionPorcentaje: form.comision_porcentaje
+  });
 
   const listoParaSolicitar =
     Boolean(form.id_afore) &&
@@ -217,7 +242,8 @@ export default function Paso1() {
       tipo_cobro: checked ? prev.tipo_cobro || 'TRANSFERENCIA' : 'TRANSFERENCIA',
       evidencia_cobro_file: checked ? prev.evidencia_cobro_file : null,
       monto_cobrar: checked ? prev.monto_cobrar : '',
-      comision_asesora: checked ? prev.comision_asesora : '',
+      // ✅ NUEVO: reset % si se apaga
+      comision_porcentaje: checked ? prev.comision_porcentaje : '',
       encuesta_aplicada: checked ? prev.encuesta_aplicada : false
     }));
   };
@@ -294,10 +320,20 @@ export default function Paso1() {
         return false;
       }
 
-      if (!isNonNegativeNumber(form.comision_asesora)) {
-        swalError('Captura una comisión válida (0 o mayor).');
+      // ✅ NUEVO: % comisión válido 0-100
+      if (!isValidPercent(form.comision_porcentaje)) {
+        swalError('Captura un porcentaje de comisión válido (0 a 100).');
         return false;
       }
+    }
+
+    // REGLA evidencia si estatus BLOQUEADO o CANCELADO
+    if (
+      (form.estatus_proceso === 'BLOQUEADO' || form.estatus_proceso === 'CANCELADO') &&
+      !form.evidencia_bloqueo_file
+    ) {
+      swalError('Para BLOQUEADO/CANCELADO debes adjuntar evidencia.');
+      return false;
     }
 
     return true; // ✅ todo OK
@@ -331,7 +367,9 @@ export default function Paso1() {
     fecha_cobro: form.listo_para_cobro ? form.fecha_cobro : null,
     tipo_cobro: form.listo_para_cobro ? form.tipo_cobro : null,
     monto_cobrar: form.listo_para_cobro ? String(form.monto_cobrar) : null,
-    comision_asesora: form.listo_para_cobro ? String(form.comision_asesora) : null,
+
+    // ✅ NUEVO
+    comision_porcentaje: form.listo_para_cobro ? String(form.comision_porcentaje) : null,
     encuesta_aplicada: form.listo_para_cobro ? form.encuesta_aplicada : false,
     bono_asesora: String(bono_asesora),
 
@@ -351,7 +389,10 @@ export default function Paso1() {
       if (form.listo_para_cobro && form.evidencia_cobro_file) {
         await uploadArchivo(pid, 'EVIDENCIA_COBRO', form.evidencia_cobro_file);
       }
-      if (form.estatus_proceso === 'BLOQUEADO' && form.evidencia_bloqueo_file) {
+      if (
+        (form.estatus_proceso === 'BLOQUEADO' || form.estatus_proceso === 'CANCELADO') &&
+        form.evidencia_bloqueo_file
+      ) {
         await uploadArchivo(pid, 'BLOQUEO', form.evidencia_bloqueo_file);
       }
 
@@ -367,7 +408,7 @@ export default function Paso1() {
       await uploadArchivo(id_proceso, 'EVIDENCIA_COBRO', form.evidencia_cobro_file);
       setForm(prev => ({ ...prev, evidencia_cobro_file: null }));
     }
-    if (form.estatus_proceso === 'BLOQUEADO' && form.evidencia_bloqueo_file) {
+    if ((form.estatus_proceso === 'BLOQUEADO' || form.estatus_proceso === 'CANCELADO') && form.evidencia_bloqueo_file) {
       await uploadArchivo(id_proceso, 'BLOQUEO', form.evidencia_bloqueo_file);
       setForm(prev => ({ ...prev, evidencia_bloqueo_file: null }));
     }
@@ -376,18 +417,21 @@ export default function Paso1() {
   };
 
   const onNext = async () => {
-    // ⛔ corta antes de guardar y antes de navegar
     if (!validateOrSwal()) return;
 
     setSaving(true);
     setError('');
     try {
       const pid = await saveCreateOrPatch();
+
+      // EDITAR -> paso2
       if (isEdit) {
         history.push(`/clientes/${id_cliente}/procesos/${pid}/editar/paso2`);
-      } else {
-        history.push(`/clientes/${id_cliente}/procesos/nuevo2?id_proceso=${pid}`);
+        return;
       }
+
+      // NUEVO -> paso2 por URL y conservando pid por query
+      history.push(`/clientes/${id_cliente}/procesos/nuevo/paso2?id_proceso=${pid}`);
     } catch (e) {
       setError(getErrMsg(e, 'Error al guardar proceso'));
     } finally {
@@ -395,19 +439,20 @@ export default function Paso1() {
     }
   };
 
-  const onCancel = () => history.push(`/clientes/${id_cliente}/procesos/${id_proceso}`);
+  const onCancel = () => {
+    if (!isEdit) {
+      history.push(`/clientes/${id_cliente}/procesos`);
+      return;
+    }
+    history.push(`/clientes/${id_cliente}/procesos/${id_proceso}`);
+  };
 
   // =========================
   // UI
   // =========================
   return (
     <div className="retiro-container">
-      <div className="retiro-steps">
-        <div className="step active">1 Seleccionar Cliente</div>
-        <div className="step active">2 Datos del Retiro</div>
-        <div className="step">3 Documentos</div>
-        <div className="step">4 Confirmación</div>
-      </div>
+      <RetiroSteps />
 
       <div className="retiro-card">
         {error ? <div className="form-error">{error}</div> : null}
@@ -581,7 +626,7 @@ export default function Paso1() {
                     onChange={onChange('resultado_tramite')}
                     disabled={loading || saving}
                   >
-                    <option value="SOLICITADO">SOLCITADO</option>
+                    <option value="SOLICITADO">SOLICITADO</option>
                     <option value="LISTO">LISTO</option>
                     <option value="RECHAZADO">RECHAZADO</option>
                   </select>
@@ -590,7 +635,6 @@ export default function Paso1() {
                 <div className="form-col">
                   <label className="sub-label">Observación</label>
                   <textarea
-                    type="text"
                     value={form.observacion_tramite}
                     onChange={onChange('observacion_tramite')}
                     placeholder="Motivo / nota del trámite..."
@@ -654,13 +698,14 @@ export default function Paso1() {
                 </div>
 
                 <div className="form-col">
-                  <label className="sub-label">Comisión asesora</label>
+                  {/* ✅ NUEVO: Comisión % */}
+                  <label className="sub-label">Comisión asesora (%)</label>
                   <input
                     type="number"
                     inputMode="decimal"
-                    value={form.comision_asesora}
-                    onChange={onChange('comision_asesora')}
-                    placeholder="0.00"
+                    value={form.comision_porcentaje}
+                    onChange={onChange('comision_porcentaje')}
+                    placeholder="0"
                     disabled={loading || saving}
                   />
                 </div>
@@ -682,9 +727,11 @@ export default function Paso1() {
                 <div className="form-col">
                   <div className="money-pill">
                     <div className="money-title">Bono asesora</div>
-                    <div className="money-value">${bono_asesora}</div>
+                    <div className="money-value">${Number(bono_asesora || 0).toFixed(2)}</div>
                     <div className="money-sub">
-                      Base: {form.tipo_firma === 'Asesor' ? '$700' : '$0'} {form.encuesta_aplicada ? ' + $100' : ''}
+                      Base: {form.tipo_firma === 'Asesor' ? '$700' : '$0'}
+                      {form.encuesta_aplicada ? ' + $100 encuesta' : ''}
+                      {Number(form.comision_porcentaje) > 0 ? ` + ${form.comision_porcentaje}% comisión` : ''}
                     </div>
                   </div>
                 </div>
@@ -728,7 +775,7 @@ export default function Paso1() {
                   <option value="CANCELADO">CANCELADO</option>
                   <option value="BLOQUEADO">BLOQUEADO</option>
                 </select>
-                <div className="tiny-note">Si lo pones en BLOQUEADO manualmente, el sistema exigirá evidencia.</div>
+                <div className="tiny-note">Si lo pones en BLOQUEADO/CANCELADO, el sistema exigirá evidencia.</div>
               </div>
 
               <div className="form-col">
@@ -825,6 +872,26 @@ function addDaysISO(isoDate, days) {
   const dd = String(dt.getUTCDate()).padStart(2, '0');
   return `${yy}-${mm}-${dd}`;
 }
+
+function toUiTipoFirma(v) {
+  const x = (v ?? '').toString().toUpperCase();
+  if (x === 'ASESOR') return 'Asesor';
+  if (x === 'OFICINA') return 'Oficina';
+  return '';
+}
+function toUiSiNo(v) {
+  const x = (v ?? '').toString().toUpperCase();
+  if (x === 'SI') return 'Si';
+  if (x === 'NO') return 'No';
+  return '';
+}
+function toUiModoRetiro(v) {
+  const x = (v ?? '').toString().toUpperCase();
+  if (x === 'PRESENCIAL') return 'Presencial';
+  if (x === 'DISTANCIA') return 'Distancia';
+  return '';
+}
+
 function getEstatusPreparacion(form, listoParaSolicitar) {
   if (listoParaSolicitar) return 'LISTO_PARA_SOLICITAR';
   if (!form.app_vinculada) return 'VINCULAR_APP';
@@ -859,16 +926,26 @@ function getScore(form) {
   const pct = Math.round(((ok1 + ok2 + ok3 + ok4 + ok5) / total) * 100);
   return `${pct}%`;
 }
-function getBonoAsesora(tipoFirma, encuestaAplicada) {
+
+// ✅ NUEVO: base + encuesta + (monto * %)
+function getBonoAsesora({ tipoFirma, encuestaAplicada, montoCobrar, comisionPorcentaje }) {
   const base = tipoFirma === 'Asesor' ? 700 : 0;
-  const extra = encuestaAplicada ? 100 : 0;
-  return base + extra;
+  const encuesta = encuestaAplicada ? 100 : 0;
+
+  const monto = Number(montoCobrar) || 0;
+  const pct = Number(comisionPorcentaje) || 0;
+
+  const comision = monto > 0 && pct > 0 ? monto * (pct / 100) : 0;
+
+  return base + encuesta + comision;
 }
+
 function isPositiveNumber(v) {
   const n = Number(v);
   return Number.isFinite(n) && n > 0;
 }
-function isNonNegativeNumber(v) {
+
+function isValidPercent(v) {
   const n = Number(v);
-  return Number.isFinite(n) && n >= 0;
+  return Number.isFinite(n) && n >= 0 && n <= 100;
 }

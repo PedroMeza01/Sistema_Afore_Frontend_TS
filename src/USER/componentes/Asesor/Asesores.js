@@ -193,7 +193,6 @@ export default function Asesores() {
             <tr>
               <th>Asesor</th>
               <th>Alias</th>
-              <th>% Comisión</th>
               <th>Estatus</th>
               <th>Acciones</th>
             </tr>
@@ -217,7 +216,6 @@ export default function Asesores() {
                 <tr key={a.id_asesor}>
                   <td>{nombreFull}</td>
                   <td>{a?.alias}</td>
-                  <td>{a?.porcentaje_comision}</td>
                   <td>
                     <span className={activo ? 'tag activo' : 'tag inactivo'}>{activo ? 'Activo' : 'Inactivo'}</span>
                   </td>
@@ -283,17 +281,6 @@ export default function Asesores() {
                 <div className="field">
                   <label>Alias</label>
                   <input value={form.alias} onChange={e => setField('alias', e.target.value)} disabled={saving} />
-                </div>
-
-                <div className="field">
-                  <label>Porcentaje comisión (0-100)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={form.porcentaje_comision}
-                    onChange={e => setField('porcentaje_comision', e.target.value)}
-                    disabled={saving}
-                  />
                 </div>
 
                 <div className="field">

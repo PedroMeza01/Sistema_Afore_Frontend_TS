@@ -18,11 +18,13 @@ import Asesores from './USER/componentes/Asesor/Asesores';
 import Usuarios from './ADMINISTRADOR/componentes/Usuarioss/Usuarios';
 import Clientes from './USER/componentes/Clientes/Clientes';
 import ProcesosCliente from './USER/componentes/Clientes/ProcesosCliente';
-import Paso1 from './USER/componentes/Procesos/Paso1';
-import Paso2 from './USER/componentes/Procesos/Paso2';
+
 import DashboardProcesos from './USER/componentes/Dashboard/DashboardProcesos';
-import ProcesoDetalle from './USER/componentes/Procesos/ProcesoDetalle';
+
 import ProcesosList from './USER/componentes/Dashboard/ProcesosList';
+import ProcesoDetalle from './USER/componentes/Procesos/ProcesoDetalle';
+import Datos_Del_Retiro from './USER/componentes/Procesos/Datos_Del_Retiro';
+import Documentos from './USER/componentes/Procesos/Documentos';
 function App() {
   //UTILIZAR CONTEXT
   const [auth, guardarAuth] = useContext(CRMContext);
@@ -46,10 +48,14 @@ function App() {
 
                 <Route exact path="/proceso/cliente/:id_cliente" component={ProcesosCliente} />
                 <Route exact path="/procesos" component={ProcesosList} />
-                <Route exact path="/clientes/:id_cliente/procesos/nuevo" component={Paso1} />
-                <Route exact path="/clientes/:id_cliente/procesos/nuevo2" component={Paso2} />
-                <Route exact path="/clientes/:id_cliente/procesos/:id_proceso/editar/paso1" component={Paso1} />
-                <Route exact path="/clientes/:id_cliente/procesos/:id_proceso/editar/paso2" component={Paso2} />
+                <Route exact path="/clientes/:id_cliente/procesos/nuevo" component={Datos_Del_Retiro} />
+                <Route exact path="/clientes/:id_cliente/procesos/nuevo2" component={Documentos} />
+                <Route
+                  exact
+                  path="/clientes/:id_cliente/procesos/:id_proceso/editar/paso1"
+                  component={Datos_Del_Retiro}
+                />
+                <Route exact path="/clientes/:id_cliente/procesos/:id_proceso/editar/paso2" component={Documentos} />
                 <Route exact path="/clientes/:id_cliente/procesos/:id_proceso" component={ProcesoDetalle} />
               </Switch>
             </main>

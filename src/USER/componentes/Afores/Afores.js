@@ -40,7 +40,7 @@ export default function Afores() {
 
       // Tu backend a veces responde { mensaje: [...] } o directo [...]
       const list = Array.isArray(data) ? data : (data?.mensaje ?? data?.data ?? []);
-      console.log(list);
+
       setAfores(list);
     } catch (e) {
       setError(getErrMsg(e, 'Error al cargar AFORES'));
@@ -123,7 +123,6 @@ export default function Afores() {
       <div className="afores-header">
         <h2>Afore</h2>
         <div className="afores-actions">
-          
           <button className="btn-primary" onClick={openCreate} disabled={saving}>
             + Nueva AFORE
           </button>
