@@ -63,14 +63,17 @@ export default function Asesores() {
   const setField = (name, value) => setForm(prev => ({ ...prev, [name]: value }));
 
   const openCreate = () => {
+    setError('');
     setEditAsesor(null);
     setForm(initialForm);
     setModalOpen(true);
   };
 
+
   const openEdit = asesor => {
     setEditAsesor(asesor);
     setForm({
+      
       nombre_asesor: asesor?.nombre_asesor ?? '',
       apellido_pat_asesor: asesor?.apellido_pat_asesor ?? '',
       apellido_mat_asesor: asesor?.apellido_mat_asesor ?? '',
@@ -85,12 +88,14 @@ export default function Asesores() {
     setModalOpen(true);
   };
 
-  const closeModal = () => {
-    if (saving) return;
-    setModalOpen(false);
-    setEditAsesor(null);
-    setForm(initialForm);
-  };
+ const closeModal = () => {
+  if (saving) return;
+  setError('');
+  setModalOpen(false);
+  setEditAsesor(null);
+  setForm(initialForm);
+};
+
 
   const validate = () => {
     if (!String(form.nombre_asesor || '').trim()) return 'Nombre es requerido';
@@ -183,7 +188,7 @@ export default function Asesores() {
         </div>
       </div>
 
-      {error && <div className="asesores-alert">{error}</div>}
+
 
       {loading ? (
         <div className="asesores-loading">Cargando...</div>
@@ -250,6 +255,7 @@ export default function Asesores() {
             </div>
 
             <div className="modal-body">
+              {error && <div className="asesores-alert">{error}</div>}
               <div className="form-grid">
                 <div className="field">
                   <label>Nombre</label>
