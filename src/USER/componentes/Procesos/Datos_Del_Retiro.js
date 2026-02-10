@@ -167,7 +167,6 @@ export default function Datos_Del_Retiro() {
       evidencia_cobro_file: null, // input file no precarga
       monto_cobrar: p.monto_cobrar ?? '',
       // ✅ NUEVO: % precarga
-      comision_porcentaje: p.comision_porcentaje ?? '',
       encuesta_aplicada: Boolean(p.encuesta_aplicada),
 
       // ======= ESTATUS =======
@@ -190,8 +189,7 @@ export default function Datos_Del_Retiro() {
   const bono_asesora = getBonoAsesora({
     tipoFirma: form.tipo_firma,
     encuestaAplicada: form.encuesta_aplicada,
-    montoCobrar: form.monto_cobrar,
-    comisionPorcentaje: form.comision_porcentaje
+    montoCobrar: form.monto_cobrar
   });
 
   const listoParaSolicitar =
@@ -243,7 +241,6 @@ export default function Datos_Del_Retiro() {
       evidencia_cobro_file: checked ? prev.evidencia_cobro_file : null,
       monto_cobrar: checked ? prev.monto_cobrar : '',
       // ✅ NUEVO: reset % si se apaga
-      comision_porcentaje: checked ? prev.comision_porcentaje : '',
       encuesta_aplicada: checked ? prev.encuesta_aplicada : false
     }));
   };
@@ -321,10 +318,6 @@ export default function Datos_Del_Retiro() {
       }
 
       // ✅ NUEVO: % comisión válido 0-100
-      if (!isValidPercent(form.comision_porcentaje)) {
-        swalError('Captura un porcentaje de comisión válido (0 a 100).');
-        return false;
-      }
     }
 
     // REGLA evidencia si estatus BLOQUEADO o CANCELADO
@@ -369,7 +362,6 @@ export default function Datos_Del_Retiro() {
     monto_cobrar: form.listo_para_cobro ? String(form.monto_cobrar) : null,
 
     // ✅ NUEVO
-    comision_porcentaje: form.listo_para_cobro ? String(form.comision_porcentaje) : null,
     encuesta_aplicada: form.listo_para_cobro ? form.encuesta_aplicada : false,
     bono_asesora: String(bono_asesora),
 
@@ -696,19 +688,6 @@ export default function Datos_Del_Retiro() {
                     disabled={loading || saving}
                   />
                 </div>
-
-                <div className="form-col">
-                  {/* ✅ NUEVO: Comisión % */}
-                  <label className="sub-label">Comisión asesora (%)</label>
-                  <input
-                    type="number"
-                    inputMode="decimal"
-                    value={form.comision_porcentaje}
-                    onChange={onChange('comision_porcentaje')}
-                    placeholder="0"
-                    disabled={loading || saving}
-                  />
-                </div>
               </div>
 
               <div className="form-row">
@@ -731,7 +710,6 @@ export default function Datos_Del_Retiro() {
                     <div className="money-sub">
                       Base: {form.tipo_firma === 'Asesor' ? '$700' : '$0'}
                       {form.encuesta_aplicada ? ' + $100 encuesta' : ''}
-                      {Number(form.comision_porcentaje) > 0 ? ` + ${form.comision_porcentaje}% comisión` : ''}
                     </div>
                   </div>
                 </div>
@@ -923,19 +901,19 @@ function getScore(form) {
   const ok3 = !form.requiere_cita_afore || Boolean(form.cita_afore) ? 1 : 0;
   const ok4 = form.tramite_solicitado ? 1 : 0;
   const ok5 = form.listo_para_cobro ? 1 : 0;
-  const pct = Math.round(((ok1 + ok2 + ok3 + ok4 + ok5) / total) * 100);
-  return `${pct}%`;
+  const porcentaje = Math.round(((ok1 + ok2 + ok3 + ok4 + ok5) / total) * 100);
+  return `${porcentaje}%`;
 }
 
 // ✅ NUEVO: base + encuesta + (monto * %)
-function getBonoAsesora({ tipoFirma, encuestaAplicada, montoCobrar, comisionPorcentaje }) {
+function getBonoAsesora({ tipoFirma, encuestaAplicada, montoCobrar }) {
   const base = tipoFirma === 'Asesor' ? 700 : 0;
   const encuesta = encuestaAplicada ? 100 : 0;
 
   const monto = Number(montoCobrar) || 0;
-  const pct = Number(comisionPorcentaje) || 0;
+  const porcentaje = 25.6;
 
-  const comision = monto > 0 && pct > 0 ? monto * (pct / 100) : 0;
+  const comision = monto > 0 && porcentaje > 0 ? monto * (porcentaje / 100) : 0;
 
   return base + encuesta + comision;
 }
