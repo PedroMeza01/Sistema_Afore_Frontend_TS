@@ -9,7 +9,6 @@ const initialForm = {
   apellido_pat_asesor: '',
   apellido_mat_asesor: '',
   alias: '',
-  porcentaje_comision: '',
   observaciones: '',
   activo: true
 };
@@ -78,10 +77,6 @@ export default function Asesores() {
       apellido_pat_asesor: asesor?.apellido_pat_asesor ?? '',
       apellido_mat_asesor: asesor?.apellido_mat_asesor ?? '',
       alias: asesor?.alias ?? '',
-      porcentaje_comision:
-        asesor?.porcentaje_comision !== undefined && asesor?.porcentaje_comision !== null
-          ? String(asesor.porcentaje_comision)
-          : '',
       observaciones: asesor?.observaciones ?? '',
       activo: asesor?.activo ?? true
     });
@@ -102,23 +97,16 @@ export default function Asesores() {
     if (!String(form.apellido_pat_asesor || '').trim()) return 'Apellido paterno es requerido';
     if (!String(form.apellido_mat_asesor || '').trim()) return 'Apellido materno es requerido';
     if (!String(form.alias || '').trim()) return 'Alias es requerido';
-    if (!String(form.porcentaje_comision || '').trim()) return 'Porcentaje de comisión es requerido';
-
-    const pct = Number(String(form.porcentaje_comision).replace(',', '.'));
-    if (!Number.isFinite(pct)) return 'Porcentaje de comisión debe ser numérico';
-    if (pct < 0 || pct > 100) return 'Porcentaje de comisión debe estar entre 0 y 100';
 
     return '';
   };
 
   const buildPayload = () => {
-    const pct = Number(String(form.porcentaje_comision).replace(',', '.'));
     return {
       nombre_asesor: form.nombre_asesor.trim(),
       apellido_pat_asesor: form.apellido_pat_asesor.trim(),
       apellido_mat_asesor: form.apellido_mat_asesor.trim(),
       alias: form.alias.trim(),
-      porcentaje_comision: pct,
       observaciones: String(form.observaciones || '').trim() || undefined,
       activo: Boolean(form.activo)
     };
