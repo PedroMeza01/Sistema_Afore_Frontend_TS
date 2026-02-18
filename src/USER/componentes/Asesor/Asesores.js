@@ -68,11 +68,9 @@ export default function Asesores() {
     setModalOpen(true);
   };
 
-
   const openEdit = asesor => {
     setEditAsesor(asesor);
     setForm({
-      
       nombre_asesor: asesor?.nombre_asesor ?? '',
       apellido_pat_asesor: asesor?.apellido_pat_asesor ?? '',
       apellido_mat_asesor: asesor?.apellido_mat_asesor ?? '',
@@ -83,19 +81,17 @@ export default function Asesores() {
     setModalOpen(true);
   };
 
- const closeModal = () => {
-  if (saving) return;
-  setError('');
-  setModalOpen(false);
-  setEditAsesor(null);
-  setForm(initialForm);
-};
-
+  const closeModal = () => {
+    if (saving) return;
+    setError('');
+    setModalOpen(false);
+    setEditAsesor(null);
+    setForm(initialForm);
+  };
 
   const validate = () => {
     if (!String(form.nombre_asesor || '').trim()) return 'Nombre es requerido';
     if (!String(form.apellido_pat_asesor || '').trim()) return 'Apellido paterno es requerido';
-    if (!String(form.apellido_mat_asesor || '').trim()) return 'Apellido materno es requerido';
     if (!String(form.alias || '').trim()) return 'Alias es requerido';
 
     return '';
@@ -175,8 +171,6 @@ export default function Asesores() {
           </button>
         </div>
       </div>
-
-
 
       {loading ? (
         <div className="asesores-loading">Cargando...</div>

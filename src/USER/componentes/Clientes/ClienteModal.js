@@ -41,7 +41,7 @@ export default function ClienteModal({ open, saving, error, asesores = [], editC
   }, [open, editCliente]);
 
   const setField = (name, value) => setForm(prev => ({ ...prev, [name]: value }));
-
+  /*
   const validate = () => {
     if (!String(form.id_asesor || '').trim()) return 'Asesor es requerido';
 
@@ -58,7 +58,7 @@ export default function ClienteModal({ open, saving, error, asesores = [], editC
 
     return '';
   };
-
+*/
   const payload = useMemo(
     () => ({
       id_asesor: String(form.id_asesor).trim(),
@@ -77,9 +77,7 @@ export default function ClienteModal({ open, saving, error, asesores = [], editC
   );
 
   const handleSave = () => {
-    const msg = validate();
-    if (msg) return onSave(null, msg); // manda error al padre
-    onSave(payload, '');
+    onSave(payload);
   };
 
   if (!open) return null;

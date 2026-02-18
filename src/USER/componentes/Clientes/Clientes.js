@@ -114,14 +114,8 @@ export default function Clientes() {
     setEditCliente(null);
   };
 
-  const saveCliente = async (payload, validationError) => {
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
-
+  const saveCliente = async payload => {
     setSaving(true);
-    setError('');
 
     try {
       if (editCliente?.id_cliente) {

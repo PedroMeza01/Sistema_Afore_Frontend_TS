@@ -7,14 +7,14 @@ import './ProcesoDetalle.css';
 export default function ProcesoDetalle() {
   const formatDate = dateStr => {
     if (!dateStr) return '-';
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return '-';
 
-    const dd = String(d.getDate()).padStart(2, '0');
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const yyyy = d.getFullYear();
+    // dateStr esperado: "YYYY-MM-DD"
+    const [y, m, d] = String(dateStr).split('-').map(Number);
+    if (!y || !m || !d) return '-';
 
-    return `${dd}/${mm}/${yyyy}`;
+    const dd = String(d).padStart(2, '0');
+    const mm = String(m).padStart(2, '0');
+    return `${dd}/${mm}/${y}`;
   };
 
   const [auth] = useContext(CRMContext);
