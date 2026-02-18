@@ -63,7 +63,7 @@ function FormularioNuevoUsuario({ selectedCode, selectedOption, history }) {
 
         try {
             const response = await usuariosAxios.post('/crear-cuenta', nuevoUsuario);
-            console.log('Usuario agregado exitosamente:', response.data);
+           // console.log('Usuario agregado exitosamente:', response.data);
             if (selectedOption === 'Cliente') {
                 Swal.fire({
                     title: "Se agrego el nuevo usuario(Cliente)",

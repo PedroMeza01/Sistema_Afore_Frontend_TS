@@ -33,7 +33,7 @@ const Organizaciones = () => {
       const res = await usuariosAxios.get('/organizacion', { headers });
       setData(Array.isArray(res.data) ? res.data : res.data?.data || []);
     } catch (error) {
-      console.log(error);
+     // console.log(error);
       Swal.fire('Error', 'No se pudieron cargar las organizaciones', 'error');
     } finally {
       setLoading(false);
@@ -97,7 +97,7 @@ const Organizaciones = () => {
         await cargar();
       }
     } catch (error) {
-      console.log(error);
+     // console.log(error);
       const msg = error?.response?.data?.message || error?.response?.data?.error || 'No se pudo crear la organización';
 
       Swal.fire('Error', msg, 'error');

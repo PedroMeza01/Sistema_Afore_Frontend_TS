@@ -18,12 +18,12 @@ function useQuery() {
 }
 
 export default function Documentos() {
-  console.log(useParams());
+  //console.log(useParams());
   const [auth] = useContext(CRMContext);
   const history = useHistory();
   const { id_cliente, id_proceso: idProcesoParam } = useParams();
-  console.log('Proceso', idProcesoParam);
-  console.log('Cliente', id_cliente);
+  // console.log('Proceso', idProcesoParam);
+  // console.log('Cliente', id_cliente);
   const q = useQuery();
   const idProcesoQuery = q.get('id_proceso');
 
@@ -48,7 +48,7 @@ export default function Documentos() {
     setError('');
     try {
       const { data } = await usuariosAxios.get(`/procesos/${idProceso}/archivos`, { headers });
-      console.log(data);
+      //  console.log(data);
       const list = Array.isArray(data)
         ? data
         : Array.isArray(data?.data)
