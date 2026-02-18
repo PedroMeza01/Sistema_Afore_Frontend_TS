@@ -49,7 +49,7 @@ function App() {
                 <Route exact path="/proceso/cliente/:id_cliente" component={ProcesosCliente} />
                 <Route exact path="/procesos" component={ProcesosList} />
                 <Route exact path="/clientes/:id_cliente/procesos/nuevo" component={Datos_Del_Retiro} />
-                <Route exact path="/clientes/:id_cliente/procesos/nuevo2" component={Documentos} />
+                <Route exact path="/clientes/:id_cliente/procesos/nuevo/paso2" component={Documentos} />
                 <Route
                   exact
                   path="/clientes/:id_cliente/procesos/:id_proceso/editar/paso1"

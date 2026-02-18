@@ -18,12 +18,14 @@ function useQuery() {
 }
 
 export default function Documentos() {
+  console.log(useParams());
   const [auth] = useContext(CRMContext);
   const history = useHistory();
   const { id_cliente, id_proceso: idProcesoParam } = useParams();
-
+  console.log('Proceso', idProcesoParam);
+  console.log('Cliente', id_cliente);
   const q = useQuery();
-  const idProcesoQuery = q.get('idProceso');
+  const idProcesoQuery = q.get('id_proceso');
 
   const idProceso = idProcesoParam || idProcesoQuery; // PRIORIDAD: params
   // console.log(idProceso);

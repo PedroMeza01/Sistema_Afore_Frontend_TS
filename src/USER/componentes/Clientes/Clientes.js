@@ -27,6 +27,7 @@ export default function Clientes() {
   const [auth] = useContext(CRMContext);
   const history = useHistory();
   const didInitSearch = useRef(false);
+
   const headers = useMemo(() => ({ Authorization: auth?.token ? `Bearer ${auth.token}` : '' }), [auth?.token]);
 
   const [clientes, setClientes] = useState([]);
@@ -42,13 +43,17 @@ export default function Clientes() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [pageSize] = useState(5); // o editable
+  const [pageSize] = useState(5);
 
   const [search, setSearch] = useState('');
+
+  // ✅ NUEVO: filtro por asesor (server-side)
+  const [filterAsesor, setFilterAsesor] = useState('');
+
   // =========================
   // API
   // =========================
-  const fetchClientes = async (page = currentPage, q = search) => {
+  const fetchClientes = async (page = currentPage, q = search, asesorId = filterAsesor) => {
     setLoading(true);
     setError('');
     try {
@@ -57,7 +62,8 @@ export default function Clientes() {
         params: {
           page,
           limit: pageSize,
-          search: q?.trim() || undefined
+          search: q?.trim() || undefined,
+          id_asesor: asesorId || undefined
         }
       });
 
@@ -73,28 +79,29 @@ export default function Clientes() {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    if (!auth?.token) return;
-    fetchAsesores();
-    fetchClientes();
-  }, [auth?.token]);
 
   const fetchAsesores = async () => {
     try {
-      //  console.log('Hizo asesores');
-      // Ideal: backend también filtra asesores por org desde token
       const { data } = await usuariosAxios.get('/asesores', { headers });
       const list = Array.isArray(data) ? data : (data?.mensaje ?? []);
-      setAsesores(list);
-      // console.log(list);
+      setAsesores(Array.isArray(list) ? list : []);
     } catch (e) {
       console.error('Error al cargar asesores', e);
     }
   };
+
+  useEffect(() => {
+    if (!auth?.token) return;
+    fetchAsesores();
+    fetchClientes(1, '', ''); // carga inicial: página 1 sin búsqueda ni filtro
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [auth?.token]);
+
   const handleSearchChange = e => {
     setSearch(e.target.value);
   };
 
+  // ✅ debounce búsqueda (resetea a page 1)
   useEffect(() => {
     if (!auth?.token) return;
 
@@ -104,11 +111,19 @@ export default function Clientes() {
     }
 
     const t = setTimeout(() => {
-      fetchClientes(1, search);
-    }, 600);
+      fetchClientes(1, search, filterAsesor);
+    }, 1000);
 
     return () => clearTimeout(t);
-  }, [search, auth?.token]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search, auth?.token, filterAsesor]);
+
+  // ✅ cambio de filtro asesor (resetea a page 1)
+  useEffect(() => {
+    if (!auth?.token) return;
+    fetchClientes(1, search, filterAsesor);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterAsesor, auth?.token]);
 
   // =========================
   // Helpers
@@ -207,7 +222,8 @@ export default function Clientes() {
       }
 
       closeModal();
-      await fetchClientes(currentPage);
+      // conserva filtro/búsqueda/página actual
+      await fetchClientes(currentPage, search, filterAsesor);
     } catch (e) {
       setError(getErrMsg(e, 'Error al guardar cliente'));
     } finally {
@@ -222,7 +238,7 @@ export default function Clientes() {
     setError('');
     try {
       await usuariosAxios.patch(`/clientes/${cliente.id_cliente}/toggle`, {}, { headers });
-      await fetchClientes(currentPage);
+      await fetchClientes(currentPage, search, filterAsesor);
     } catch (e) {
       setError(getErrMsg(e, 'Error al cambiar estatus'));
     } finally {
@@ -247,13 +263,12 @@ export default function Clientes() {
 
   const goToProcesos = cliente => {
     if (!cliente?.id_cliente) return;
-
     history.push(`/proceso/cliente/${cliente.id_cliente}`);
   };
 
   const handlePageChange = page => {
     if (saving || loading) return;
-    fetchClientes(page);
+    fetchClientes(page, search, filterAsesor);
   };
 
   return (
@@ -270,6 +285,28 @@ export default function Clientes() {
             onChange={handleSearchChange}
             disabled={loading || saving}
           />
+
+          {/* ✅ NUEVO: filtro por asesor */}
+          <select
+            className="clientes-filter"
+            value={filterAsesor}
+            onChange={e => setFilterAsesor(e.target.value)}
+            disabled={loading || saving}
+          >
+            <option value="">-- Todos los asesores --</option>
+            {asesores.map(a => {
+              const nombre = [a?.nombre_asesor, a?.apellido_pat_asesor, a?.apellido_mat_asesor]
+                .filter(Boolean)
+                .join(' ');
+              const label = a?.alias ? `${nombre} (${a.alias})` : nombre;
+
+              return (
+                <option key={a.id_asesor} value={a.id_asesor}>
+                  {label}
+                </option>
+              );
+            })}
+          </select>
 
           <button className="btn-primary" onClick={openCreate} disabled={saving}>
             + Nuevo Cliente
@@ -298,7 +335,8 @@ export default function Clientes() {
               <tbody>
                 {clientes.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="empty">
+                    {/* ✅ eran 7 columnas */}
+                    <td colSpan={7} className="empty">
                       Sin registros
                     </td>
                   </tr>
@@ -340,6 +378,7 @@ export default function Clientes() {
               </tbody>
             </table>
           </div>
+
           {/* PAGINACIÓN */}
           {totalPages > 1 && (
             <div className="clientes-pagination">
@@ -356,7 +395,6 @@ export default function Clientes() {
             <div className="modal-head">
               <div>
                 <h3>{editCliente ? 'Editar Cliente' : 'Nuevo Cliente'}</h3>
-                {/* <p className="modal-sub">Los clientes se guardan dentro de tu organización (por token)</p> */}
               </div>
               <button className="icon-btn" onClick={closeModal} disabled={saving} aria-label="Cerrar">
                 ✕
