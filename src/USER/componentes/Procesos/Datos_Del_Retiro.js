@@ -1,7 +1,7 @@
 // src/pages/Clientes/Procesos/Datos_Del_Retiro/Datos_Del_Retiro.jsx
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { CRMContext } from '../../../context/CRMContext';
-import { useHistory, useLocation, useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import usuariosAxios from '../../../config/axios';
 import './Datos_Del_Retiro.css';
 import { swalError } from '../../../helpers/swal';
@@ -9,29 +9,27 @@ import RetiroSteps from './RetiroSteps';
 
 export default function Datos_Del_Retiro() {
   const history = useHistory();
-  const location = useLocation();
-  const { id_cliente, id_proceso } = useParams(); // editar: trae id_proceso | nuevo: NO trae id_proceso
+  const { id_cliente, id_proceso } = useParams();
   const isEdit = Boolean(id_proceso);
 
   const [auth] = useContext(CRMContext);
 
-  const [asesores, setAsesores] = useState([]);
+  // ✅ ya NO cargamos asesores para seleccionar
   const [afores, setAfores] = useState([]);
 
-  const [loading, setLoading] = useState(false); // catálogos + precarga proceso
+  const [cliente, setCliente] = useState(null); // ✅ para mostrar nombre asesor del cliente
+  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
   const todayStr = new Date().toISOString().slice(0, 10);
 
-  // ============ FORM INIT ============
-  // NUEVO: valores iniciales (vacío donde debe ir vacío)
   const [form, setForm] = useState({
     fecha_firma: todayStr,
     tipo_firma: 'Oficina',
 
     id_afore: '',
-    id_asesor: '',
+    id_asesor: '', // ✅ se llena desde el cliente (no editable)
 
     fecha_baja_imss: '',
     fecha_46_dias: '',
@@ -54,7 +52,6 @@ export default function Datos_Del_Retiro() {
     tipo_cobro: 'TRANSFERENCIA',
     evidencia_cobro_file: null,
     monto_cobrar: '',
-    // ✅ NUEVO: % de comisión (0-100)
     comision_porcentaje: '',
     encuesta_aplicada: false,
 
@@ -85,9 +82,15 @@ export default function Datos_Del_Retiro() {
     setLoading(true);
     setError('');
     try {
-      await fetchCatalogos();
+      await fetchCatalogos(); // solo afores
+
+      // ✅ SIEMPRE trae cliente para fijar asesor
+      await fetchClienteToForm();
+
       if (isEdit) {
         await fetchProcesoToForm();
+        // ✅ blinda: fuerza asesor del cliente aunque el proceso venga mal
+        await enforceAsesorCliente();
       }
     } catch (e) {
       setError(getErrMsg(e, 'Error al inicializar'));
@@ -97,29 +100,67 @@ export default function Datos_Del_Retiro() {
   };
 
   // =========================
-  // API CATALOGOS
+  // API CATALOGOS (solo AFORES)
   // =========================
   const fetchCatalogos = async () => {
-    const [asesRes, afoRes] = await Promise.all([
-      usuariosAxios.get('/asesores', { headers }),
-      usuariosAxios.get('/afores', { headers })
-    ]);
-
-    const asesList = normalizeList(asesRes.data);
+    const afoRes = await usuariosAxios.get('/afores', { headers });
     const afoList = normalizeList(afoRes.data);
 
-    setAsesores(asesList);
     setAfores(afoList);
 
-    // SOLO en NUEVO: setear defaults si siguen vacíos
+    // SOLO en NUEVO: setear default de afore si sigue vacío
     if (!isEdit) {
       setForm(prev => ({
         ...prev,
-        id_asesor: prev.id_asesor || (asesList[0]?.id_asesor ?? ''),
         id_afore: prev.id_afore || (afoList[0]?.id_afore ?? '')
       }));
     }
   };
+
+  // =========================
+  // API CLIENTE (para fijar asesor)
+  // =========================
+  const fetchClienteToForm = async () => {
+    const { data } = await usuariosAxios.get(`/clientes/${id_cliente}`, { headers });
+
+    // ajusta si tu backend regresa distinto
+    const c = data?.row ?? data?.mensaje ?? data;
+    if (!c) throw new Error('No se encontró el cliente');
+
+    setCliente(c);
+
+    const idAsesorCliente = c?.id_asesor ?? c?.asesor?.id_asesor ?? '';
+    if (!idAsesorCliente) {
+      // ✅ decisión: bloquear creación/edición si no hay asesor asignado en cliente
+      throw new Error(
+        'El cliente no tiene asesor asignado. Asigna un asesor al cliente antes de crear/editar el proceso.'
+      );
+    }
+
+    setForm(prev => ({
+      ...prev,
+      id_asesor: idAsesorCliente
+    }));
+  };
+
+  const enforceAsesorCliente = async () => {
+    const { data } = await usuariosAxios.get(`/clientes/${id_cliente}`, { headers });
+    const c = data?.row ?? data?.mensaje ?? data;
+    const idAsesorCliente = c?.id_asesor ?? c?.asesor?.id_asesor ?? '';
+
+    if (!idAsesorCliente) return;
+
+    setForm(prev => ({
+      ...prev,
+      id_asesor: idAsesorCliente
+    }));
+  };
+
+  const asesorNombre = useMemo(() => {
+    const a = cliente?.asesor;
+    if (!a) return '';
+    return [a?.nombre_asesor, a?.apellido_pat_asesor, a?.apellido_mat_asesor].filter(Boolean).join(' ').trim();
+  }, [cliente]);
 
   // =========================
   // API PROCESO (EDITAR)
@@ -132,60 +173,52 @@ export default function Datos_Del_Retiro() {
     setForm(prev => ({
       ...prev,
 
-      // ======= FECHAS / FIRMA =======
       fecha_firma: p.fecha_firma,
       tipo_firma: toUiTipoFirma(p.tipo_firma) || prev.tipo_firma,
 
-      // ======= RELACIONES =======
-      id_afore: p.id_afore ?? '',
-      id_asesor: p.id_asesor ?? '',
+      id_afore: p.id_afore ?? prev.id_afore ?? '',
+      // ⚠️ id_asesor lo vamos a forzar al del cliente después
 
-      // ======= IMSS =======
       fecha_baja_imss: p.fecha_baja_imss || '',
       fecha_46_dias: p.fecha_46_dias || (p.fecha_baja_imss ? addDaysISO(p.fecha_baja_imss, 46) : ''),
 
-      // ======= CITA =======
       requiere_cita_afore: Boolean(p.requiere_cita_afore),
       cita_afore: p.cita_afore || null,
 
-      // ======= CONFIG =======
       acompanamiento: toUiSiNo(p.acompanamiento) || 'Si',
       modo_retiro: toUiModoRetiro(p.modo_retiro) || 'Distancia',
 
       expediente_actualizado: Boolean(p.expediente_actualizado),
       app_vinculada: Boolean(p.app_vinculada),
 
-      // ======= TRAMITE =======
       tramite_solicitado: Boolean(p.tramite_solicitado),
       resultado_tramite: p.resultado_tramite || 'SOLICITADO',
       observacion_tramite: p.observacion_tramite || '',
 
-      // ======= COBRO =======
       listo_para_cobro: Boolean(p.listo_para_cobro),
       fecha_cobro: p.fecha_cobro || '',
       tipo_cobro: p.tipo_cobro || 'TRANSFERENCIA',
-      evidencia_cobro_file: null, // input file no precarga
+      evidencia_cobro_file: null,
       monto_cobrar: p.monto_cobrar ?? '',
-      // ✅ NUEVO: % precarga
       encuesta_aplicada: Boolean(p.encuesta_aplicada),
 
-      // ======= ESTATUS =======
       estatus_proceso: (p.estatus_proceso || 'ACTIVO').toString().toUpperCase(),
-      evidencia_bloqueo_file: null // input file no precarga
+      evidencia_bloqueo_file: null
     }));
   };
 
   // =========================
-  // DERIVADOS: fecha 46 días
+  // DERIVADOS: fecha 46 días (UTC safe)
   // =========================
   useEffect(() => {
     setForm(prev => ({
       ...prev,
       fecha_46_dias: prev.fecha_baja_imss ? addDaysISO(prev.fecha_baja_imss, 46) : ''
     }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.fecha_baja_imss]);
 
-  // ✅ NUEVO: bono = tipo firma + encuesta + (monto * %)
+  // ✅ bono = tipo firma + encuesta + comision fija (ejemplo)
   const bono_asesora = getBonoAsesora({
     tipoFirma: form.tipo_firma,
     encuestaAplicada: form.encuesta_aplicada,
@@ -240,7 +273,6 @@ export default function Datos_Del_Retiro() {
       tipo_cobro: checked ? prev.tipo_cobro || 'TRANSFERENCIA' : 'TRANSFERENCIA',
       evidencia_cobro_file: checked ? prev.evidencia_cobro_file : null,
       monto_cobrar: checked ? prev.monto_cobrar : '',
-      // ✅ NUEVO: reset % si se apaga
       encuesta_aplicada: checked ? prev.encuesta_aplicada : false
     }));
   };
@@ -273,8 +305,9 @@ export default function Datos_Del_Retiro() {
       return false;
     }
 
+    // ✅ ahora NO se elige: debe venir del cliente
     if (!form.id_asesor) {
-      swalError('Selecciona un Asesor.');
+      swalError('El cliente no tiene asesor asignado.');
       return false;
     }
 
@@ -283,7 +316,6 @@ export default function Datos_Del_Retiro() {
       return false;
     }
 
-    // REGLA: no permitir trámite solicitado si faltan banderas
     if (form.tramite_solicitado) {
       if (!form.expediente_actualizado || !form.app_vinculada) {
         swalError('Para solicitar trámite debes marcar "Expediente actualizado" y "App vinculada".');
@@ -316,11 +348,8 @@ export default function Datos_Del_Retiro() {
         swalError('Captura un monto válido a cobrar.');
         return false;
       }
-
-      // ✅ NUEVO: % comisión válido 0-100
     }
 
-    // REGLA evidencia si estatus BLOQUEADO o CANCELADO
     if (
       (form.estatus_proceso === 'BLOQUEADO' || form.estatus_proceso === 'CANCELADO') &&
       !form.evidencia_bloqueo_file
@@ -329,12 +358,14 @@ export default function Datos_Del_Retiro() {
       return false;
     }
 
-    return true; // ✅ todo OK
+    return true;
   };
 
   const buildPayload = () => ({
     id_cliente,
     id_afore: form.id_afore,
+
+    // ✅ asesor fijo del cliente
     id_asesor: form.id_asesor,
 
     fecha_firma: form.fecha_firma,
@@ -361,7 +392,6 @@ export default function Datos_Del_Retiro() {
     tipo_cobro: form.listo_para_cobro ? form.tipo_cobro : null,
     monto_cobrar: form.listo_para_cobro ? String(form.monto_cobrar) : null,
 
-    // ✅ NUEVO
     encuesta_aplicada: form.listo_para_cobro ? form.encuesta_aplicada : false,
     bono_asesora: String(bono_asesora),
 
@@ -392,10 +422,8 @@ export default function Datos_Del_Retiro() {
       return pid;
     }
 
-    // EDITAR
     await usuariosAxios.patch(`/procesos/${id_proceso}`, payload, { headers });
 
-    // si seleccionó nuevos archivos, se suben
     if (form.listo_para_cobro && form.evidencia_cobro_file) {
       await uploadArchivo(id_proceso, 'EVIDENCIA_COBRO', form.evidencia_cobro_file);
       setForm(prev => ({ ...prev, evidencia_cobro_file: null }));
@@ -416,13 +444,11 @@ export default function Datos_Del_Retiro() {
     try {
       const pid = await saveCreateOrPatch();
 
-      // EDITAR -> paso2
       if (isEdit) {
         history.push(`/clientes/${id_cliente}/procesos/${pid}/editar/paso2`);
         return;
       }
 
-      // NUEVO -> paso2 por URL y conservando pid por query
       history.push(`/clientes/${id_cliente}/procesos/nuevo/paso2?id_proceso=${pid}`);
     } catch (e) {
       setError(getErrMsg(e, 'Error al guardar proceso'));
@@ -489,24 +515,19 @@ export default function Datos_Del_Retiro() {
           </select>
         </div>
 
+        {/* ✅ ASESOR FIJO DEL CLIENTE (NO EDITABLE) */}
         <div className="form-group">
-          <label>Asesor</label>
-          <select value={form.id_asesor} onChange={onChange('id_asesor')} disabled={loading || saving}>
-            {loading ? (
-              <option value="">Cargando...</option>
-            ) : asesores.length === 0 ? (
-              <option value="">Sin asesores</option>
-            ) : (
-              <>
-                <option value="">Selecciona...</option>
-                {asesores.map(a => (
-                  <option key={a.id_asesor} value={a.id_asesor}>
-                    {safeStr(a.nombre_asesor)} {safeStr(a.apellido_pat_asesor)} {safeStr(a.apellido_mat_asesor)}
-                  </option>
-                ))}
-              </>
-            )}
-          </select>
+          <label>Asesor (del cliente)</label>
+          <input
+            value={asesorNombre || (form.id_asesor ? `Asesor asignado (ID: ${form.id_asesor})` : 'Sin asesor asignado')}
+            readOnly
+            disabled
+          />
+          {!form.id_asesor ? (
+            <div className="tiny-note" style={{ color: '#ffb4b4' }}>
+              Asigna asesor al cliente antes de continuar.
+            </div>
+          ) : null}
         </div>
 
         <div className="form-group">
@@ -815,7 +836,7 @@ export default function Datos_Del_Retiro() {
             Cancelar
           </button>
 
-          <button className="btn-next" type="button" onClick={onNext} disabled={saving || loading}>
+          <button className="btn-next" type="button" onClick={onNext} disabled={saving || loading || !form.id_asesor}>
             {saving ? 'Guardando...' : isEdit ? 'Guardar y seguir' : 'Siguiente'}
           </button>
         </div>
@@ -850,7 +871,6 @@ function addDaysISO(isoDate, days) {
   const dd = String(dt.getUTCDate()).padStart(2, '0');
   return `${yy}-${mm}-${dd}`;
 }
-
 function toUiTipoFirma(v) {
   const x = (v ?? '').toString().toUpperCase();
   if (x === 'ASESOR') return 'Asesor';
@@ -869,7 +889,6 @@ function toUiModoRetiro(v) {
   if (x === 'DISTANCIA') return 'Distancia';
   return '';
 }
-
 function getEstatusPreparacion(form, listoParaSolicitar) {
   if (listoParaSolicitar) return 'LISTO_PARA_SOLICITAR';
   if (!form.app_vinculada) return 'VINCULAR_APP';
@@ -904,8 +923,6 @@ function getScore(form) {
   const porcentaje = Math.round(((ok1 + ok2 + ok3 + ok4 + ok5) / total) * 100);
   return `${porcentaje}%`;
 }
-
-// ✅ NUEVO: base + encuesta + (monto * %)
 function getBonoAsesora({ tipoFirma, encuestaAplicada, montoCobrar }) {
   const base = tipoFirma === 'Asesor' ? 700 : 0;
   const encuesta = encuestaAplicada ? 100 : 0;
@@ -917,13 +934,7 @@ function getBonoAsesora({ tipoFirma, encuestaAplicada, montoCobrar }) {
 
   return base + encuesta + comision;
 }
-
 function isPositiveNumber(v) {
   const n = Number(v);
   return Number.isFinite(n) && n > 0;
-}
-
-function isValidPercent(v) {
-  const n = Number(v);
-  return Number.isFinite(n) && n >= 0 && n <= 100;
 }

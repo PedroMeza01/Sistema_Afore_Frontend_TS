@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import usuariosAxios from '../../../config/axios';
 import './DashboardProcesos.css';
 import { CRMContext } from '../../../context/CRMContext';
+import CalendarioModal from './components/CalendarioModal';
 
 export default function ProcesosDashboard() {
   const history = useHistory();
@@ -16,20 +17,11 @@ export default function ProcesosDashboard() {
     kpis: {
       activos: 0,
       bloqueados: 0,
-      cancelados: 0,
       tramite_solicitado: 0,
-      tramite_sin_resultado: 0,
-      listos_para_cobro: 0,
-      pendientes_por_cobrar: 0,
-      comision_total: 0,
-      bono_total: 0,
-      docs_completos: 0,
       docs_incompletos: 0,
       citas_proximas_7: 0,
-      citas_vencidas: 0,
       dias46_proximos_7: 0,
-      dias46_vencidos: 0,
-      inconsistencia_tramite: 0
+      dias46_vencidos: 0
     },
     pendientesCriticos: [],
     calendario: [],
@@ -213,66 +205,12 @@ export default function ProcesosDashboard() {
       </div>
 
       {/* MODAL CALENDARIO */}
-      {calOpen ? (
-        <div className="db-modal-backdrop" onClick={() => setCalOpen(false)}>
-          <div className="db-modal" onClick={e => e.stopPropagation()}>
-            <div className="db-modal-head">
-              <div>
-                <div className="db-modal-title">Calendario de actividades</div>
-              </div>
-              <button className="db-btn sm" onClick={() => setCalOpen(false)}>
-                Cerrar
-              </button>
-            </div>
-
-            <div className="db-modal-body">
-              {groupedEvents.length === 0 ? (
-                <div className="db-empty">Sin eventos</div>
-              ) : (
-                groupedEvents.map(g => (
-                  <div className="db-day" key={g.date}>
-                    <div className="db-day-title">{g.date}</div>
-                    <div className="db-day-list">
-                      {g.items.map(ev => (
-                        <div
-                          className={`db-event 
-    ${isPast(ev.date) ? 'is-past' : ''} 
-    ${isToday(ev.date) ? 'is-today' : ''} 
-    ${isCritical(ev.tipo) ? 'is-critical' : ''}
-  `}
-                          key={ev.id}
-                        >
-                          <div className={`db-dot ${eventTone(ev.tipo)}`} />
-                          <div className="db-event-main">
-                            <div className="db-event-title">{ev.titulo}</div>
-                            <div className="db-event-meta">
-                              Tipo: <b>{ev.tipo}</b> · Estatus: <b>{ev.estatus}</b> · Proceso: <b>{ev.id_proceso}</b>
-                            </div>
-                          </div>
-                          <div className="db-event-actions">
-                            <button className="db-btn sm" onClick={() => openProceso(ev.id_proceso, ev.id_cliente)}>
-                              Abrir
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-
-            <div className="db-modal-foot">
-              <div className="db-legend">
-                <LegendItem tone="blue" label="Cita Afore" />
-                <LegendItem tone="orange" label="46 días" />
-                <LegendItem tone="green" label="Cobro" />
-                <LegendItem tone="red" label="Docs pendientes" />
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <CalendarioModal
+        open={calOpen}
+        onClose={() => setCalOpen(false)}
+        events={dash.calendario}
+        onOpenProceso={openProceso}
+      />
     </div>
   );
 }
@@ -293,36 +231,4 @@ function badgeClass(sev) {
   if (s === 'WARN') return 'warn';
   if (s === 'OK') return 'ok';
   return 'muted';
-}
-
-function eventTone(tipo) {
-  const t = (tipo || '').toString().toUpperCase();
-  if (t === 'CITA_AFORE') return 'blue';
-  if (t === 'DIAS_46') return 'orange';
-  if (t === 'COBRO') return 'green';
-  if (t === 'DOCS_PENDIENTES') return 'red';
-  return 'muted';
-}
-
-function LegendItem({ tone, label }) {
-  return (
-    <div className="db-legend-item">
-      <span className={`db-dot ${tone}`} />
-      <span>{label}</span>
-    </div>
-  );
-}
-
-function isToday(dateStr) {
-  const today = new Date().toISOString().slice(0, 10);
-  return dateStr === today;
-}
-
-function isPast(dateStr) {
-  const today = new Date().toISOString().slice(0, 10);
-  return dateStr < today;
-}
-
-function isCritical(tipo) {
-  return ['DOCS_PENDIENTES', 'DIAS_46'].includes(tipo);
 }
