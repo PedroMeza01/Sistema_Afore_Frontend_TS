@@ -31,10 +31,12 @@ function App() {
   const [auth, guardarAuth] = useContext(CRMContext);
   return (
     <Router>
-     <div className='logos'>
+     {/* <div className='logos'>
      <div> logo de nosotros</div>
-     <div> Logo del cliente </div>
-     </div>
+     <div> logo del cliente </div>
+     <img src=' src\img\logo2.png' alt='Logo' className='logo' />
+    
+     </div> */}
       <Fragment>
         <CRMProvider value={[auth, guardarAuth]}>
           <div className="grid contenedor contenido-principal">

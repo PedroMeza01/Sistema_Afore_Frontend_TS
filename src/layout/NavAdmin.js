@@ -3,10 +3,11 @@ import { Link, useLocation, useHistory } from 'react-router-dom';
 import { CRMContext } from '../context/CRMContext';
 
 import { AiOutlineLogout } from "react-icons/ai";
-import { AiFillDashboard } from "react-icons/ai";
+import { AiOutlineDashboard } from "react-icons/ai";
 import { AiTwotoneBank } from "react-icons/ai";
-import { AiFillContacts } from "react-icons/ai";
+import { AiOutlineContacts } from "react-icons/ai";
 import { AiOutlineUserAdd } from "react-icons/ai";
+import { AiTwotoneCalculator } from "react-icons/ai";
 
 
 
@@ -145,12 +146,12 @@ const NavAdmin = ({ collapsed, setCollapsed }) => {
               to="/dashboard" 
               className={`navadm-link${isActive('/dashboard')}`}>
               
-                <AiFillDashboard className="icon blue" />
+                <AiOutlineDashboard className="icon blue" />
                 <span className="navadm-text">Dashboard</span>
               </Link>
 
               <Link to="/asesores" className={`navadm-link${isActive('/asesores')}`}>
-                <AiFillContacts className="icon blue" />
+                <AiOutlineContacts className="icon blue" />
                 <span className="navadm-text">Asesores</span>
               </Link>
 
@@ -165,7 +166,7 @@ const NavAdmin = ({ collapsed, setCollapsed }) => {
               </Link>
 
               <Link to="/balance" className={`navadm-link ${isActive('/balance')}`}>
-                <AiFillDashboard className="navadm-icon" />
+                <AiTwotoneCalculator className="navadm-icon" />
                 <span className="navadm-text">Balance</span>
               </Link>
             </>
@@ -189,10 +190,11 @@ const NavAdmin = ({ collapsed, setCollapsed }) => {
 
         {/* LOGOUT */}
         <div className="navadm-logout-final">
-          <button 
+          <button name=''
           className="navadm-logout-final-btn" onClick={cerrarSesion}>
-            <AiOutlineLogout className="navadm-logout-final-btn logout-icon" />
             <span className="navadm-logout-final-text">Cerrar sesión</span>
+
+            
           </button>
         </div>
       </aside>
