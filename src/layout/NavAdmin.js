@@ -2,6 +2,15 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useHistory } from 'react-router-dom';
 import { CRMContext } from '../context/CRMContext';
 
+import { AiOutlineLogout } from "react-icons/ai";
+import { AiFillDashboard } from "react-icons/ai";
+import { AiTwotoneBank } from "react-icons/ai";
+import { AiFillContacts } from "react-icons/ai";
+import { AiOutlineUserAdd } from "react-icons/ai";
+
+
+
+
 const NavAdmin = ({ collapsed, setCollapsed }) => {
   const [auth, guardarAuth] = useContext(CRMContext);
   const [open, setOpen] = useState(false); // mobile drawer
@@ -36,7 +45,7 @@ const NavAdmin = ({ collapsed, setCollapsed }) => {
 
   const tituloRol = useMemo(() => {
     if (idrol_user === '1') return 'Administrador';
-    if (idrol_user === '2') return 'Operación';
+    if (idrol_user === '2') return 'Catálogo';
     return 'Usuario';
   }, [idrol_user]);
 
@@ -90,11 +99,15 @@ const NavAdmin = ({ collapsed, setCollapsed }) => {
 
       {/* ===== SIDEBAR ===== */}
       <aside
-        className={`navadm-drawer ${open ? 'is-open' : ''}`}
-      >
+  className={`
+    navadm-drawer
+    ${open ? 'is-open' : ''}
+    ${collapsed ? 'is-collapsed' : ''}
+  `}
+>
         {/* HEADER SIDEBAR */}
         <div className="navadm-drawer-head">
-        
+
 
           {!collapsed && (
             <span className="navadm-drawer-title">
@@ -128,21 +141,33 @@ const NavAdmin = ({ collapsed, setCollapsed }) => {
 
           {idrol_user === '2' && (
             <>
-              <Link to="/dashboard" className={`navadm-link${isActive('/dashboard')}`}>
+              <Link 
+              to="/dashboard" 
+              className={`navadm-link${isActive('/dashboard')}`}>
+              
+                <AiFillDashboard className="icon blue" />
                 <span className="navadm-text">Dashboard</span>
               </Link>
+
               <Link to="/asesores" className={`navadm-link${isActive('/asesores')}`}>
+                <AiFillContacts className="icon blue" />
                 <span className="navadm-text">Asesores</span>
               </Link>
-              <Link to="/clientes" className={`navadm-link${isActive('/clientes')}`}>
+
+              <Link to="/clientes" className={`navadm-link ${isActive('/clientes')}`}>
+                <AiOutlineUserAdd className="navadm-icon" />
                 <span className="navadm-text">Clientes</span>
               </Link>
-              <Link to="/afores" className={`navadm-link${isActive('/afores')}`}>
+
+              <Link to="/afores" className={`navadm-link ${isActive('/afores')}`}>
+                <AiTwotoneBank className="navadm-icon" />
                 <span className="navadm-text">Afores</span>
               </Link>
-              {/* <Link to="/procesos" className={`navadm-link${isActive('/procesos')}`}>
-                <span className="navadm-text">Procesos</span>
-              </Link> */}
+
+              <Link to="/balance" className={`navadm-link ${isActive('/balance')}`}>
+                <AiFillDashboard className="navadm-icon" />
+                <span className="navadm-text">Balance</span>
+              </Link>
             </>
           )}
 
@@ -163,9 +188,11 @@ const NavAdmin = ({ collapsed, setCollapsed }) => {
         </nav>
 
         {/* LOGOUT */}
-        <div className="navadm-logout">
-          <button className="navadm-logout-btn" onClick={cerrarSesion}>
-            <span className="navadm-text">Cerrar sesión</span>
+        <div className="navadm-logout-final">
+          <button 
+          className="navadm-logout-final-btn" onClick={cerrarSesion}>
+            <AiOutlineLogout className="navadm-logout-final-btn logout-icon" />
+            <span className="navadm-logout-final-text">Cerrar sesión</span>
           </button>
         </div>
       </aside>

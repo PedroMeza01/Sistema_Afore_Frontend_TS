@@ -7,6 +7,7 @@ import './login.css';
 
 //context
 import { CRMContext } from '../context/CRMContext';
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></link>
 
 function Login() {
   const [, guardarAuth] = useContext(CRMContext);
@@ -55,7 +56,7 @@ function Login() {
       const msg = error.response?.data?.mensaje || error.message || 'Error al iniciar sesión';
       Swal.fire({ icon: 'error', title: 'Hubo un error', text: msg });
     }
-  };
+  }; 
 
   // Almacenar lo que el usuario escribe en el state
   const leerDatos = e => {
@@ -67,22 +68,28 @@ function Login() {
 
   return (
     <div className="login">
-      <h2>Iniciar Sesión</h2>
+      <div className="logos-formulario">
+        {/* <img src={require('../img/logo.png')} alt="Logo" className="logo" /> */}
+        <img src={require('../img/logo2.png')} alt="Logo" className="logo" />
+        
+        </div>
       <div className="contenedor-formulario">
+        <h2>Inicio de sesión </h2>
         <form onSubmit={iniciarSesion}>
           <div className="campo">
-            <label>Usuario</label>
+            <label className="label-login">Usuario</label>
             <input
               type="text"
               name="username"
-              placeholder="Usuario"
+              placeholder="Ejemplo: juan.perez"
               onChange={leerDatos}
               style={{ textTransform: 'none' }} // Desactivar las mayúsculas
             />
-          </div>
+            
 
+          </div>          
           <div className="campo">
-            <label>Contraseña</label>
+            <label className="label-login">Contraseña</label>
             <div className="input-contenedor">
               <input
                 type={verContraseña ? 'text' : 'password'}
@@ -90,13 +97,14 @@ function Login() {
                 placeholder="Contraseña"
                 onChange={leerDatos}
               />
+
               <button type="button" onClick={() => setVerContraseña(!verContraseña)} className="ver-contrasena-btn">
                 {verContraseña ? <FaRegEye /> : <FaRegEyeSlash />}
               </button>
             </div>
           </div>
 
-          <input type="submit" value="Iniciar Sesión" className="btn btn-verde btn-block" />
+          <input type="submit" value="Iniciar Sesión" className="btn-iniciarSesion" />
         </form>
       </div>
     </div>

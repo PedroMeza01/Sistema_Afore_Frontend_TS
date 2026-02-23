@@ -9,21 +9,60 @@
 .login {
   margin-top: 5px;
   min-height: 75vh;
-  background: linear-gradient(135deg, #e9f0ff, #f5f8ff);
+  background: linear-gradient(135deg, #ffffff, #ffffff);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
+body {
+  font-family: 'Inter', sans-serif;
+  color: #1f2937;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.logos {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.logos div {
+  display: flex;
+  align-items: center;      /* alinea logo + texto dentro */
+  gap: 10px;                /* espacio entre imagen y texto */
+}
+
+.logo {
+  width: clamp(140px, 35vw, 375px);
+  max-width: 90%;
+  height: auto;
+  margin-bottom: clamp(18px, 3vh, 35px);
+  transition: transform 0.3s ease;
+}
+
+/* Opcional: pequeño efecto elegante */
+.logo:hover {
+  transform: scale(1.1);
+}
+
 
 /* ================== TITULO ================== */
+
+
 .login h2 {
-  margin-bottom: 55px;
-  font-size: 30px;
-  font-weight: 800;
-  color: #1446cf;
-  letter-spacing: 0.5px;
+  margin-bottom: 20px;
+  font-size: clamp(22px, 2.4vw, 26px);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: #0f172a; /* azul oscuro elegante */
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.15;
+
 }
+
 
 /* ================== CARD ================== */
 .contenedor-formulario {
@@ -36,32 +75,57 @@
 
 /* ================== CAMPOS ================== */
 .campo {
-  margin-bottom: 22px;
+  width: 100%;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
 }
 
-.campo label {
-  display: block;
+/* ================== LABEL ================== */
+.label-login{
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 16px;
+  letter-spacing: -0.3px; /* hace que se vea más premium */
+  display: block;      /* asegura que ocupe toda la línea */
+  text-align: left;    /* lo alinea a la izquierda */
+  margin-bottom: 6px;
   margin-bottom: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #1f2937;
+  color: #374151;
 }
-
 /* ================== INPUTS ================== */
+/* INPUT */
 .campo input {
   width: 100%;
-  padding: 13px 15px;
-  border-radius: 12px;
-  border: 1px solid #d1d9f0;
-  background-color: #f6f9ff;
+  padding: 12px 14px; /* un poco menos alto */
+  border-radius: 10px;
+  border: 1px solid #374151;
+  background-color: #ffffff;
+  color: #020000;
   font-size: 14px;
-  transition: all 0.25s ease;
+  box-sizing: border-box;
 }
 
+/* Placeholder más suave */
 .campo input::placeholder {
-  color: #94a3b8;
+
+  color: #9ca3af;
 }
 
+/* Focus elegante */
+.campo input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+  background-color: #111827;
+}
+/* .hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #94a3b8;
+} */
 .campo input:focus {
   outline: none;
   border-color: #2563eb;
@@ -97,7 +161,7 @@
 }
 
 /* ================== BOTONES ================== */
-.btn {
+/* .btn {
   border: none;
   padding: 14px;
   border-radius: 14px;
@@ -105,25 +169,40 @@
   font-weight: 700;
   cursor: pointer;
   transition: all 0.25s ease;
-}
+} */
 
 /* ================== BOTON LOGIN ================== */
-.btn-verde {
-  background: linear-gradient(135deg, #2563eb, #3b82f6);
+.btn-iniciarSesion {
+  background: linear-gradient(135deg, #1e293b, #334155);
   color: #ffffff;
-  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.4);
+  border: none;
+  border-radius: 10px;
+  height: 50px;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-.btn-verde:hover {
+.btn-iniciarSesion:hover {
   transform: translateY(-2px);
-  box-shadow: 0 18px 40px rgba(37, 99, 235, 0.5);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+  opacity: 0.95;
+}
+
+.btn-iniciarSesion:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* ================== BOTON BLOQUE ================== */
-.btn-block {
+.btn-iniciarSesion {
   width: 100%;
-  margin-top: 15px;
+  margin-top: 20px;
 }
+
 
 /* ================== RESPONSIVE ================== */
 @media (max-width: 480px) {

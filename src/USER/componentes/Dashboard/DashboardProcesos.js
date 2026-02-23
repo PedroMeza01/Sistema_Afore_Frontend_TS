@@ -5,6 +5,7 @@ import './DashboardProcesos.css';
 import { CRMContext } from '../../../context/CRMContext';
 import CalendarioModal from './components/CalendarioModal';
 
+
 export default function ProcesosDashboard() {
   const history = useHistory();
   const [auth] = useContext(CRMContext);
@@ -110,15 +111,15 @@ export default function ProcesosDashboard() {
       {/* KPI ROW 1 */}
       <div className="db-grid">
         <KpiCard title="Procesos activos" value={k.activos} tone="ok" />
-        <KpiCard title="Bloqueados" value={k.bloqueados} tone="warn" />
-        <KpiCard title="Tramites con docs pendientes" value={k.docs_incompletos} tone="warn" />
+        <KpiCard title="Trámite solicitado" value={k.tramite_solicitado} tone="muted" />
+         <KpiCard title="Tramites con docs pendientes" value={k.docs_incompletos} tone="warn" />
       </div>
 
       {/* KPI ROW 2 */}
       <div className="db-grid">
-        <KpiCard title="Trámite solicitado" value={k.tramite_solicitado} tone="muted" />
         <KpiCard title="Citas (7 días)" value={k.citas_proximas_7} tone="muted" />
         <KpiCard title="46 días (7 días)" value={k.dias46_proximos_7} tone="muted" />
+         <KpiCard title="Bloqueados" value={k.bloqueados} tone="warn" />
       </div>
 
       {/* CONTENIDO */}
@@ -174,7 +175,7 @@ export default function ProcesosDashboard() {
           <div className="db-card-head">
             <div className="db-card-title">Top documentos faltantes</div>
             <button className="db-btn sm" onClick={() => history.push('/procesos?f=docs')}>
-              Ver procesos →
+              Ver procesos 
             </button>
           </div>
 

@@ -21,7 +21,7 @@
 
 .db-page {
   font-family: var(--fontTexto);
-  background: var(--bg);
+  background:rgb(255, 255, 255);
   padding: 24px;
 }
 
@@ -54,7 +54,7 @@
 
 .db-btn {
   background: #fff;
-  border: 1px solid #d0d7e2;
+  border: 2px solid #d0d7e2;
   padding: 10px 16px;
   border-radius: 10px;
   cursor: pointer;
@@ -68,7 +68,7 @@
 .db-btn.primary {
   background: var(--azul);
   border-color: var(--azul);
-  color: #fff;
+  color: #e5f2ff;
 }
 
 .db-btn.sm {
@@ -77,7 +77,8 @@
 }
 
 .db-btn:hover {
-  background: #f0f3f9;
+  background: var(--grisClaro);
+  color: var(--azul);
 }
 
 .db-btn.primary:hover {
@@ -93,7 +94,7 @@
 
 .db-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   margin-bottom: 20px;
 }

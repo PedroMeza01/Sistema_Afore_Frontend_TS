@@ -18,6 +18,7 @@ import Asesores from './USER/componentes/Asesor/Asesores';
 import Usuarios from './ADMINISTRADOR/componentes/Usuarioss/Usuarios';
 import Clientes from './USER/componentes/Clientes/Clientes';
 import ProcesosCliente from './USER/componentes/Clientes/ProcesosCliente';
+import Balance from './USER/componentes/Balance/Balance.js';
 
 import DashboardProcesos from './USER/componentes/Dashboard/DashboardProcesos';
 
@@ -30,10 +31,15 @@ function App() {
   const [auth, guardarAuth] = useContext(CRMContext);
   return (
     <Router>
+     <div className='logos'>
+     <div> logo de nosotros</div>
+     <div> Logo del cliente </div>
+     </div>
       <Fragment>
         <CRMProvider value={[auth, guardarAuth]}>
           <div className="grid contenedor contenido-principal">
             <main className="caja-contenido col-9">
+              
               <NavegacionAdmin />
               <Switch>
                 <Route exact path="/" component={Login} />
@@ -45,6 +51,7 @@ function App() {
                 <Route exact path="/clientes" component={Clientes} />
                 <Route exact path="/afores" component={Afores} />
                 <Route exact path="/asesores" component={Asesores} />
+                <Route exact path="/balance" component={Balance} />
 
                 <Route exact path="/proceso/cliente/:id_cliente" component={ProcesosCliente} />
                 <Route exact path="/procesos" component={ProcesosList} />

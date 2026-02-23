@@ -51,7 +51,7 @@ h2 {
 }
 
 .contenedor {
-  max-width: 1300px;
+  max-width: 100%;
   margin: 0 auto;
   width: 95%;
   margin-bottom: 1rem;
@@ -248,26 +248,88 @@ h2 {
 /** Navegacion **/
 .sidebar {
   padding-top: 1.8rem;
-  /*position: fixed; Para HACER QUE EL MENU SE MUEVA CON LA PAGINA */
 }
 
-.navegacion a {
-  display: block;
-  font-family: var(--fontTexto);
-  color: var(--grisOscuro);
-  margin-bottom: 2rem;
-  font-size: 1.8rem;
-  position: relative;
-  padding-left: 5rem;
-  padding-top: 2rem;
+/* CONTENEDOR DE LINKS */
+.navegacion {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
+
+/* LINK BASE */
+.navadm-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-family: var(--fontTexto);
+  font-size: 15px;
+  font-weight: 500;
+  color: #374151;
+  transition: all 0.2s ease;
+}
+
+/* ICONO */
+.navadm-icon {
+  font-size: 18px;
+  min-width: 22px;
+  color: rgba(17, 24, 39, 0.65);
+  transition: color 0.2s ease;
+}
+
+/* TEXTO */
+.navadm-text {
+  letter-spacing: 0.5px;
+}
+
+/* HOVER */
+.navadm-link:hover {
+  background: rgba(17, 24, 39, 0.07);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.06);
+  transform: translateY(-1px);
+}
+
+.navadm-link:hover .navadm-icon {
+  color: #2563eb;
+}
+
+/* ACTIVO */
+.navadm-link.is-active {
+  background: #2563eb;
+  color: white;
+  border: none;
+}
+
+.navadm-link.is-active .navadm-icon {
+  color: white;
+}
+/* ==============================
+   COLAPSADO
+============================== */
+
+.navadm-drawer.is-collapsed .navadm-link {
+  justify-content: center;
+}
+
+.navadm-drawer.is-collapsed .navadm-text {
+  display: none;
+}
+
+.navadm-drawer.is-collapsed .navadm-drawer-title {
+  display: none;
+}
+
+
 
 /** Caja **/
 
 @media (max-width: 767px) {
   .caja-contenido {
     height: 100%;
-    margin-top: 5rem;
+    margin-top: 0rem;
   }
 }
 
@@ -298,7 +360,7 @@ form legend {
   margin-bottom: 2rem;
 }
 
-.campo label {
+/* .campo label {
   font-weight: bold;
   font-family: var(--fontTexto);
   flex: 0 0 100px;
@@ -319,9 +381,9 @@ form .campo label {
   font-weight: bold;
   font-family: var(--fontTexto);
   flex: 0 0 100px;
-}
+} */
 
-form .campo {
+/* form .campo {
   padding: 0.5rem 2rem;
   display: flex;
   align-items: center;
@@ -335,14 +397,14 @@ form .campo select {
   margin-bottom: 2rem;
   margin-right: 3rem;
   margin-left: 1rem;
-}
+} */
 
-form .campo label {
+/* form .campo label {
   font-weight: bold;
   font-family: var(--fontTexto);
   flex: 0 0 100px;
-}
-
+} */
+/* 
 form .campo input:not([type='submit']) {
   padding: 1.5rem;
   flex: 1;
@@ -351,7 +413,7 @@ form .campo input:not([type='submit']) {
 
 form .campo input[readonly] {
   background-color: #e1e1e1;
-}
+} */
 
 .enviar {
   padding: 0.5rem 2rem;
@@ -512,9 +574,9 @@ h3.resumen-titulo {
 
 /* Botones de paginación */
 .pagination button {
-  background-color: #4caf50;
+  background-color: #5697fa;
   /* Verde */
-  color: white;
+  color: rgb(0, 0, 0);
   border: none;
   padding: 8px 12px;
   font-size: 16px;
@@ -527,7 +589,7 @@ h3.resumen-titulo {
 
 /* Ajustes al hacer hover */
 .pagination button:hover {
-  background-color: #45a049;
+  background-color: #5697fa;
   /* Verde más oscuro */
 }
 
@@ -775,17 +837,22 @@ SISTEMA DE AFORES
 }
 
 .navadm-link {
-  padding: 12px 12px;
+  .navadm-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
   border-radius: 14px;
   color: #111827;
   text-decoration: none;
-  font-weight: 800;
+  font-weight: 700;
   border: 1px solid rgba(0, 0, 0, 0.06);
   background: rgba(17, 24, 39, 0.03);
   transition:
     transform 0.12s ease,
     box-shadow 0.12s ease,
-    background 0.12s ease;
+    background 0.12s ease,
+    color 0.12s ease;
 }
 
 .navadm-link:hover {
@@ -816,43 +883,65 @@ SISTEMA DE AFORES
 /* Desktop: si quieres que el drawer no sea fijo sino sidebar normal, lo ajustamos.
    Por default queda como drawer siempre. */
 @media (min-width: 1024px) {
-  .navadm-topbar {
-    position: sticky;
+    .navadm-drawer {
+    transform: none;
+    width: 250px;
+  }
+
+  .navadm-drawer.is-collapsed {
+    width: 80px;
   }
 }
 
-/* LOGOUT */
-.navadm-logout {
+/* CONTENEDOR */
+.navadm-logout-final {
   margin-top: auto;
   padding: 14px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-.navadm-logout-btn {
+/* BOTÓN */
+.navadm-logout-final-btn{
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   padding: 12px 14px;
   border-radius: 14px;
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  background: rgba(239, 68, 68, 0.08);
-  color: #b91c1c;
-  font-weight: 900;
+  background: rgba(112, 5, 5, 0.05);
+  border: 1px solid rgba(220, 38, 38, 0.15);
   cursor: pointer;
-  transition:
-    transform 0.12s ease,
-    box-shadow 0.12s ease,
-    background 0.12s ease;
+  font-weight: 700;
+  font-size: 14px;
+  color: #dc2626;
+  transition: all 0.2s ease;
 }
 
-.navadm-logout-btn:hover {
-  background: rgba(239, 68, 68, 0.14);
-  box-shadow: 0 12px 28px rgba(239, 68, 68, 0.25);
-  transform: translateY(-1px);
+/* ICONO */
+.navadm-logout-final-btn .logout-icon {
+  font-size: 18px;
+  color: #dc2626;
+  transition: 0.2s ease;
 }
 
-.navadm-logout-btn i {
-  font-size: 16px;
+/* HOVER */
+.navadm-logout-final-text:hover {
+  background: #dc2626;
+  color: white;
+  box-shadow: 0 10px 22px rgba(220, 38, 38, 0.25);
+}
+
+.navadm-logout-final-btn:hover .logout-icon {
+  color: white;
+}
+
+/* COLAPSADO */
+.navadm-drawer.is-collapsed .navadm-logout-final-btn {
+  justify-content: center;
+}
+
+.navadm-drawer.is-collapsed .navadm-logout-final-btn .navadm-text {
+  display: none;
 }
 
 /*ORGANIZACIONES */
@@ -1102,4 +1191,5 @@ SISTEMA DE AFORES
 .org-btn.ghost {
   background: #fff;
   color: #0f172a;
+}
 }
