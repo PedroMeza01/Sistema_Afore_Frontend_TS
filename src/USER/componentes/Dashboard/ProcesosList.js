@@ -16,7 +16,8 @@ const FILTERS = {
   '46_vencidos': { label: '46 días vencidos' },
   inconsistencia_tramite: { label: 'Inconsistencia trámite' },
   criticos: { label: 'Críticos' },
-  docs: { label: 'Documentos' }
+  docs: { label: 'Documentos' },
+  solicitados: { label: 'Solicitados' }
 };
 
 export default function ProcesosList() {
@@ -147,6 +148,7 @@ export default function ProcesosList() {
             <option value="46_vencidos">46 días vencidos</option>
             <option value="inconsistencia_tramite">Inconsistencia trámite</option>
             <option value="criticos">Críticos</option>
+            <option value="solicitados">Solicitados</option>
           </select>
 
           <select

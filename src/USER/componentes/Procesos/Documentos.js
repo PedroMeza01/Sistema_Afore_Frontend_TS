@@ -21,6 +21,7 @@ export default function Documentos() {
   //console.log(useParams());
   const [auth] = useContext(CRMContext);
   const history = useHistory();
+  const [cliente, setCliente] = useState(null);
   const { id_cliente, id_proceso: idProcesoParam } = useParams();
   // console.log('Proceso', idProcesoParam);
   // console.log('Cliente', id_cliente);
@@ -36,10 +37,21 @@ export default function Documentos() {
   const [error, setError] = useState('');
 
   const [archivos, setArchivos] = useState([]);
+  const fetchClienteToForm = async () => {
+    const { data } = await usuariosAxios.get(`/clientes/${id_cliente}`, { headers });
 
+    // ajusta si tu backend regresa distinto
+    const c = data?.row ?? data?.mensaje ?? data;
+
+    console.log(c);
+    if (!c) throw new Error('No se encontró el cliente');
+
+    setCliente(c);
+  };
   useEffect(() => {
     if (!auth?.token || !idProceso) return;
     fetchArchivos();
+    fetchClienteToForm();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth?.token, idProceso]);
 
@@ -123,7 +135,9 @@ export default function Documentos() {
         <div className="dp-card">
           <div className="dp-header">
             <h3>Informacion de los documentos del proceso</h3>
-
+            <div className="form-col">
+              {cliente?.nombre_cliente} {cliente?.apellido_pat_cliente}
+            </div>
             <div className="dp-right">
               <span className={`dp-pill ${faltantes === 0 ? 'ok' : 'bad'}`}>
                 {faltantes === 0 ? 'Completo' : `Faltan ${faltantes}`}

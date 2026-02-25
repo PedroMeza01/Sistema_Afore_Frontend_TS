@@ -125,6 +125,8 @@ export default function Datos_Del_Retiro() {
 
     // ajusta si tu backend regresa distinto
     const c = data?.row ?? data?.mensaje ?? data;
+
+    console.log(c);
     if (!c) throw new Error('No se encontró el cliente');
 
     setCliente(c);
@@ -474,8 +476,10 @@ export default function Datos_Del_Retiro() {
 
       <div className="retiro-card">
         {error ? <div className="form-error">{error}</div> : null}
-
         <div className="form-group">
+          <div className="form-col">
+            {cliente?.nombre_cliente} {cliente?.apellido_pat_cliente}
+          </div>
           <div className="form-col">
             <label className="sub-label">Fecha de la firma</label>
             <input
@@ -720,7 +724,7 @@ export default function Datos_Del_Retiro() {
                       onChange={onToggle('encuesta_aplicada')}
                       disabled={loading || saving}
                     />
-                    Encuesta aplicada (+$100)
+                    Encuesta aplicada (+$200)
                   </label>
                 </div>
 
@@ -730,7 +734,7 @@ export default function Datos_Del_Retiro() {
                     <div className="money-value">${Number(bono_asesora || 0).toFixed(2)}</div>
                     <div className="money-sub">
                       Base: {form.tipo_firma === 'Asesor' ? '$700' : '$0'}
-                      {form.encuesta_aplicada ? ' + $100 encuesta' : ''}
+                      {form.encuesta_aplicada ? ' + $200 encuesta' : ''}
                     </div>
                   </div>
                 </div>
@@ -853,6 +857,7 @@ function normalizeList(data) {
   if (Array.isArray(data?.mensaje)) return data.mensaje;
   return [];
 }
+
 function getErrMsg(err, fallback) {
   try {
     return err?.response?.data?.message || err?.response?.data?.mensaje || err?.message || fallback;
@@ -925,7 +930,7 @@ function getScore(form) {
 }
 function getBonoAsesora({ tipoFirma, encuestaAplicada, montoCobrar }) {
   const base = tipoFirma === 'Asesor' ? 700 : 0;
-  const encuesta = encuestaAplicada ? 100 : 0;
+  const encuesta = encuestaAplicada ? 200 : 0;
 
   const monto = Number(montoCobrar) || 0;
   const porcentaje = 25.6;
