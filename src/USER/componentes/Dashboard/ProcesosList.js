@@ -4,6 +4,8 @@ import { useHistory, useLocation } from 'react-router-dom';
 import './ProcesosList.css';
 import { CRMContext } from '../../../context/CRMContext';
 import usuariosAxios from '../../../config/axios';
+import DateRangeFilter from 'C:/Users/JohannGut/Documents/GitHub/Sistema_Afore_Frontend_TS/src/USER/componentes/Dashboard/components/common/DateRangeFilter.js';
+
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -31,6 +33,10 @@ export default function ProcesosList() {
   const [page, setPage] = useState(Number(query.get('page') || 1));
   const [limit, setLimit] = useState(Number(query.get('limit') || 10));
 
+  // ✅ estados de fecha
+  const [from, setFrom] = useState(query.get('desde') || '');
+  const [to, setTo] = useState(query.get('hasta') || '');
+
   const [items, setItems] = useState([]);
   const [meta, setMeta] = useState({ page: 1, limit: 10, totalItems: 0, totalPages: 1 });
   const [loading, setLoading] = useState(true);
@@ -47,11 +53,14 @@ export default function ProcesosList() {
     history.push(`${location.pathname}?${q.toString()}`);
   };
 
-  // Mantén estado sincronizado con URL si el usuario navega
+  // ✅ sincronizar estado con URL
   useEffect(() => {
+     console.log('FETCH TRIGGER', { page, limit, search, f, from, to });
     setSearch(query.get('q') || '');
     setPage(Number(query.get('page') || 1));
     setLimit(Number(query.get('limit') || 10));
+    setFrom(query.get('desde') || '');
+    setTo(query.get('hasta') || '');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
 
@@ -64,7 +73,14 @@ export default function ProcesosList() {
         setError(null);
 
         const { data } = await usuariosAxios.get('/procesos', {
-          params: { page, limit, search, f: f || undefined },
+          params: {
+            page,
+            limit,
+            search,
+            f: f || undefined,
+            desde: from || undefined,
+            hasta: to || undefined
+          },
           headers: { Authorization: `Bearer ${auth.token}` }
         });
 
@@ -84,7 +100,7 @@ export default function ProcesosList() {
     return () => {
       mounted = false;
     };
-  }, [auth?.token, page, limit, search, f]);
+  }, [auth?.token, page, limit, search, f, from, to]);
 
   const onSearchSubmit = e => {
     e.preventDefault();
@@ -94,6 +110,39 @@ export default function ProcesosList() {
   const reset = () => {
     setSearch('');
     pushQuery({ q: '', page: 1, f: '' });
+  };
+
+  // ✅ handlers de fecha
+  const handleDateChange = ({ from, to }) => {
+    setFrom(from);
+    setTo(to);
+  };
+
+  const applyDateFilter = () => {
+     console.log('APLICANDO FECHAS', { from, to });
+    if (!from || !to) return;
+
+    if (from > to) {
+      alert('"Desde" no puede ser mayor que "Hasta"');
+      return;
+    }
+
+    pushQuery({
+      desde: from,
+      hasta: to,
+      page: 1
+    });
+  };
+
+  const resetDateFilter = () => {
+    setFrom('');
+    setTo('');
+
+    pushQuery({
+      desde: '',
+      hasta: '',
+      page: 1
+    });
   };
 
   const openProceso = p => {
@@ -138,6 +187,15 @@ export default function ProcesosList() {
             Reset
           </button>
         </form>
+
+        {/* ✅ filtro por fechas */}
+        <DateRangeFilter
+          from={from}
+          to={to}
+          onChange={handleDateChange}
+          onApply={applyDateFilter}
+          onReset={resetDateFilter}
+        />
 
         <div className="pr-filterRow">
           <select className="pr-select" value={f} onChange={e => pushQuery({ f: e.target.value, page: 1 })}>

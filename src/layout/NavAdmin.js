@@ -46,7 +46,7 @@ const NavAdmin = ({ collapsed, setCollapsed }) => {
 
   const tituloRol = useMemo(() => {
     if (idrol_user === '1') return 'Administrador';
-    if (idrol_user === '2') return 'Catálogo';
+    if (idrol_user === '2') return 'Módulos';
     return 'Usuario';
   }, [idrol_user]);
 
@@ -100,12 +100,12 @@ const NavAdmin = ({ collapsed, setCollapsed }) => {
 
       {/* ===== SIDEBAR ===== */}
       <aside
-  className={`
+        className={`
     navadm-drawer
     ${open ? 'is-open' : ''}
     ${collapsed ? 'is-collapsed' : ''}
   `}
->
+      >
         {/* HEADER SIDEBAR */}
         <div className="navadm-drawer-head">
 
@@ -142,10 +142,10 @@ const NavAdmin = ({ collapsed, setCollapsed }) => {
 
           {idrol_user === '2' && (
             <>
-              <Link 
-              to="/dashboard" 
-              className={`navadm-link${isActive('/dashboard')}`}>
-              
+              <Link
+                to="/dashboard"
+                className={`navadm-link${isActive('/dashboard')}`}>
+
                 <AiOutlineDashboard className="icon blue" />
                 <span className="navadm-text">Dashboard</span>
               </Link>
@@ -191,10 +191,12 @@ const NavAdmin = ({ collapsed, setCollapsed }) => {
         {/* LOGOUT */}
         <div className="navadm-logout-final">
           <button name=''
-          className="navadm-logout-final-btn" onClick={cerrarSesion}>
+            className="navadm-logout-final-btn" onClick={cerrarSesion}>
+            <AiOutlineLogout className="navadm-icon" />
             <span className="navadm-logout-final-text">Cerrar sesión</span>
 
-            
+
+
           </button>
         </div>
       </aside>
