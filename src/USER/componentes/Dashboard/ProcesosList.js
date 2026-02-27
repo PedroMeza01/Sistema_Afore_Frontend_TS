@@ -152,23 +152,20 @@ export default function ProcesosList() {
       </div>
 
       <div className="pr-filters">
-        <form onSubmit={onSearchSubmit} className="pr-search">
+        
           <input
             className="pr-input"
             placeholder="Buscar por nombre, curp, nss, teléfono..."
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
-          <button className="pr-btn" type="submit">
-            Buscar
-          </button>
           <button className="pr-btn ghost" type="button" onClick={reset}>
-            Reset
+            Limpiar
           </button>
-        </form>
-
-        {/* ✅ filtro por fechas */}
+           {/* ✅ filtro por fechas */}
         <DateRangeFilter from={from} to={to} onChange={handleDateChange} onReset={resetDateFilter} />
+      
+       
 
         <div className="pr-filterRow">
           <select className="pr-select" value={f} onChange={e => pushQuery({ f: e.target.value, page: 1 })}>

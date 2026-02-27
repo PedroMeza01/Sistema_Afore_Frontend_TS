@@ -134,9 +134,11 @@ export default function Documentos() {
 
       <div className="dp-wrap">
         <div className="dp-card">
+          <ClienteContextBar cliente={cliente} />
           <div className="dp-header">
+            
             <h3>Informacion de los documentos del proceso</h3>
-            <ClienteContextBar cliente={cliente} />
+           
             <div className="dp-right">
               <span className={`dp-pill ${faltantes === 0 ? 'ok' : 'bad'}`}>
                 {faltantes === 0 ? 'Completo' : `Faltan ${faltantes}`}

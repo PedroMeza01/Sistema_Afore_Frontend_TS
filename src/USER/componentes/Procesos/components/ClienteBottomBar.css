@@ -1,39 +1,46 @@
-/* src/components/ClienteBottomBar.css */
+/* =========================
+   CLIENTE CONTEXT BAR
+   ========================= */
 
 .cliente-bottom-bar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-
-  z-index: 2000;
+  position: sticky;
+  top: 0;
+  z-index: 5;
 
   background: #fff;
-  border-top: 1px solid #e5e5e5;
-
-  padding: 10px 16px;
-
-  /* si quieres sombra para separar del contenido */
-  box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.06);
+  padding: 12px 18px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .cliente-bottom-content {
   display: flex;
-  gap: 16px;
-  align-items: center;
   flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
 }
 
 .cliente-bottom-label {
-  font-weight: 600;
-  color: #555;
+  font-size: 12px;
+  font-weight: 800;
+  color: #6b7280;
 }
 
 .cliente-bottom-name {
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 800;
+  color: #1d4ed8;
 }
 
 .cliente-bottom-meta {
-  color: #777;
-  font-size: 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #374151;
+  background: #eef2f6;
+  border: 1px solid #d1d5db;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+.dp-header {
+  position: relative;
+  z-index: 1;
 }

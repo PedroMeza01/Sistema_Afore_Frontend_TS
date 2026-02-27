@@ -306,6 +306,8 @@ export default function ProcesoDetalle() {
                 <span className="pd-k">Cita Afore:</span>
                 <span className="pd-v">{formatDate(proceso.cita_afore) || '-'}</span>
               </div>
+              <div>
+                <span className="pd-v">Anotaciones: pendiente por agregar</span></div>
             </div>
           </div>
           {showArchivos ? (
