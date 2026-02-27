@@ -6,6 +6,7 @@ import usuariosAxios from '../../../config/axios';
 import './Documentos.css';
 import RetiroSteps from './RetiroSteps';
 
+import ClienteContextBar from './components/ClienteBottomBar';
 const REQUIRED_DOCS = [
   { key: 'INE_FRENTE', label: 'INE Frente', categoria: 'INE_FRENTE' },
   { key: 'INE_POSTERIOR', label: 'INE Posterior', categoria: 'INE_POSTERIOR' },
@@ -135,9 +136,7 @@ export default function Documentos() {
         <div className="dp-card">
           <div className="dp-header">
             <h3>Informacion de los documentos del proceso</h3>
-            <div className="form-col">
-              {cliente?.nombre_cliente} {cliente?.apellido_pat_cliente}
-            </div>
+            <ClienteContextBar cliente={cliente} />
             <div className="dp-right">
               <span className={`dp-pill ${faltantes === 0 ? 'ok' : 'bad'}`}>
                 {faltantes === 0 ? 'Completo' : `Faltan ${faltantes}`}

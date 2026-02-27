@@ -4,8 +4,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import './ProcesosList.css';
 import { CRMContext } from '../../../context/CRMContext';
 import usuariosAxios from '../../../config/axios';
-import DateRangeFilter from 'C:/Users/JohannGut/Documents/GitHub/Sistema_Afore_Frontend_TS/src/USER/componentes/Dashboard/components/common/DateRangeFilter.js';
-
+import DateRangeFilter from './components/common/DateRangeFilter';
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -33,7 +32,6 @@ export default function ProcesosList() {
   const [page, setPage] = useState(Number(query.get('page') || 1));
   const [limit, setLimit] = useState(Number(query.get('limit') || 10));
 
-  // ✅ estados de fecha
   const [from, setFrom] = useState(query.get('desde') || '');
   const [to, setTo] = useState(query.get('hasta') || '');
 
@@ -53,15 +51,12 @@ export default function ProcesosList() {
     history.push(`${location.pathname}?${q.toString()}`);
   };
 
-  // ✅ sincronizar estado con URL
   useEffect(() => {
-     console.log('FETCH TRIGGER', { page, limit, search, f, from, to });
     setSearch(query.get('q') || '');
     setPage(Number(query.get('page') || 1));
     setLimit(Number(query.get('limit') || 10));
     setFrom(query.get('desde') || '');
     setTo(query.get('hasta') || '');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
 
   useEffect(() => {
@@ -116,22 +111,6 @@ export default function ProcesosList() {
   const handleDateChange = ({ from, to }) => {
     setFrom(from);
     setTo(to);
-  };
-
-  const applyDateFilter = () => {
-     console.log('APLICANDO FECHAS', { from, to });
-    if (!from || !to) return;
-
-    if (from > to) {
-      alert('"Desde" no puede ser mayor que "Hasta"');
-      return;
-    }
-
-    pushQuery({
-      desde: from,
-      hasta: to,
-      page: 1
-    });
   };
 
   const resetDateFilter = () => {
@@ -189,13 +168,7 @@ export default function ProcesosList() {
         </form>
 
         {/* ✅ filtro por fechas */}
-        <DateRangeFilter
-          from={from}
-          to={to}
-          onChange={handleDateChange}
-          onApply={applyDateFilter}
-          onReset={resetDateFilter}
-        />
+        <DateRangeFilter from={from} to={to} onChange={handleDateChange} onReset={resetDateFilter} />
 
         <div className="pr-filterRow">
           <select className="pr-select" value={f} onChange={e => pushQuery({ f: e.target.value, page: 1 })}>

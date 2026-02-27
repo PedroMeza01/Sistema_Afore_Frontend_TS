@@ -6,6 +6,7 @@ import usuariosAxios from '../../../config/axios';
 import './Datos_Del_Retiro.css';
 import { swalError } from '../../../helpers/swal';
 import RetiroSteps from './RetiroSteps';
+import ClienteContextBar from './components/ClienteBottomBar';
 
 export default function Datos_Del_Retiro() {
   const history = useHistory();
@@ -477,9 +478,8 @@ export default function Datos_Del_Retiro() {
       <div className="retiro-card">
         {error ? <div className="form-error">{error}</div> : null}
         <div className="form-group">
-          <div className="form-col">
-            {cliente?.nombre_cliente} {cliente?.apellido_pat_cliente}
-          </div>
+          <ClienteContextBar cliente={cliente} />
+
           <div className="form-col">
             <label className="sub-label">Fecha de la firma</label>
             <input
