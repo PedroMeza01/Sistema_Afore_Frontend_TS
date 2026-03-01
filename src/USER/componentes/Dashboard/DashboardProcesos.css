@@ -158,15 +158,45 @@
 /* KPI STATES */
 .kpi-card.ok {
   border-left-color: var(--verde);
+  background: linear-gradient(to right, rgba(34,197,94,0.2), transparent);
 }
+
 .kpi-card.warn {
   border-left-color: var(--amarillo);
+  background: linear-gradient(to right, rgba(234,179,8,0.2), transparent);
 }
+
 .kpi-card.bad {
   border-left-color: var(--rojo);
+  background: linear-gradient(to right, rgba(239,68,68,0.2), transparent);
 }
 .kpi-card.muted {
   border-left-color: var(--gris);
+  background: linear-gradient(to right, rgba(153,153,153,0.2), transparent);
+}
+
+.kpi-extra {
+  margin-top: 8px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.kpi-mini-btn {
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+
+.kpi-mini-btn:hover {
+  background: #1d4ed8;
+  color: #fff;
+  transform: translateY(-1px);
 }
 
 /* ===================== TWO COLUMNS ===================== */
@@ -250,7 +280,17 @@
   cursor: pointer;
   font-weight: 700;
 }
+.db-table-row:not(.head) {
+  cursor: default;
+}
 
+.db-table-row:not(.head).is-clickable {
+  cursor: pointer;
+}
+.db-table-row:not(.head):hover {
+  background: #f7f9fd;
+  transform: translateX(2px); /* micro-motion premium */
+}
 /* ===================== BADGES ===================== */
 
 .db-badge {
@@ -833,4 +873,33 @@
 }
 .cal-chip.muted {
   background: rgba(255, 255, 255, 0.1);
+}
+
+/* ===================== Ajustes al calendario ===================== */
+.cal-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0 14px;
+}
+
+.cal-filter-btn {
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cal-filter-btn:hover {
+  background: #f3f6fb;
+}
+
+.cal-filter-btn.active {
+  background: var(--azul);
+  color: #fff;
+  border-color: var(--azul);
 }

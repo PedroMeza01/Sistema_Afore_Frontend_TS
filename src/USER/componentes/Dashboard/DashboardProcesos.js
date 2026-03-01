@@ -68,6 +68,10 @@ export default function ProcesosDashboard() {
   }, [auth?.token]);
 
   const k = dash.kpis;
+  const recovery = useMemo(() => {
+  if (!dash.balance) return 0;
+  return dash.balance.recovery_pct;
+}, [dash.balance]);
 
   const money = n => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(Number(n || 0));
 
@@ -110,18 +114,63 @@ export default function ProcesosDashboard() {
 
       {/* KPI ROW 1 */}
       <div className="db-grid">
-        <KpiCard title="Procesos activos" value={k.activos} tone="ok" />
-        <KpiCard title="Trámite solicitado" value={k.tramite_solicitado} tone="muted" />
-         <KpiCard title="Tramites con docs pendientes" value={k.docs_incompletos} tone="warn" />
-      </div>
 
-      {/* KPI ROW 2 */}
-      <div className="db-grid">
-        <KpiCard title="Citas (7 días)" value={k.citas_proximas_7} tone="muted" />
-        <KpiCard title="46 días (7 días)" value={k.dias46_proximos_7} tone="muted" />
-         <KpiCard title="Bloqueados" value={k.bloqueados} tone="warn" />
-      </div>
+        <KpiCard title="Procesos con estatus de activo" value={k.activos} tone="ok">
+          <button
+            className="kpi-mini-btn"
+            onClick={() => history.push('/procesos?f=solicitados&page=1')}
+          >
+            Ver
+          </button>
+        </KpiCard>
 
+        <KpiCard title="Procesos con estatus de trámite solicitado" value={k.tramite_solicitado} tone="warn">
+          <button
+            className="kpi-mini-btn"
+            onClick={() => history.push('/procesos?f=tramite_solicitado')}
+          >
+            Ver
+          </button>
+
+        </KpiCard>
+        {/* Check */}
+        <KpiCard title="Tramites con docs pendientes" value={k.docs_incompletos} tone="bad">
+          <button
+            className="kpi-mini-btn"
+            onClick={() => history.push('/procesos?f=docs_incompletos')}
+          >
+            Ver
+          </button>
+        </KpiCard>
+
+        <KpiCard title="Procesos con estatus de bloqueado" value={k.bloqueados} tone="bad">
+          <button
+            className="kpi-mini-btn"
+            onClick={() => history.push('/procesos?f=bloqueados')}
+          >
+            Ver
+          </button>
+        </KpiCard>
+
+        <KpiCard title="Citas de clientes" value={k.citas_proximas_7} tone="muted">
+          <button
+            className="kpi-mini-btn"
+            onClick={() => setCalOpen(true)}
+          >
+            Abrir calendario
+          </button>
+        </KpiCard>
+
+        <KpiCard title="Cumplimiento de 46 días" value={k.dias46_proximos_7} tone="muted">
+          <button
+            className="kpi-mini-btn"
+            onClick={() => setCalOpen(true)}
+          >
+            Abrir calendario
+          </button>
+        </KpiCard>
+            <KpiCard title="Total Cobrado" loading={loading} />
+      </div>
       {/* CONTENIDO */}
       <div className="db-two">
         {/* Pendientes críticos */}
@@ -154,14 +203,14 @@ export default function ProcesosDashboard() {
                 <div className="db-table-row" key={p.tipo}>
                   <div className="db-cell">
                     <span className={`db-badge ${badgeClass(p.severidad)}`}>
-                      {(p.severidad || 'muted').toUpperCase()}
+                      {badgeLabel(p.severidad)}
                     </span>
                     <span className="db-text">{p.titulo}</span>
                   </div>
                   <div className="right">{p.count}</div>
                   <div className="right">
                     <button className="db-link" onClick={() => history.push(p.accion?.route || '/procesos')}>
-                      {p.accion?.label || 'Ver'} →
+                      {p.accion?.label || 'Ver'} 
                     </button>
                   </div>
                 </div>
@@ -173,9 +222,9 @@ export default function ProcesosDashboard() {
         {/* Top faltantes */}
         <div className="db-card">
           <div className="db-card-head">
-            <div className="db-card-title">Top documentos faltantes</div>
+            <div className="db-card-title">Documentos faltantes</div>
             <button className="db-btn sm" onClick={() => history.push('/procesos?f=docs')}>
-              Ver procesos 
+              Ver procesos
             </button>
           </div>
 
@@ -216,12 +265,18 @@ export default function ProcesosDashboard() {
   );
 }
 
-function KpiCard({ title, value, sub, tone }) {
+function KpiCard({ title, value, sub, tone, children, loading }) {
   return (
-    <div className={`kpi-card ${tone}`}>
+    <div className={`kpi-card ${tone} ${loading ? 'loading' : ''}`}>
       <div className="kpi-title">{title}</div>
-      <div className="kpi-value">{value}</div>
-      <div className="kpi-sub">{sub}</div>
+
+      <div className="kpi-value">
+        {loading ? '—' : value}
+      </div>
+
+      {sub && <div className="kpi-sub">{sub}</div>}
+
+      {children && <div className="kpi-extra">{children}</div>}
     </div>
   );
 }
@@ -232,4 +287,16 @@ function badgeClass(sev) {
   if (s === 'WARN') return 'warn';
   if (s === 'OK') return 'ok';
   return 'muted';
+}
+function badgeLabel(sev) {
+  const map = {
+    BAD: 'Crítico',
+    WARN: 'Atención',
+    OK: 'Estable',
+    INFO: 'Info',
+    MUTED: 'Info'
+  };
+
+  const key = (sev || '').toString().trim().toUpperCase();
+  return map[key] || key;
 }

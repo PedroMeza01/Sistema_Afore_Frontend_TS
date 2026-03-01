@@ -143,7 +143,7 @@ export default function ProcesosList() {
 
         <div className="pr-actions">
           <button className="pr-btn" onClick={() => history.push('/dashboard')}>
-            ← Dashboard
+            Dashboard
           </button>
           <button className="pr-btn primary" onClick={() => history.push('/clientes')}>
             Ver clientes
@@ -176,7 +176,7 @@ export default function ProcesosList() {
             <option value="46_vencidos">46 días vencidos</option>
             <option value="inconsistencia_tramite">Inconsistencia trámite</option>
             <option value="criticos">Críticos</option>
-            <option value="solicitados">Solicitados</option>
+            <option value="solicitados">Activos</option>
           </select>
 
           <select
