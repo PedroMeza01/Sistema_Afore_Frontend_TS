@@ -157,7 +157,7 @@ export default function ProcesosCliente() {
                       </td>
                       <td>
                         <button className="pc-link" onClick={() => goDetalle(p.id_proceso)}>
-                          Ver detalle →
+                          Ver detalles
                         </button>
                       </td>
                     </tr>

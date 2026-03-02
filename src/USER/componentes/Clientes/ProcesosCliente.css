@@ -84,6 +84,7 @@
 /* Buttons */
 .pc-btn {
   border: 0;
+  margin-top: 20px;
   padding: 10px 14px;
   border-radius: 8px;
   font-weight: 800;

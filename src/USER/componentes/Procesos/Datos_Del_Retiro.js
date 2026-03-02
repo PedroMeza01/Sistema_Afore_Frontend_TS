@@ -476,7 +476,20 @@ export default function Datos_Del_Retiro() {
       <RetiroSteps />
 
       <div className="retiro-card">
-        {error ? <div className="form-error">{error}</div> : null}
+        {error && (
+          <div className="error-modal-backdrop" onClick={() => setError('')}>
+            <div className="error-modal" onClick={e => e.stopPropagation()}>
+              <div className="error-modal-icon">⚠</div>
+              <div className="error-modal-message">{error}</div>
+              <button
+                className="error-modal-btn"
+                onClick={() => setError('')}
+              >
+                Entendido
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="form-group">
           <ClienteContextBar cliente={cliente} />
