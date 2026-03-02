@@ -1,46 +1,117 @@
 /* =========================
-   CLIENTE CONTEXT BAR
-   ========================= */
+   CLIENTE CONTEXT BAR PRO+
+========================= */
 
-.cliente-bottom-bar {
+.cliente-context-bar {
   position: sticky;
   top: 0;
-  z-index: 5;
+  z-index: 30;
 
-  background: #fff;
-  padding: 12px 18px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.cliente-bottom-content {
   display: flex;
-  flex-wrap: wrap;
+  justify-content: space-between;
   align-items: center;
-  gap: 8px 14px;
+
+  padding: 18px 28px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
 }
 
-.cliente-bottom-label {
+/* LEFT SIDE */
+
+.cliente-context-left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+/* Avatar más premium */
+
+.cliente-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #0b3c6f, #1e40af);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 18px;
+  letter-spacing: 1px;
+  box-shadow: 0 6px 14px rgba(30, 64, 175, 0.25);
+}
+
+/* Info block */
+
+.cliente-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Nombre principal */
+
+.cliente-nombre {
+  font-size: 18px;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: 0.3px;
+}
+
+/* Meta container horizontal */
+
+.cliente-meta {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+/* Texto secundario */
+
+.cliente-curp,
+.cliente-asesor {
   font-size: 12px;
-  font-weight: 800;
-  color: #6b7280;
+  color: #64748b;
 }
 
-.cliente-bottom-name {
-  font-size: 14px;
-  font-weight: 800;
-  color: #1d4ed8;
-}
-
-.cliente-bottom-meta {
-  font-size: 12px;
+.cliente-curp span,
+.cliente-asesor span {
   font-weight: 700;
-  color: #374151;
-  background: #eef2f6;
-  border: 1px solid #d1d5db;
-  padding: 4px 10px;
-  border-radius: 999px;
+  color: #0f172a;
 }
-.dp-header {
-  position: relative;
-  z-index: 1;
+
+/* RIGHT SIDE */
+
+.cliente-context-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Chip más profesional */
+
+.cliente-chip {
+  background: linear-gradient(135deg, #e0f2fe, #f0f9ff);
+  color: #0369a1;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid #bae6fd;
+  letter-spacing: 0.4px;
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+  .cliente-context-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .cliente-context-right {
+    align-self: flex-start;
+  }
 }

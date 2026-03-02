@@ -134,7 +134,7 @@ export default function ProcesosDashboard() {
 
         </KpiCard>
         {/* Check */}
-        <KpiCard title="Tramites con docs pendientes" value={k.docs_incompletos} tone="bad">
+        <KpiCard title="Tramites con docs pendientes" value={k.docs_incompletos} tone="warn">
           <button
             className="kpi-mini-btn"
             onClick={() => history.push('/procesos?f=docs_incompletos')}
@@ -169,7 +169,10 @@ export default function ProcesosDashboard() {
             Abrir calendario
           </button>
         </KpiCard>
-            <KpiCard title="Total Cobrado" loading={loading} />
+
+              
+            {/* KPIS DE  BALANCE, PENDIENTE POR MODIFICAR
+             <KpiCard title="Total Cobrado" loading={loading} /> */}
       </div>
       {/* CONTENIDO */}
       <div className="db-two">

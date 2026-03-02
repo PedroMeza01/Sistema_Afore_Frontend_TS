@@ -182,7 +182,7 @@ export default function Clientes() {
           <input
             type="text"
             className="clientes-search"
-            placeholder="Buscar cliente (nombre, CURP, RFC...)"
+            placeholder="Buscar cliente (Nombre, CURP, RFC...)"
             value={search}
             onChange={e => setSearch(e.target.value)}
             disabled={loading || saving}
@@ -194,7 +194,7 @@ export default function Clientes() {
             onChange={e => setFilterAsesor(e.target.value)}
             disabled={loading || saving}
           >
-            <option value="">-- Todos los asesores --</option>
+            <option value=""> Todos los asesores</option>
             {asesores.map(a => {
               const nombre = [a?.nombre_asesor, a?.apellido_pat_asesor, a?.apellido_mat_asesor]
                 .filter(Boolean)
@@ -210,7 +210,7 @@ export default function Clientes() {
           </select>
 
           <button className="btn-primary" onClick={openCreate} disabled={saving}>
-            + Nuevo Cliente
+             Nuevo Cliente
           </button>
         </div>
       </div>

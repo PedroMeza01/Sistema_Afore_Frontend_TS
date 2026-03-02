@@ -31,9 +31,20 @@
   align-items: center;
   gap: 12px;
 }
-
+.clientes-filter{
+  height: 42px;
+  min-width: 220px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid #dbe1ea;
+  font-weight: 600;
+  font-size: 14px;
+  background: #f8fafc;
+  color: #0f172a;
+  transition: all 160ms ease;
+}
 /* =========================
-   SEARCH
+   SEARCH 
 ========================= */
 .clientes-search {
   height: 42px;

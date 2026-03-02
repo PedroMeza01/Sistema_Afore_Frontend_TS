@@ -4,17 +4,34 @@ import './ClienteBottomBar.css';
 export default function ClienteBottomBar({ cliente }) {
   if (!cliente) return null;
 
-  const nombre = [cliente.nombre_cliente, cliente.apellido_pat_cliente, cliente.apellido_mat_cliente]
+  const nombre = [
+    cliente.nombre_cliente,
+    cliente.apellido_pat_cliente,
+    cliente.apellido_mat_cliente
+  ]
     .filter(Boolean)
     .join(' ');
 
   return (
-    <div className="cliente-bottom-bar" role="status" aria-live="polite">
-      <div className="cliente-bottom-content">
-        <span className="cliente-bottom-label">Cliente:</span>
-        <span className="cliente-bottom-name">{nombre}</span>
+    <div className="cliente-context-bar">
+      <div className="cliente-context-left">
+        <div className="cliente-avatar">
+          {nombre?.charAt(0)}
+        </div>
 
-        {cliente.curp_cliente && <span className="cliente-bottom-meta">CURP: {cliente.curp_cliente}</span>}
+        <div className="cliente-info">
+          <div className="cliente-nombre">{nombre}</div>
+          <div className="cliente-curp">
+            CURP: <span>{cliente?.curp_cliente}</span>
+          </div>
+           <div className="cliente-asesor">
+            Asesor: <span>{cliente?.asesor?.nombre_asesor}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="cliente-context-right">
+        <div className="cliente-chip">Retiro en proceso</div>
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import './Afores.css';
 export default function Afores() {
   const [auth] = useContext(CRMContext);
   const history = useHistory();
+  
 
   const [afores, setAfores] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -124,7 +125,7 @@ export default function Afores() {
         <h2>Afore</h2>
         <div className="afores-actions">
           <button className="btn-primary" onClick={openCreate} disabled={saving}>
-            + Nueva AFORE
+            Nueva AFORE
           </button>
         </div>
       </div>
@@ -166,7 +167,7 @@ export default function Afores() {
                   </td>
                 </tr>
               );
-            })}
+            })} 
 
             {afores.length === 0 ? (
               <tr>

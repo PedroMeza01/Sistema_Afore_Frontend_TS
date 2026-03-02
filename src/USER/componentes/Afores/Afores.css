@@ -15,6 +15,7 @@
   margin-bottom: 16px;
 }
 
+
 .afores-header h2 {
  margin: 0;
   font-size: 20px;
@@ -76,7 +77,24 @@
   border-bottom: 1px solid #e5e7eb;
   text-align: left;
 }
+.afores-table tbody tr:hover {
+  background: #f9fbff;
+  transition: background 0.2s ease;
+}
+.afores-table {
+  border-radius: 14px;
+  overflow: hidden;
+}
 
+.tag.activo::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #16a34a;
+  display: inline-block;
+  margin-right: 6px;
+}
 .tag {
   padding: 4px 10px;
   border-radius: 999px;
@@ -95,7 +113,7 @@
 }
 
 .acciones {
-  display: flex;
+  display: grid;
   gap: 10px;
 }
 

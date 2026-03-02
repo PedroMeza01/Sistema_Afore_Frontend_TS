@@ -477,62 +477,61 @@ export default function Datos_Del_Retiro() {
 
       <div className="retiro-card">
         {error ? <div className="form-error">{error}</div> : null}
+
         <div className="form-group">
           <ClienteContextBar cliente={cliente} />
 
-          <div className="form-col">
-            <label className="sub-label">Fecha de la firma</label>
-            <input
-              type="date"
-              value={form.fecha_firma}
-              onChange={onChange('fecha_firma')}
-              disabled={loading || saving}
-            />
+          <div className="form-row-3">
+            <div className="form-field">
+              <label className="sub-label">Fecha de la firma</label>
+              <input
+                type="date"
+                value={form.fecha_firma}
+                onChange={onChange('fecha_firma')}
+                disabled={loading || saving}
+              />
+            </div>
+
+            <div className="form-field">
+              <label className="sub-label">Tipo de firma</label>
+              <select
+                value={form.tipo_firma}
+                onChange={onChange('tipo_firma')}
+                disabled={loading || saving}
+              >
+                <option value="Oficina">Oficina</option>
+                <option value="Asesor">Asesor</option>
+              </select>
+            </div>
+
+            <div className="form-field">
+              <label className="sub-label">Afore</label>
+              <select
+                value={form.id_afore}
+                onChange={onChange('id_afore')}
+                disabled={loading || saving}
+              >
+                {loading ? (
+                  <option value="">Cargando...</option>
+                ) : afores.length === 0 ? (
+                  <option value="">Sin afores</option>
+                ) : (
+                  <>
+                    <option value="">Selecciona...</option>
+                    {afores.map(a => (
+                      <option key={a.id_afore} value={a.id_afore}>
+                        {a.nombre_afore}
+                      </option>
+                    ))}
+                  </>
+                )}
+              </select>
+            </div>
           </div>
         </div>
 
-        <div className="form-group">
-          <label>Tipo de firma</label>
-          <select value={form.tipo_firma} onChange={onChange('tipo_firma')} disabled={loading || saving}>
-            <option value="Oficina">Oficina</option>
-            <option value="Asesor">Asesor</option>
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label>Afore</label>
-          <select value={form.id_afore} onChange={onChange('id_afore')} disabled={loading || saving}>
-            {loading ? (
-              <option value="">Cargando...</option>
-            ) : afores.length === 0 ? (
-              <option value="">Sin afores</option>
-            ) : (
-              <>
-                <option value="">Selecciona...</option>
-                {afores.map(a => (
-                  <option key={a.id_afore} value={a.id_afore}>
-                    {a.nombre_afore}
-                  </option>
-                ))}
-              </>
-            )}
-          </select>
-        </div>
-
         {/* ✅ ASESOR FIJO DEL CLIENTE (NO EDITABLE) */}
-        <div className="form-group">
-          <label>Asesor (del cliente)</label>
-          <input
-            value={asesorNombre || (form.id_asesor ? `Asesor asignado (ID: ${form.id_asesor})` : 'Sin asesor asignado')}
-            readOnly
-            disabled
-          />
-          {!form.id_asesor ? (
-            <div className="tiny-note" style={{ color: '#ffb4b4' }}>
-              Asigna asesor al cliente antes de continuar.
-            </div>
-          ) : null}
-        </div>
+
 
         <div className="form-group">
           <div className="form-row">
@@ -553,70 +552,84 @@ export default function Datos_Del_Retiro() {
           </div>
         </div>
 
-        <div className="form-group">
-          <label className="check-inline">
+        <div className="checks-grid">
+
+          {/* Requiere cita */}
+          <label className="check-card">
             <input
               type="checkbox"
               checked={form.requiere_cita_afore}
               onChange={onToggleRequiereCita}
               disabled={loading || saving}
             />
-            Requiere cita en Afore
+            <span>Requiere cita en Afore</span>
           </label>
-        </div>
 
-        {form.requiere_cita_afore ? (
-          <div className="form-group">
-            <div className="form-col">
-              <label className="sub-label">Cita Afore</label>
+          {/* Expediente */}
+          <label className="check-card">
+            <input
+              type="checkbox"
+              checked={form.expediente_actualizado}
+              onChange={onToggle('expediente_actualizado')}
+              disabled={loading || saving}
+            />
+            <span>Expediente Actualizado</span>
+          </label>
+
+          {/* App */}
+          <label className="check-card">
+            <input
+              type="checkbox"
+              checked={form.app_vinculada}
+              onChange={onToggle('app_vinculada')}
+              disabled={loading || saving}
+            />
+            <span>App vinculada</span>
+          </label>
+
+          {/* Cita Afore dinámica */}
+          {form.requiere_cita_afore && (
+            <div className="cita-field">
+              <label className="sub-label">Fecha Cita Afore</label>
               <input
                 type="date"
                 value={form.cita_afore ?? ''}
-                onChange={e => setForm(prev => ({ ...prev, cita_afore: e.target.value || null }))}
+                onChange={e =>
+                  setForm(prev => ({
+                    ...prev,
+                    cita_afore: e.target.value || null
+                  }))
+                }
                 disabled={loading || saving}
               />
             </div>
-          </div>
-        ) : null}
-
-        <div className="form-group">
-          <div className="checks-col">
-            <label className="check-inline">
-              <input
-                type="checkbox"
-                checked={form.expediente_actualizado}
-                onChange={onToggle('expediente_actualizado')}
-                disabled={loading || saving}
-              />
-              Expediente Actualizado
-            </label>
-
-            <label className="check-inline">
-              <input
-                type="checkbox"
-                checked={form.app_vinculada}
-                onChange={onToggle('app_vinculada')}
-                disabled={loading || saving}
-              />
-              App Vinculada
-            </label>
-          </div>
+          )}
         </div>
 
-        <div className="form-group">
-          <label>Acompañamiento</label>
-          <select value={form.acompanamiento} onChange={onChange('acompanamiento')} disabled={loading || saving}>
-            <option value="Si">Si</option>
-            <option value="No">No</option>
-          </select>
-        </div>
+        <div className="form-row-2">
+          <div className="form-field">
+            <label className="sub-label">Acompañamiento</label>
+            <select
+              value={form.acompanamiento}
+              onChange={onChange('acompanamiento')}
+              disabled={loading || saving}
+            >
+              <option className='option' value="Si">Si</option>
+              <option className='option' value="No">No</option>
+            </select>
+          </div>
 
-        <div className="form-group">
-          <label>Modo De Retiro</label>
-          <select value={form.modo_retiro} onChange={onChange('modo_retiro')} disabled={loading || saving}>
-            <option value="Distancia">Distancia</option>
-            <option value="Presencial">Presencial</option>
-          </select>
+          <div className="form-field">
+            <label className="sub-label"> Modo de Retiro</label>
+            <select
+              value={form.modo_retiro}
+              onChange={onChange('modo_retiro')}
+              disabled={loading || saving}
+            >
+              <option className='option' value="Distancia">Distancia</option>
+              <option className='option' value="Presencial">Presencial</option>
+            </select>
+          </div>
         </div>
 
         <div className="section">
@@ -654,7 +667,7 @@ export default function Datos_Del_Retiro() {
                   <textarea
                     value={form.observacion_tramite}
                     onChange={onChange('observacion_tramite')}
-                    placeholder="Motivo / nota del trámite..."
+                    placeholder="Ingrese observación"
                     disabled={loading || saving}
                   />
                 </div>
@@ -702,20 +715,7 @@ export default function Datos_Del_Retiro() {
               </div>
 
               <div className="form-row">
-                <div className="form-col">
-                  <label className="sub-label">Monto a cobrar</label>
-                  <input
-                    type="number"
-                    inputMode="decimal"
-                    value={form.monto_cobrar}
-                    onChange={onChange('monto_cobrar')}
-                    placeholder="0.00"
-                    disabled={loading || saving}
-                  />
-                </div>
-              </div>
 
-              <div className="form-row">
                 <div className="form-col">
                   <label className="check-inline">
                     <input
@@ -727,36 +727,64 @@ export default function Datos_Del_Retiro() {
                     Encuesta aplicada (+$200)
                   </label>
                 </div>
-
                 <div className="form-col">
+                  <label className="sub-label">Monto a cobrar</label>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    value={form.monto_cobrar}
+                    onChange={onChange('monto_cobrar')}
+                    placeholder="0.00"
+                    disabled={loading || saving} />
+                </div>
+
+              </div>
+
+              <div className="cobro-form-row-2">
+                {/* Columna 1 - Bono */}
+                <div className="form-field">
                   <div className="money-pill">
                     <div className="money-title">Bono asesora</div>
-                    <div className="money-value">${Number(bono_asesora || 0).toFixed(2)}</div>
-                    <div className="money-sub">
-                      Base: {form.tipo_firma === 'Asesor' ? '$700' : '$0'}
-                      {form.encuesta_aplicada ? ' + $200 encuesta' : ''}
+                    <div className="money-value">
+                      ${Number(bono_asesora || 0).toFixed(2)}
                     </div>
+                    <div className="money-sub">
+                      Firma: {form.tipo_firma === 'Asesor' ? '$700' : '$0'}
+                      {form.encuesta_aplicada ? ' + Encuesta: $200 ' : ''}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Columna 2 - Evidencia */}
+                <div className="form-field">
+                  <div className="money-pill2">
+                    <div className="money-title2">Evidencia de cobro</div>
+
+                    <label className="file-drop">
+                      Seleccionar archivo
+                      <input
+                        type="file"
+                        onChange={onFile('evidencia_cobro_file')}
+                        disabled={loading || saving}
+                      />
+                    </label>
+
+                    {form.evidencia_cobro_file && (
+                      <div className="money-sub">
+                        Archivo: {form.evidencia_cobro_file.name}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
 
-              <div className="form-group">
-                <label className="sub-label">Evidencia de cobro</label>
-                <input
-                  className="file-input"
-                  type="file"
-                  onChange={onFile('evidencia_cobro_file')}
-                  disabled={loading || saving}
-                />
-                {form.evidencia_cobro_file ? (
-                  <div className="file-meta">Archivo: {form.evidencia_cobro_file.name}</div>
-                ) : null}
-              </div>
             </div>
           ) : (
             <div className="section-hint">Actívalo sólo cuando ya esté todo para cobrar.</div>
           )}
         </div>
+
+        {/*ESTATUS DEL PROCESO  */}
 
         <div className="section">
           <div className="section-head">
