@@ -1,59 +1,119 @@
-import React, { useEffect, useState, useCallback } from "react";
-import BalanceHeader from "./BalanceHeader";
-import BalanceCards from "./BalanceCards";
-import BalanceTable from "./BalanceTable";
-import "./balance.css";
+import React, { useEffect, useState, useCallback, useContext } from 'react';
+import { CRMContext } from '../../../context/CRMContext';
+import BalanceHeader from './BalanceHeader';
+import BalanceCards from './BalanceCards';
+import BalanceTable from './BalanceTable';
+import BalanceDesglose from './BalanceDesglose';
+import { fetchBalanceMock } from './balanceMock';
+import './balance.css';
+
+// ─────────────────────────────────────────────────────────────
+// 🔌 Cuando el backend esté listo, reemplaza fetchBalanceMock
+//    por una llamada real así:
+//
+//  import usuariosAxios from '../../../config/axios';
+//
+//  const { data } = await usuariosAxios.get('/balance', {
+//    params: { asesor, mes },
+//    headers: { Authorization: `Bearer ${auth.token}` }
+//  });
+//  return data;  // misma forma: { items, totales }
+// ─────────────────────────────────────────────────────────────
 
 const Balance = () => {
-  const [data, setData] = useState([]);
+  const [auth]   = useContext(CRMContext);
+
+  const [items,   setItems]   = useState([]);
   const [totales, setTotales] = useState({
-    facturado: 0,
-    cobrado: 0,
-    pendiente: 0,
+    facturado: 0, cobrado: 0, pendiente: 0,
+    comision_total: 0, bono_total: 0
   });
 
+  const [asesor,   setAsesor]   = useState('');
+  const [mes,      setMes]      = useState('');
+  const [loading,  setLoading]  = useState(true);
+  const [error,    setError]    = useState(null);
+
   const fetchBalance = useCallback(async () => {
-    // 🔥 Simulación (aquí conectas tu backend)
-    const response = [
-      {
-        cliente: "Juan Pérez",
-        asesor: "Carlos López",
-        total: 50000,
-        cobrado: 30000,
-      },
-      {
-        cliente: "María Gómez",
-        asesor: "Andrea Ruiz",
-        total: 40000,
-        cobrado: 40000,
-      },
-    ];
+    try {
+      setLoading(true);
+      setError(null);
 
-    const calculado = response.map((item) => ({
-      ...item,
-      pendiente: item.total - item.cobrado,
-    }));
+      // 🔥 Mock — reemplazar por llamada axios cuando el backend esté listo
+      const data = await fetchBalanceMock({ asesor, mes });
 
-    const facturado = calculado.reduce((acc, i) => acc + i.total, 0);
-    const cobrado = calculado.reduce((acc, i) => acc + i.cobrado, 0);
-
-    setData(calculado);
-    setTotales({
-      facturado,
-      cobrado,
-      pendiente: facturado - cobrado,
-    });
-  }, []);
+      setItems(data.items);
+      setTotales(data.totales);
+    } catch (e) {
+      setError(e?.message || 'Error cargando balance');
+    } finally {
+      setLoading(false);
+    }
+  }, [asesor, mes]);
 
   useEffect(() => {
     fetchBalance();
   }, [fetchBalance]);
 
+  // Desglose por asesor (calculado desde items)
+  const desgloseAsesor = Object.values(
+    items.reduce((acc, item) => {
+      if (!acc[item.asesor]) {
+        acc[item.asesor] = { label: item.asesor, facturado: 0, cobrado: 0, comision: 0, bono: 0 };
+      }
+      acc[item.asesor].facturado += item.monto_cobrar;
+      acc[item.asesor].cobrado   += item.cobrado;
+      acc[item.asesor].comision  += item.comision_asesora;
+      acc[item.asesor].bono      += item.bono_asesora;
+      return acc;
+    }, {})
+  );
+
+  // Desglose por mes
+  const desgloseMes = Object.values(
+    items.reduce((acc, item) => {
+      if (!acc[item.mes]) {
+        acc[item.mes] = { label: item.mes, facturado: 0, cobrado: 0 };
+      }
+      acc[item.mes].facturado += item.monto_cobrar;
+      acc[item.mes].cobrado   += item.cobrado;
+      return acc;
+    }, {})
+  ).sort((a, b) => a.label.localeCompare(b.label));
+
+  // Pendientes de cobro
+  const pendientes = items.filter(i => i.pendiente > 0);
+
   return (
     <div className="balance-container">
-      <BalanceHeader />
+      <BalanceHeader
+        asesor={asesor}
+        mes={mes}
+        onAsesorChange={setAsesor}
+        onMesChange={setMes}
+        items={items}
+      />
+
+      {error && <div className="balance-alert">{error}</div>}
+
       <BalanceCards totales={totales} />
-      <BalanceTable data={data} />
+
+      {loading ? (
+        <div className="balance-loading">Cargando...</div>
+      ) : (
+        <>
+          <BalanceDesglose
+            desgloseAsesor={desgloseAsesor}
+            desgloseMes={desgloseMes}
+          />
+
+          <BalanceTable
+            data={pendientes}
+            titulo="Procesos pendientes de cobro"
+            showComision
+          />
+        </>
+      )}
     </div>
   );
 };

@@ -323,6 +323,277 @@ h2 {
 }
 
 
+/* TOPBAR */
+.navadm-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.navadm-burger {
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: #fff;
+  border-radius: 12px;
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+  gap: 5px;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.navadm-burger:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.navadm-burger span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: #1f2937; /* gris oscuro */
+  border-radius: 2px;
+}
+
+.navadm-top-title {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.navadm-user-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: rgba(31, 41, 55, 0.55);
+}
+
+.navadm-user-name {
+  font-size: 14px;
+  font-weight: 900;
+  color: #111827;
+}
+
+/* OVERLAY */
+.navadm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.navadm-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* DRAWER */
+.navadm-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 70;
+  width: min(320px, 88vw);
+  height: 100vh;
+  background: #ffffff;
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  transform: translateX(-102%);
+  transition: transform 0.24s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.navadm-drawer.is-open {
+  transform: translateX(0);
+}
+
+/* Drawer header */
+.navadm-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.navadm-drawer-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navadm-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  display: grid;
+  place-content: center;
+  font-weight: 900;
+  color: #111827;
+  background: rgba(17, 24, 39, 0.08);
+}
+
+.navadm-user-block {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.navadm-user-small {
+  font-size: 11px;
+  font-weight: 800;
+  color: rgba(31, 41, 55, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.navadm-user-big {
+  font-size: 14px;
+  font-weight: 900;
+  color: #111827;
+}
+
+.navadm-close {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* Links */
+.navadm-links {
+  padding: 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.navadm-link {
+  .navadm-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  color: #111827;
+  text-decoration: none;
+  font-weight: 700;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(17, 24, 39, 0.03);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    background 0.12s ease,
+    color 0.12s ease;
+}
+
+.navadm-link:hover {
+  background: rgba(17, 24, 39, 0.06);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+/* Footer */
+.navadm-footer {
+  margin-top: auto;
+  padding: 14px;
+  color: rgba(31, 41, 55, 0.55);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.navadm-footer-line {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.08);
+  margin-bottom: 10px;
+}
+
+.navadm-footer-text {
+  display: inline-block;
+}
+
+/* Desktop: si quieres que el drawer no sea fijo sino sidebar normal, lo ajustamos.
+   Por default queda como drawer siempre. */
+@media (min-width: 1024px) {
+    .navadm-drawer {
+    transform: none;
+    width: 250px;
+  }
+
+  .navadm-drawer.is-collapsed {
+    width: 80px;
+  }
+}
+
+/* CONTENEDOR */
+.navadm-logout-final {
+  margin-top: auto;
+  padding: 14px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* BOTÓN */
+.navadm-logout-final-btn{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(112, 5, 5, 0.05);
+  border: 1px solid rgba(220, 38, 38, 0.15);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  color: #dc2626;
+  transition: all 0.2s ease;
+}
+
+/* ICONO */
+.navadm-logout-final-btn .logout-icon {
+  font-size: 18px;
+  color: #dc2626;
+  transition: 0.2s ease;
+}
+
+/* HOVER */
+.navadm-logout-final-text:hover {
+  background: #dc2626;
+  color: white;
+  box-shadow: 0 10px 22px rgba(220, 38, 38, 0.25);
+}
+
+.navadm-logout-final-btn:hover .logout-icon {
+  color: white;
+}
+
+/* COLAPSADO */
+.navadm-drawer.is-collapsed .navadm-logout-final-btn {
+  justify-content: center;
+}
+
+.navadm-drawer.is-collapsed .navadm-logout-final-btn .navadm-text {
+  display: none;
+}
+
+
 
 /** Caja **/
 
@@ -674,275 +945,6 @@ SISTEMA DE AFORES
 */
 /* src/components/NavegacionAdmin.css */
 
-/* TOPBAR */
-.navadm-topbar {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  background: #ffffff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-.navadm-burger {
-  width: 44px;
-  height: 44px;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  background: #fff;
-  border-radius: 12px;
-  cursor: pointer;
-  display: grid;
-  place-content: center;
-  gap: 5px;
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
-}
-
-.navadm-burger:hover {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-  transform: translateY(-1px);
-}
-
-.navadm-burger span {
-  display: block;
-  width: 18px;
-  height: 2px;
-  background: #1f2937; /* gris oscuro */
-  border-radius: 2px;
-}
-
-.navadm-top-title {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.1;
-}
-
-.navadm-user-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  color: rgba(31, 41, 55, 0.55);
-}
-
-.navadm-user-name {
-  font-size: 14px;
-  font-weight: 900;
-  color: #111827;
-}
-
-/* OVERLAY */
-.navadm-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  background: rgba(0, 0, 0, 0.35);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-}
-
-.navadm-overlay.is-open {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* DRAWER */
-.navadm-drawer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 70;
-  width: min(320px, 88vw);
-  height: 100vh;
-  background: #ffffff;
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
-  transform: translateX(-102%);
-  transition: transform 0.24s ease;
-  display: flex;
-  flex-direction: column;
-}
-
-.navadm-drawer.is-open {
-  transform: translateX(0);
-}
-
-/* Drawer header */
-.navadm-drawer-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 14px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-.navadm-drawer-user {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.navadm-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 14px;
-  display: grid;
-  place-content: center;
-  font-weight: 900;
-  color: #111827;
-  background: rgba(17, 24, 39, 0.08);
-}
-
-.navadm-user-block {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.1;
-}
-
-.navadm-user-small {
-  font-size: 11px;
-  font-weight: 800;
-  color: rgba(31, 41, 55, 0.55);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.navadm-user-big {
-  font-size: 14px;
-  font-weight: 900;
-  color: #111827;
-}
-
-.navadm-close {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  background: #fff;
-  cursor: pointer;
-  font-size: 16px;
-  line-height: 1;
-}
-
-/* Links */
-.navadm-links {
-  padding: 10px 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.navadm-link {
-  .navadm-link {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 14px;
-  border-radius: 14px;
-  color: #111827;
-  text-decoration: none;
-  font-weight: 700;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  background: rgba(17, 24, 39, 0.03);
-  transition:
-    transform 0.12s ease,
-    box-shadow 0.12s ease,
-    background 0.12s ease,
-    color 0.12s ease;
-}
-
-.navadm-link:hover {
-  background: rgba(17, 24, 39, 0.06);
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.08);
-  transform: translateY(-1px);
-}
-
-/* Footer */
-.navadm-footer {
-  margin-top: auto;
-  padding: 14px;
-  color: rgba(31, 41, 55, 0.55);
-  font-weight: 700;
-  font-size: 12px;
-}
-
-.navadm-footer-line {
-  height: 1px;
-  background: rgba(0, 0, 0, 0.08);
-  margin-bottom: 10px;
-}
-
-.navadm-footer-text {
-  display: inline-block;
-}
-
-/* Desktop: si quieres que el drawer no sea fijo sino sidebar normal, lo ajustamos.
-   Por default queda como drawer siempre. */
-@media (min-width: 1024px) {
-    .navadm-drawer {
-    transform: none;
-    width: 250px;
-  }
-
-  .navadm-drawer.is-collapsed {
-    width: 80px;
-  }
-}
-
-/* CONTENEDOR */
-.navadm-logout-final {
-  margin-top: auto;
-  padding: 14px;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-/* BOTÓN */
-.navadm-logout-final-btn{
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  border-radius: 14px;
-  background: rgba(112, 5, 5, 0.05);
-  border: 1px solid rgba(220, 38, 38, 0.15);
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 14px;
-  color: #dc2626;
-  transition: all 0.2s ease;
-}
-
-/* ICONO */
-.navadm-logout-final-btn .logout-icon {
-  font-size: 18px;
-  color: #dc2626;
-  transition: 0.2s ease;
-}
-
-/* HOVER */
-.navadm-logout-final-text:hover {
-  background: #dc2626;
-  color: white;
-  box-shadow: 0 10px 22px rgba(220, 38, 38, 0.25);
-}
-
-.navadm-logout-final-btn:hover .logout-icon {
-  color: white;
-}
-
-/* COLAPSADO */
-.navadm-drawer.is-collapsed .navadm-logout-final-btn {
-  justify-content: center;
-}
-
-.navadm-drawer.is-collapsed .navadm-logout-final-btn .navadm-text {
-  display: none;
-}
 
 /*ORGANIZACIONES */
 

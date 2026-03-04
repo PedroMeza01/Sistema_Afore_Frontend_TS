@@ -24,7 +24,7 @@ const BalanceTable = ({ data }) => {
             <tr key={index}>
               <td>{item.cliente}</td>
               <td>{item.asesor}</td>
-              <td>{formato(item.total)}</td>
+             <td>{formato(item.monto_cobrar)}</td>
               <td className="cobrado-text">
                 {formato(item.cobrado)}
               </td>

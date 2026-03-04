@@ -28,7 +28,6 @@ import Datos_Del_Retiro from './USER/componentes/Procesos/Datos_Del_Retiro';
 import Documentos from './USER/componentes/Procesos/Documentos';
 function App() {
   //UTILIZAR CONTEXT
-  const [auth, guardarAuth] = useContext(CRMContext);
   return (
     <Router>
      {/* <div className='logos'>
@@ -38,7 +37,7 @@ function App() {
     
      </div> */}
       <Fragment>
-        <CRMProvider value={[auth, guardarAuth]}>
+        <CRMProvider>
           <div className="grid contenedor contenido-principal">
             <main className="caja-contenido col-9">
               

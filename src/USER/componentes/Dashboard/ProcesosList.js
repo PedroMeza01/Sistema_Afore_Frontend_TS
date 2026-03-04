@@ -11,6 +11,7 @@ function useQuery() {
 }
 
 const FILTERS = {
+  
   docs_incompletos: { label: 'Docs incompletos' },
   tramite_sin_resultado: { label: 'Trámite sin resultado' },
   citas_vencidas: { label: 'Citas vencidas' },
@@ -18,7 +19,8 @@ const FILTERS = {
   inconsistencia_tramite: { label: 'Inconsistencia trámite' },
   criticos: { label: 'Críticos' },
   docs: { label: 'Documentos' },
-  solicitados: { label: 'Solicitados' }
+  solicitados: { label: 'Solicitados' },
+  bloqueados: { label: 'Bloqueados' }
 };
 
 export default function ProcesosList() {
@@ -170,13 +172,15 @@ export default function ProcesosList() {
         <div className="pr-filterRow">
           <select className="pr-select" value={f} onChange={e => pushQuery({ f: e.target.value, page: 1 })}>
             <option value="">Todos</option>
+            <option value="solicitados">Activos</option>
             <option value="docs_incompletos">Docs incompletos</option>
             <option value="tramite_sin_resultado">Trámite sin resultado</option>
             <option value="citas_vencidas">Citas vencidas</option>
             <option value="46_vencidos">46 días vencidos</option>
             <option value="inconsistencia_tramite">Inconsistencia trámite</option>
             <option value="criticos">Críticos</option>
-            <option value="solicitados">Activos</option>
+            <option value="finalizados">Finalizados</option>
+            <option value="bloqueados">Bloqueados</option>
           </select>
 
           <select
@@ -259,7 +263,7 @@ export default function ProcesosList() {
 
                 <div className="pr-cell right">
                   <button className="pr-link" onClick={() => openProceso(p)}>
-                    Abrir →
+                    Abrir proceso
                   </button>
                 </div>
               </div>

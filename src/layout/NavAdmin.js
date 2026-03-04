@@ -8,6 +8,7 @@ import { AiTwotoneBank } from "react-icons/ai";
 import { AiOutlineContacts } from "react-icons/ai";
 import { AiOutlineUserAdd } from "react-icons/ai";
 import { AiTwotoneCalculator } from "react-icons/ai";
+import { AiOutlineContainer } from "react-icons/ai";
 
 
 
@@ -158,6 +159,11 @@ const NavAdmin = ({ collapsed, setCollapsed }) => {
               <Link to="/clientes" className={`navadm-link ${isActive('/clientes')}`}>
                 <AiOutlineUserAdd className="navadm-icon" />
                 <span className="navadm-text">Clientes</span>
+              </Link>
+
+              <Link to="/procesos" className={`navadm-link ${isActive('/procesos')}`}>
+                <AiOutlineContainer  className="navadm-icon" />
+                <span className="navadm-text">Procesos</span>
               </Link>
 
               <Link to="/afores" className={`navadm-link ${isActive('/afores')}`}>
