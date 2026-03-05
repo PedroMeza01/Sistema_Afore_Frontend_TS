@@ -9,6 +9,7 @@ import { AiOutlineContacts } from "react-icons/ai";
 import { AiOutlineUserAdd } from "react-icons/ai";
 import { AiTwotoneCalculator } from "react-icons/ai";
 import { AiOutlineContainer } from "react-icons/ai";
+import logo from '../img/logo2.png';
 
 
 
@@ -62,14 +63,14 @@ const NavAdmin = ({ collapsed, setCollapsed }) => {
       rol: ''
     });
 
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('rol');
+    localStorage.removeItem('token');
+    localStorage.removeItem('rol');
+
     history.push('/');
   };
 
   const isActive = path =>
     location.pathname === path ? ' is-active' : '';
-
   if (!auth?.auth) return null;
 
   /* =====================
@@ -78,55 +79,38 @@ const NavAdmin = ({ collapsed, setCollapsed }) => {
 
   return (
     <>
-      {/* ===== TOPBAR (mobile) ===== */}
+      {/* TOPBAR */}
       <header className="navadm-topbar">
-        <button
-          className="navadm-burger"
-          onClick={() => setOpen(true)}
-          aria-label="Abrir menú"
-        >
-          <span />
-          <span />
-          <span />
-        </button>
-
-        <span className="navadm-role">{tituloRol}</span>
-      </header>
-
-      {/* ===== OVERLAY (mobile) ===== */}
-      <div
-        className={`navadm-overlay ${open ? 'is-open' : ''}`}
-        onClick={() => setOpen(false)}
-      />
-
-      {/* ===== SIDEBAR ===== */}
-      <aside
-        className={`
-    navadm-drawer
-    ${open ? 'is-open' : ''}
-    ${collapsed ? 'is-collapsed' : ''}
-  `}
-      >
-        {/* HEADER SIDEBAR */}
-        <div className="navadm-drawer-head">
-
-
-          {!collapsed && (
-            <span className="navadm-drawer-title">
-              {tituloRol}
-            </span>
-          )}
-
-          {/* Cerrar solo en mobile */}
-          <button
-            className="navadm-close"
-            onClick={() => setOpen(false)}
-            aria-label="Cerrar menú"
-          >
-            ✕
+        {/* Izquierda: burger + usuario */}
+        <div className="navadm-topbar-left">
+          <button className="navadm-burger" onClick={() => setOpen(true)} aria-label="Abrir menú">
+            <span /><span /><span />
           </button>
+          <div className="navadm-top-title">
+            <span className="navadm-user-label">Operado por</span>
+            <span className="navadm-user-name">{auth.username || tituloRol}</span>
+          </div>
         </div>
 
+        {/* Derecha: logo */}
+        <img src={logo} alt="Logo" className="navadm-topbar-logo" />
+      </header>
+
+      <div className={`navadm-overlay ${open ? 'is-open' : ''}`} onClick={() => setOpen(false)} />
+
+      <aside className={`navadm-drawer ${open ? 'is-open' : ''} ${collapsed ? 'is-collapsed' : ''}`}>
+        {/* ✅ HEADER DEL DRAWER con logo + org + usuario */}
+        <div className="navadm-drawer-head">
+          <div className="navadm-drawer-user">
+            <div className="navadm-avatar">
+              {(auth.username || 'U').charAt(0).toUpperCase()}
+            </div>
+            <div className="navadm-user-block">
+              <span className="navadm-user-small">{tituloRol}</span>
+            </div>
+          </div>
+          <button className="navadm-close" onClick={() => setOpen(false)} aria-label="Cerrar menú">✕</button>
+        </div>
         {/* LINKS */}
         <nav className="navadm-links">
 
@@ -162,7 +146,7 @@ const NavAdmin = ({ collapsed, setCollapsed }) => {
               </Link>
 
               <Link to="/procesos" className={`navadm-link ${isActive('/procesos')}`}>
-                <AiOutlineContainer  className="navadm-icon" />
+                <AiOutlineContainer className="navadm-icon" />
                 <span className="navadm-text">Procesos</span>
               </Link>
 

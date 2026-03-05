@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext,useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { withRouter, useHistory } from 'react-router-dom';
 import usuariosAxios from '../config/axios';
@@ -10,10 +10,19 @@ import { CRMContext } from '../context/CRMContext';
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></link>
 
 function Login() {
-  const [, guardarAuth] = useContext(CRMContext);
+
+  const [auth, guardarAuth] = useContext(CRMContext);
   const [credenciales, guardarCredenciales] = useState({});
   const [verContraseña, setVerContraseña] = useState(false); // Estado para controlar la visibilidad de la contraseña
   const history = useHistory(); // Hook para redirección
+
+   useEffect(() => {
+    if (auth?.auth && auth?.token) {
+      const rol = String(auth.rol ?? '');
+      if (rol === '1') history.replace('/organizaciones');
+      else if (rol === '2') history.replace('/dashboard');
+    }
+  }, [auth, history]);
 
   // Inicia sesión en el servidor
   const iniciarSesion = async e => {
@@ -21,6 +30,7 @@ function Login() {
     try {
       // console.log(credenciales);
       const { data } = await usuariosAxios.post('/usuarios/iniciarSesion', credenciales);
+      console.log('LOGIN RESPONSE:', data); // ← agrega esto temporal
       const { usuario, rol, mensaje } = data || {};
       //console.log(data);
       //console.log(rol);

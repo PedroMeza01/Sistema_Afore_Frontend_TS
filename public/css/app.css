@@ -257,6 +257,8 @@ h2 {
   gap: 8px;
 }
 
+
+/* ================== NAV Completo ================== */
 /* LINK BASE */
 .navadm-link {
   display: flex;
@@ -323,17 +325,50 @@ h2 {
 }
 
 
+.navadm-topbar-logo {
+  height: 32px;
+  object-fit: contain;
+}
+
+.navadm-drawer-logo {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+}
+
+.navadm-drawer-logo img {
+  height: 36px;
+  object-fit: contain;
+}
+
+.navadm-org-tag {
+  font-size: 10px;
+  color: rgba(31,41,55,0.45);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
 /* TOPBAR */
 .navadm-topbar {
-  position: sticky;
-  top: 0;
-  z-index: 50;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between; /* ← empuja logo al extremo derecho */
   padding: 12px 14px;
   background: #ffffff;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.navadm-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navadm-topbar-logo {
+  height: 32px;
+  object-fit: contain;
 }
 
 .navadm-burger {
@@ -368,6 +403,7 @@ h2 {
   display: flex;
   flex-direction: column;
   line-height: 1.1;
+  
 }
 
 .navadm-user-label {
@@ -542,56 +578,9 @@ h2 {
   }
 }
 
-/* CONTENEDOR */
-.navadm-logout-final {
-  margin-top: auto;
-  padding: 14px;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
-}
 
-/* BOTÓN */
-.navadm-logout-final-btn{
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  border-radius: 14px;
-  background: rgba(112, 5, 5, 0.05);
-  border: 1px solid rgba(220, 38, 38, 0.15);
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 14px;
-  color: #dc2626;
-  transition: all 0.2s ease;
-}
 
-/* ICONO */
-.navadm-logout-final-btn .logout-icon {
-  font-size: 18px;
-  color: #dc2626;
-  transition: 0.2s ease;
-}
 
-/* HOVER */
-.navadm-logout-final-text:hover {
-  background: #dc2626;
-  color: white;
-  box-shadow: 0 10px 22px rgba(220, 38, 38, 0.25);
-}
-
-.navadm-logout-final-btn:hover .logout-icon {
-  color: white;
-}
-
-/* COLAPSADO */
-.navadm-drawer.is-collapsed .navadm-logout-final-btn {
-  justify-content: center;
-}
-
-.navadm-drawer.is-collapsed .navadm-logout-final-btn .navadm-text {
-  display: none;
-}
 
 
 

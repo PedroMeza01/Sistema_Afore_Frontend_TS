@@ -26,51 +26,42 @@ import ProcesosList from './USER/componentes/Dashboard/ProcesosList';
 import ProcesoDetalle from './USER/componentes/Procesos/ProcesoDetalle';
 import Datos_Del_Retiro from './USER/componentes/Procesos/Datos_Del_Retiro';
 import Documentos from './USER/componentes/Procesos/Documentos';
+function NavCondicional() {
+  const [auth] = useContext(CRMContext);
+  if (!auth?.token) return null;
+  return <NavegacionAdmin />;
+}
+
 function App() {
-  //UTILIZAR CONTEXT
   return (
-    <Router>
-     {/* <div className='logos'>
-     <div> logo de nosotros</div>
-     <div> logo del cliente </div>
-     <img src=' src\img\logo2.png' alt='Logo' className='logo' />
-    
-     </div> */}
-      <Fragment>
-        <CRMProvider>
+    <CRMProvider>          {/* ← CRMProvider primero, envuelve todo */}
+      <Router>
+        <Fragment>
           <div className="grid contenedor contenido-principal">
             <main className="caja-contenido col-9">
-              
-              <NavegacionAdmin />
+              <NavCondicional />
               <Switch>
                 <Route exact path="/" component={Login} />
-
                 <Route exact path="/usuarios" component={Usuarios} />
                 <Route exact path="/dashboard" component={DashboardProcesos} />
                 <Route exact path="/organizaciones" component={Organizaciones} />
-
                 <Route exact path="/clientes" component={Clientes} />
                 <Route exact path="/afores" component={Afores} />
                 <Route exact path="/asesores" component={Asesores} />
                 <Route exact path="/balance" component={Balance} />
-
                 <Route exact path="/proceso/cliente/:id_cliente" component={ProcesosCliente} />
                 <Route exact path="/procesos" component={ProcesosList} />
                 <Route exact path="/clientes/:id_cliente/procesos/nuevo" component={Datos_Del_Retiro} />
                 <Route exact path="/clientes/:id_cliente/procesos/nuevo/paso2" component={Documentos} />
-                <Route
-                  exact
-                  path="/clientes/:id_cliente/procesos/:id_proceso/editar/paso1"
-                  component={Datos_Del_Retiro}
-                />
+                <Route exact path="/clientes/:id_cliente/procesos/:id_proceso/editar/paso1" component={Datos_Del_Retiro} />
                 <Route exact path="/clientes/:id_cliente/procesos/:id_proceso/editar/paso2" component={Documentos} />
                 <Route exact path="/clientes/:id_cliente/procesos/:id_proceso" component={ProcesoDetalle} />
               </Switch>
             </main>
           </div>
-        </CRMProvider>
-      </Fragment>
-    </Router>
+        </Fragment>
+      </Router>
+    </CRMProvider>
   );
 }
 
