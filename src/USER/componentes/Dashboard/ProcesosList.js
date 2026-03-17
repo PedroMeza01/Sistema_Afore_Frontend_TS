@@ -11,7 +11,7 @@ function useQuery() {
 }
 
 const FILTERS = {
-  
+
   docs_incompletos: { label: 'Docs incompletos' },
   tramite_sin_resultado: { label: 'Trámite sin resultado' },
   citas_vencidas: { label: 'Citas vencidas' },
@@ -28,6 +28,9 @@ export default function ProcesosList() {
   const query = useQuery();
   const location = useLocation();
   const [auth] = useContext(CRMContext);
+
+  const [asesores, setAsesores] = useState([]);
+  const [filterAsesor, setFilterAsesor] = useState(query.get('asesor') || '');
 
   const f = query.get('f') || '';
   const [search, setSearch] = useState(query.get('q') || '');
@@ -51,16 +54,39 @@ export default function ProcesosList() {
       else q.set(k, String(v));
     });
     history.push(`${location.pathname}?${q.toString()}`);
+
+
   };
 
+  // ✅ useEffect 1 — sincronizar URL con estado
   useEffect(() => {
     setSearch(query.get('q') || '');
     setPage(Number(query.get('page') || 1));
     setLimit(Number(query.get('limit') || 10));
     setFrom(query.get('desde') || '');
     setTo(query.get('hasta') || '');
+    setFilterAsesor(query.get('asesor') || '');
   }, [location.search]);
 
+  // ✅ useEffect 2 — cargar asesores (independiente, solo una vez)
+  useEffect(() => {
+    if (!auth?.token) return;
+    (async () => {
+      try {
+
+        const { data } = await usuariosAxios.get('/asesores', {
+          headers: { Authorization: `Bearer ${auth.token}` }
+        });
+        const list = Array.isArray(data) ? data : (data?.mensaje ?? []);
+        // console.log('ASESORES CARGADOS:', list); 
+        setAsesores(Array.isArray(list) ? list : []);
+      } catch (e) {
+        // console.error('Error al cargar asesores', e);
+      }
+    })();
+  }, [auth?.token]);
+
+  // ✅ useEffect 3 — cargar procesos
   useEffect(() => {
     let mounted = true;
 
@@ -68,7 +94,13 @@ export default function ProcesosList() {
       try {
         setLoading(true);
         setError(null);
-
+        // En el useEffect 3, justo antes del GET
+        // console.log('FILTRO ASESOR:', filterAsesor);
+        // console.log('PARAMS:', {
+        //   page, limit, search,
+        //   f: f || undefined,
+        //   id_asesor: filterAsesor || undefined
+        // });
         const { data } = await usuariosAxios.get('/procesos', {
           params: {
             page,
@@ -76,13 +108,13 @@ export default function ProcesosList() {
             search,
             f: f || undefined,
             desde: from || undefined,
-            hasta: to || undefined
+            hasta: to || undefined,
+            id_asesor: filterAsesor || undefined
           },
           headers: { Authorization: `Bearer ${auth.token}` }
         });
 
         if (!mounted) return;
-
         setItems(Array.isArray(data?.items) ? data.items : []);
         setMeta(data?.meta ?? { page, limit, totalItems: 0, totalPages: 1 });
       } catch (e) {
@@ -94,10 +126,8 @@ export default function ProcesosList() {
       }
     })();
 
-    return () => {
-      mounted = false;
-    };
-  }, [auth?.token, page, limit, search, f, from, to]);
+    return () => { mounted = false; };
+  }, [auth?.token, page, limit, search, f, from, to, filterAsesor]);
 
   const onSearchSubmit = e => {
     e.preventDefault();
@@ -106,13 +136,15 @@ export default function ProcesosList() {
 
   const reset = () => {
     setSearch('');
-    pushQuery({ q: '', page: 1, f: '' });
+    setFilterAsesor('');
+    pushQuery({ q: '', page: 1, f: '', asesor: '' });
   };
 
   // ✅ handlers de fecha
   const handleDateChange = ({ from, to }) => {
     setFrom(from);
     setTo(to);
+    pushQuery({ desde: from, hasta: to, page: 1 }); // ← agrega esto
   };
 
   const resetDateFilter = () => {
@@ -154,20 +186,40 @@ export default function ProcesosList() {
       </div>
 
       <div className="pr-filters">
+
+        <input
+          className="pr-input"
+          placeholder="Buscar por nombre, curp, nss, teléfono..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
         
-          <input
-            className="pr-input"
-            placeholder="Buscar por nombre, curp, nss, teléfono..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
-          <button className="pr-btn ghost" type="button" onClick={reset}>
-            Limpiar
-          </button>
-           {/* ✅ filtro por fechas */}
+        <select
+          className="pr-select"
+          value={filterAsesor}
+          onChange={e => {
+            setFilterAsesor(e.target.value);
+            pushQuery({ asesor: e.target.value, page: 1 });
+          }}
+        >
+          <option value="">Todos los asesores</option>
+          {asesores.map(a => {
+            const nombre = [a?.nombre_asesor, a?.apellido_pat_asesor, a?.apellido_mat_asesor]
+              .filter(Boolean)
+              .join(' ');
+            const label = a?.alias ? `${nombre} (${a.alias})` : nombre;
+            return (
+              <option key={a.id_asesor} value={a.id_asesor}>
+                {label}
+              </option>
+            );
+          })}
+        </select>
+
+        {/* ✅ filtro por fechas */}
         <DateRangeFilter from={from} to={to} onChange={handleDateChange} onReset={resetDateFilter} />
-      
-       
+
+
 
         <div className="pr-filterRow">
           <select className="pr-select" value={f} onChange={e => pushQuery({ f: e.target.value, page: 1 })}>

@@ -21,18 +21,18 @@ import './balance.css';
 // ─────────────────────────────────────────────────────────────
 
 const Balance = () => {
-  const [auth]   = useContext(CRMContext);
+  const [auth] = useContext(CRMContext);
 
-  const [items,   setItems]   = useState([]);
+  const [items, setItems] = useState([]);
   const [totales, setTotales] = useState({
     facturado: 0, cobrado: 0, pendiente: 0,
     comision_total: 0, bono_total: 0
   });
 
-  const [asesor,   setAsesor]   = useState('');
-  const [mes,      setMes]      = useState('');
-  const [loading,  setLoading]  = useState(true);
-  const [error,    setError]    = useState(null);
+  const [asesor, setAsesor] = useState('');
+  const [mes, setMes] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const fetchBalance = useCallback(async () => {
     try {
@@ -59,12 +59,12 @@ const Balance = () => {
   const desgloseAsesor = Object.values(
     items.reduce((acc, item) => {
       if (!acc[item.asesor]) {
-        acc[item.asesor] = { label: item.asesor, facturado: 0, cobrado: 0, comision: 0, bono: 0 };
+        acc[item.asesor] = { label: item.asesor, monto_cobrar: 0, cobrado: 0, comision: 0, bono: 0 };
       }
-      acc[item.asesor].facturado += item.monto_cobrar;
-      acc[item.asesor].cobrado   += item.cobrado;
-      acc[item.asesor].comision  += item.comision_asesora;
-      acc[item.asesor].bono      += item.bono_asesora;
+      acc[item.asesor].monto_cobrar += item.monto_cobrar;
+      acc[item.asesor].cobrado += item.cobrado;
+      acc[item.asesor].comision += item.comision_asesora;
+      acc[item.asesor].bono += item.bono_asesora;
       return acc;
     }, {})
   );
@@ -73,10 +73,10 @@ const Balance = () => {
   const desgloseMes = Object.values(
     items.reduce((acc, item) => {
       if (!acc[item.mes]) {
-        acc[item.mes] = { label: item.mes, facturado: 0, cobrado: 0 };
+        acc[item.mes] = { label: item.mes, monto_cobrar: 0, cobrado: 0 };
       }
-      acc[item.mes].facturado += item.monto_cobrar;
-      acc[item.mes].cobrado   += item.cobrado;
+      acc[item.mes].monto_cobrar += item.monto_cobrar;
+      acc[item.mes].cobrado += item.cobrado;
       return acc;
     }, {})
   ).sort((a, b) => a.label.localeCompare(b.label));

@@ -301,13 +301,19 @@ export default function ProcesoDetalle() {
                 <span className="pd-k">Requiere cita:</span>
                 <span className="pd-v">{proceso.requiere_cita_afore ? 'SI' : 'NO'}</span>
               </div>
+              <div className="pd-row">
+                <span className="pd-k">Fecha trámite:</span>
+                <span className="pd-v">{formatDate(proceso.fecha_tramite) || '-'}</span>
+              </div>
 
               <div className="pd-row">
                 <span className="pd-k">Cita Afore:</span>
                 <span className="pd-v">{formatDate(proceso.cita_afore) || '-'}</span>
               </div>
-              <div>
-                <span className="pd-v">Anotaciones: pendiente por agregar</span></div>
+              <div className="pd-row">
+                <span className="pd-k">Observación:</span>
+                <span className="pd-v">{proceso.observacion_tramite || '-'}</span>
+              </div>
             </div>
           </div>
           {showArchivos ? (

@@ -676,11 +676,22 @@ export default function Datos_Del_Retiro() {
                 </div>
 
                 <div className="form-col">
+                  <label className="sub-label">Fecha del trámite</label>
+                  <input
+                    type="date"
+                    value={form.fecha_tramite || ''}
+                    onChange={onChange('fecha_tramite')}
+                    disabled={loading || saving}
+                  />
+                </div>
+
+                <div className="form-col full-width">
                   <label className="sub-label">Observación</label>
                   <textarea
-                    value={form.observacion_tramite}
+                    value={form.observacion_tramite || ''}
                     onChange={onChange('observacion_tramite')}
                     placeholder="Ingrese observación"
+                    rows={1}
                     disabled={loading || saving}
                   />
                 </div>

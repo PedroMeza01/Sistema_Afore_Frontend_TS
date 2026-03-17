@@ -11,8 +11,8 @@ const BalanceCards = ({ totales }) => {
   return (
     <div className="balance-cards">
       <div className="card facturado">
-        <h4>Total Facturado</h4>
-        <p>{fmt(totales.facturado)}</p>
+        <h4>Total a Cobrar</h4>
+        <p>{fmt(totales.cobrado + totales.pendiente)}</p>
       </div>
 
       <div className="card cobrado">

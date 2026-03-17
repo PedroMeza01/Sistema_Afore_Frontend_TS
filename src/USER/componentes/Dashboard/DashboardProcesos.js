@@ -69,9 +69,9 @@ export default function ProcesosDashboard() {
 
   const k = dash.kpis;
   const recovery = useMemo(() => {
-  if (!dash.balance) return 0;
-  return dash.balance.recovery_pct;
-}, [dash.balance]);
+    if (!dash.balance) return 0;
+    return dash.balance.recovery_pct;
+  }, [dash.balance]);
 
   const money = n => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(Number(n || 0));
 
@@ -152,6 +152,19 @@ export default function ProcesosDashboard() {
           </button>
         </KpiCard>
 
+        <KpiCard
+          title="Sin Baja IMSS (+10 días activo)"
+          value={k.sin_baja_imss_10dias}
+          tone="bad"
+        >
+          <button
+            className="kpi-mini-btn"
+            onClick={() => history.push('/procesos?f=sin_baja_imss')}
+          >
+            Ver
+          </button>
+        </KpiCard>
+
         <KpiCard title="Citas de clientes" value={k.citas_proximas_7} tone="muted">
           <button
             className="kpi-mini-btn"
@@ -170,8 +183,8 @@ export default function ProcesosDashboard() {
           </button>
         </KpiCard>
 
-              
-            {/* KPIS DE  BALANCE, PENDIENTE POR MODIFICAR
+
+        {/* KPIS DE  BALANCE, PENDIENTE POR MODIFICAR
              <KpiCard title="Total Cobrado" loading={loading} /> */}
       </div>
       {/* CONTENIDO */}
@@ -213,7 +226,7 @@ export default function ProcesosDashboard() {
                   <div className="right">{p.count}</div>
                   <div className="right">
                     <button className="db-link" onClick={() => history.push(p.accion?.route || '/procesos')}>
-                      {p.accion?.label || 'Ver'} 
+                      {p.accion?.label || 'Ver'}
                     </button>
                   </div>
                 </div>
