@@ -5,7 +5,6 @@ import './DashboardProcesos.css';
 import { CRMContext } from '../../../context/CRMContext';
 import CalendarioModal from './components/CalendarioModal';
 
-
 export default function ProcesosDashboard() {
   const history = useHistory();
   const [auth] = useContext(CRMContext);
@@ -22,7 +21,9 @@ export default function ProcesosDashboard() {
       docs_incompletos: 0,
       citas_proximas_7: 0,
       dias46_proximos_7: 0,
-      dias46_vencidos: 0
+      dias46_vencidos: 0,
+      firma_mas_10_dias: 0,
+      tramite_mas_5_dias: 0
     },
     pendientesCriticos: [],
     calendario: [],
@@ -52,6 +53,8 @@ export default function ProcesosDashboard() {
           calendario: Array.isArray(data?.calendario) ? data.calendario : [],
           topFaltantes: Array.isArray(data?.topFaltantes) ? data.topFaltantes : []
         });
+
+        console.log('DASh, ', data?.kpis);
       } catch (e) {
         if (!mounted) return;
         setError(e?.response?.data?.message || e?.message || 'Error cargando dashboard');
@@ -114,75 +117,52 @@ export default function ProcesosDashboard() {
 
       {/* KPI ROW 1 */}
       <div className="db-grid">
-
         <KpiCard title="Procesos con estatus de activo" value={k.activos} tone="ok">
-          <button
-            className="kpi-mini-btn"
-            onClick={() => history.push('/procesos?f=solicitados&page=1')}
-          >
+          <button className="kpi-mini-btn" onClick={() => history.push('/procesos?f=solicitados&page=1')}>
             Ver
           </button>
         </KpiCard>
 
         <KpiCard title="Procesos con estatus de trámite solicitado" value={k.tramite_solicitado} tone="warn">
-          <button
-            className="kpi-mini-btn"
-            onClick={() => history.push('/procesos?f=tramite_solicitado')}
-          >
+          <button className="kpi-mini-btn" onClick={() => history.push('/procesos?f=tramite_solicitado')}>
             Ver
           </button>
-
         </KpiCard>
         {/* Check */}
         <KpiCard title="Tramites con docs pendientes" value={k.docs_incompletos} tone="warn">
-          <button
-            className="kpi-mini-btn"
-            onClick={() => history.push('/procesos?f=docs_incompletos')}
-          >
+          <button className="kpi-mini-btn" onClick={() => history.push('/procesos?f=docs_incompletos')}>
             Ver
           </button>
         </KpiCard>
 
         <KpiCard title="Procesos con estatus de bloqueado" value={k.bloqueados} tone="bad">
-          <button
-            className="kpi-mini-btn"
-            onClick={() => history.push('/procesos?f=bloqueados')}
-          >
+          <button className="kpi-mini-btn" onClick={() => history.push('/procesos?f=bloqueados')}>
             Ver
           </button>
         </KpiCard>
 
-        <KpiCard
-          title="Sin Baja IMSS (+10 días activo)"
-          value={k.sin_baja_imss_10dias}
-          tone="bad"
-        >
-          <button
-            className="kpi-mini-btn"
-            onClick={() => history.push('/procesos?f=sin_baja_imss')}
-          >
+        <KpiCard title="Sin Baja IMSS (+10 días activo)" value={k.firma_mas_10_dias} tone="bad">
+          <button className="kpi-mini-btn" onClick={() => history.push('/procesos?f=sin_baja_imss')}>
+            Ver
+          </button>
+        </KpiCard>
+        <KpiCard title="Sin fecha de cobro (+5 días) " value={k.tramite_mas_5_dias} tone="bad">
+          <button className="kpi-mini-btn" onClick={() => history.push('/procesos?f=sin_baja_imss')}>
             Ver
           </button>
         </KpiCard>
 
         <KpiCard title="Citas de clientes" value={k.citas_proximas_7} tone="muted">
-          <button
-            className="kpi-mini-btn"
-            onClick={() => setCalOpen(true)}
-          >
+          <button className="kpi-mini-btn" onClick={() => setCalOpen(true)}>
             Abrir calendario
           </button>
         </KpiCard>
 
         <KpiCard title="Cumplimiento de 46 días" value={k.dias46_proximos_7} tone="muted">
-          <button
-            className="kpi-mini-btn"
-            onClick={() => setCalOpen(true)}
-          >
+          <button className="kpi-mini-btn" onClick={() => setCalOpen(true)}>
             Abrir calendario
           </button>
         </KpiCard>
-
 
         {/* KPIS DE  BALANCE, PENDIENTE POR MODIFICAR
              <KpiCard title="Total Cobrado" loading={loading} /> */}
@@ -218,9 +198,7 @@ export default function ProcesosDashboard() {
               dash.pendientesCriticos.map(p => (
                 <div className="db-table-row" key={p.tipo}>
                   <div className="db-cell">
-                    <span className={`db-badge ${badgeClass(p.severidad)}`}>
-                      {badgeLabel(p.severidad)}
-                    </span>
+                    <span className={`db-badge ${badgeClass(p.severidad)}`}>{badgeLabel(p.severidad)}</span>
                     <span className="db-text">{p.titulo}</span>
                   </div>
                   <div className="right">{p.count}</div>
@@ -286,9 +264,7 @@ function KpiCard({ title, value, sub, tone, children, loading }) {
     <div className={`kpi-card ${tone} ${loading ? 'loading' : ''}`}>
       <div className="kpi-title">{title}</div>
 
-      <div className="kpi-value">
-        {loading ? '—' : value}
-      </div>
+      <div className="kpi-value">{loading ? '—' : value}</div>
 
       {sub && <div className="kpi-sub">{sub}</div>}
 

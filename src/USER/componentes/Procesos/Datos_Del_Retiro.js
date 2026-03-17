@@ -197,7 +197,7 @@ export default function Datos_Del_Retiro() {
       tramite_solicitado: Boolean(p.tramite_solicitado),
       resultado_tramite: p.resultado_tramite || 'SOLICITADO',
       observacion_tramite: p.observacion_tramite || '',
-
+      fecha_tramite: p.fecha_tramite || null,
       listo_para_cobro: Boolean(p.listo_para_cobro),
       fecha_cobro: p.fecha_cobro || '',
       tipo_cobro: p.tipo_cobro || 'TRANSFERENCIA',
@@ -389,6 +389,7 @@ export default function Datos_Del_Retiro() {
     tramite_solicitado: form.tramite_solicitado,
     resultado_tramite: form.tramite_solicitado ? form.resultado_tramite : null,
     observacion_tramite: form.tramite_solicitado ? safeStr(form.observacion_tramite) || null : null,
+    fecha_tramite: form.fecha_tramite,
 
     listo_para_cobro: form.listo_para_cobro,
     fecha_cobro: form.listo_para_cobro ? form.fecha_cobro : null,
@@ -481,10 +482,7 @@ export default function Datos_Del_Retiro() {
             <div className="error-modal" onClick={e => e.stopPropagation()}>
               <div className="error-modal-icon">⚠</div>
               <div className="error-modal-message">{error}</div>
-              <button
-                className="error-modal-btn"
-                onClick={() => setError('')}
-              >
+              <button className="error-modal-btn" onClick={() => setError('')}>
                 Entendido
               </button>
             </div>
@@ -507,11 +505,7 @@ export default function Datos_Del_Retiro() {
 
             <div className="form-field">
               <label className="sub-label">Tipo de firma</label>
-              <select
-                value={form.tipo_firma}
-                onChange={onChange('tipo_firma')}
-                disabled={loading || saving}
-              >
+              <select value={form.tipo_firma} onChange={onChange('tipo_firma')} disabled={loading || saving}>
                 <option value="Oficina">Oficina</option>
                 <option value="Asesor">Asesor</option>
               </select>
@@ -519,11 +513,7 @@ export default function Datos_Del_Retiro() {
 
             <div className="form-field">
               <label className="sub-label">Afore</label>
-              <select
-                value={form.id_afore}
-                onChange={onChange('id_afore')}
-                disabled={loading || saving}
-              >
+              <select value={form.id_afore} onChange={onChange('id_afore')} disabled={loading || saving}>
                 {loading ? (
                   <option value="">Cargando...</option>
                 ) : afores.length === 0 ? (
@@ -545,7 +535,6 @@ export default function Datos_Del_Retiro() {
 
         {/* ✅ ASESOR FIJO DEL CLIENTE (NO EDITABLE) */}
 
-
         <div className="form-group">
           <div className="form-row">
             <div className="form-col">
@@ -566,7 +555,6 @@ export default function Datos_Del_Retiro() {
         </div>
 
         <div className="checks-grid">
-
           {/* Requiere cita */}
           <label className="check-card">
             <input
@@ -622,25 +610,25 @@ export default function Datos_Del_Retiro() {
         <div className="form-row-2">
           <div className="form-field">
             <label className="sub-label">Acompañamiento</label>
-            <select
-              value={form.acompanamiento}
-              onChange={onChange('acompanamiento')}
-              disabled={loading || saving}
-            >
-              <option className='option' value="Si">Si</option>
-              <option className='option' value="No">No</option>
+            <select value={form.acompanamiento} onChange={onChange('acompanamiento')} disabled={loading || saving}>
+              <option className="option" value="Si">
+                Si
+              </option>
+              <option className="option" value="No">
+                No
+              </option>
             </select>
           </div>
 
           <div className="form-field">
             <label className="sub-label"> Modo de Retiro</label>
-            <select
-              value={form.modo_retiro}
-              onChange={onChange('modo_retiro')}
-              disabled={loading || saving}
-            >
-              <option className='option' value="Distancia">Distancia</option>
-              <option className='option' value="Presencial">Presencial</option>
+            <select value={form.modo_retiro} onChange={onChange('modo_retiro')} disabled={loading || saving}>
+              <option className="option" value="Distancia">
+                Distancia
+              </option>
+              <option className="option" value="Presencial">
+                Presencial
+              </option>
             </select>
           </div>
         </div>
@@ -739,7 +727,6 @@ export default function Datos_Del_Retiro() {
               </div>
 
               <div className="form-row">
-
                 <div className="form-col">
                   <label className="check-inline">
                     <input
@@ -759,9 +746,9 @@ export default function Datos_Del_Retiro() {
                     value={form.monto_cobrar}
                     onChange={onChange('monto_cobrar')}
                     placeholder="0.00"
-                    disabled={loading || saving} />
+                    disabled={loading || saving}
+                  />
                 </div>
-
               </div>
 
               <div className="cobro-form-row-2">
@@ -769,9 +756,7 @@ export default function Datos_Del_Retiro() {
                 <div className="form-field">
                   <div className="money-pill">
                     <div className="money-title">Bono asesora</div>
-                    <div className="money-value">
-                      ${Number(bono_asesora || 0).toFixed(2)}
-                    </div>
+                    <div className="money-value">${Number(bono_asesora || 0).toFixed(2)}</div>
                     <div className="money-sub">
                       Firma: {form.tipo_firma === 'Asesor' ? '$700' : '$0'}
                       {form.encuesta_aplicada ? ' + Encuesta: $200 ' : ''}
@@ -786,22 +771,15 @@ export default function Datos_Del_Retiro() {
 
                     <label className="file-drop">
                       Seleccionar archivo
-                      <input
-                        type="file"
-                        onChange={onFile('evidencia_cobro_file')}
-                        disabled={loading || saving}
-                      />
+                      <input type="file" onChange={onFile('evidencia_cobro_file')} disabled={loading || saving} />
                     </label>
 
                     {form.evidencia_cobro_file && (
-                      <div className="money-sub">
-                        Archivo: {form.evidencia_cobro_file.name}
-                      </div>
+                      <div className="money-sub">Archivo: {form.evidencia_cobro_file.name}</div>
                     )}
                   </div>
                 </div>
               </div>
-
             </div>
           ) : (
             <div className="section-hint">Actívalo sólo cuando ya esté todo para cobrar.</div>
