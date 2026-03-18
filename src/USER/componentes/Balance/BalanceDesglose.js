@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 const fmt = num =>
   (num || 0).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
 
-const BalanceDesglose = ({ desgloseAsesor, desgloseMes }) => {
+const BalanceDesglose = ({ desgloseAsesor, desgloseCliente, meta, onPageChange, onLimitChange }) => {
   const [tab, setTab] = useState('asesor');
 
   return (
@@ -16,10 +16,10 @@ const BalanceDesglose = ({ desgloseAsesor, desgloseMes }) => {
           Por Asesor
         </button>
         <button
-          className={`desglose-tab ${tab === 'mes' ? 'active' : ''}`}
-          onClick={() => setTab('mes')}
+          className={`desglose-tab ${tab === 'cliente' ? 'active' : ''}`}
+          onClick={() => setTab('cliente')}
         >
-          Por Mes
+          Por Cliente
         </button>
       </div>
 
@@ -29,36 +29,25 @@ const BalanceDesglose = ({ desgloseAsesor, desgloseMes }) => {
             <thead>
               <tr>
                 <th>Asesor</th>
-                <th>Monto a cobrar</th>
-                <th>Cobrado</th>
-                <th>Pendiente</th>
+                <th>Total Cobrado</th>
                 <th>Comisión</th>
                 <th>Bono</th>
-                <th>% Cobrado</th>
+                <th>Saldo Libre</th>
               </tr>
             </thead>
             <tbody>
               {desgloseAsesor.length === 0 ? (
-                <tr><td colSpan={7} className="empty">Sin datos</td></tr>
+                <tr><td colSpan={5} className="empty">Sin datos</td></tr>
               ) : (
                 desgloseAsesor.map((row, i) => {
-                  const pct = row.monto_cobrar > 0
-                    ? Math.round((row.cobrado / row.monto_cobrar) * 100)
-                    : 0;
+                  const libre = row.cobrado - row.comision - row.bono;
                   return (
                     <tr key={i}>
                       <td><b>{row.label}</b></td>
-                      <td>{fmt(row.monto_cobrar)}</td>
                       <td className="cobrado-text">{fmt(row.cobrado)}</td>
-                      <td className="pendiente-text">{fmt(row.monto_cobrar - row.cobrado)}</td>
                       <td>{fmt(row.comision)}</td>
                       <td>{fmt(row.bono)}</td>
-                      <td>
-                        <div className="pct-bar-wrap">
-                          <div className="pct-bar" style={{ width: `${pct}%` }} />
-                          <span>{pct}%</span>
-                        </div>
-                      </td>
+                      <td className="libre-text">{fmt(libre)}</td>
                     </tr>
                   );
                 })
@@ -68,45 +57,71 @@ const BalanceDesglose = ({ desgloseAsesor, desgloseMes }) => {
         </div>
       )}
 
-      {tab === 'mes' && (
-        <div className="balance-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Mes</th>
-                <th>Monto a cobrar</th>
-                <th>Cobrado</th>
-                <th>Pendiente</th>
-                <th>% Cobrado</th>
-              </tr>
-            </thead>
-            <tbody>
-              {desgloseMes.length === 0 ? (
-                <tr><td colSpan={5} className="empty">Sin datos</td></tr>
-              ) : (
-                desgloseMes.map((row, i) => {
-                  const pct = row.monto_cobrar > 0
-                    ? Math.round((row.cobrado / row.monto_cobrar) * 100)
-                    : 0;
-                  return (
-                    <tr key={i}>
-                      <td><b>{row.label}</b></td>
-                      <td>{fmt(row.monto_cobrar)}</td>
-                      <td className="cobrado-text">{fmt(row.cobrado)}</td>
-                      <td className="pendiente-text">{fmt(row.monto_cobrar - row.cobrado)}</td>
-                      <td>
-                        <div className="pct-bar-wrap">
-                          <div className="pct-bar" style={{ width: `${pct}%` }} />
-                          <span>{pct}%</span>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+      {tab === 'cliente' && (
+        <>
+          <div className="balance-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Asesor</th>
+                  <th>Total Cobrado</th>
+                  <th>Comisión</th>
+                  <th>Bono</th>
+                  <th>Saldo Libre</th>
+                </tr>
+              </thead>
+              <tbody>
+                {desgloseCliente.length === 0 ? (
+                  <tr><td colSpan={6} className="empty">Sin datos</td></tr>
+                ) : (
+                  desgloseCliente.map((row, i) => {
+                    const libre = row.cobrado - row.comision - row.bono;
+                    return (
+                      <tr key={i}>
+                        <td><b>{row.label}</b></td>
+                        <td>{row.asesor}</td>
+                        <td className="cobrado-text">{fmt(row.cobrado)}</td>
+                        <td>{fmt(row.comision)}</td>
+                        <td>{fmt(row.bono)}</td>
+                        <td className="libre-text">{fmt(libre)}</td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {meta && (
+            <div className="balance-pagination">
+              <span className="pagination-info">
+                {meta.totalItems} registros — página {meta.page} de {meta.totalPages}
+              </span>
+              <div className="pagination-controls">
+                <select value={meta.limit} onChange={e => onLimitChange(Number(e.target.value))}>
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                </select>
+                <button
+                  className="btn-pag"
+                  onClick={() => onPageChange(meta.page - 1)}
+                  disabled={meta.page <= 1}
+                >
+                  ‹ Anterior
+                </button>
+                <button
+                  className="btn-pag"
+                  onClick={() => onPageChange(meta.page + 1)}
+                  disabled={meta.page >= meta.totalPages}
+                >
+                  Siguiente ›
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

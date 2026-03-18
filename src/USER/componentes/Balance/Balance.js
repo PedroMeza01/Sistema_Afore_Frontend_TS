@@ -1,97 +1,158 @@
-import React, { useEffect, useState, useCallback, useContext } from 'react';
+import React, { useEffect, useState, useContext, useMemo } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import { CRMContext } from '../../../context/CRMContext';
+// import usuariosAxios from '../../../config/axios';  ← descomentar cuando el backend esté listo
 import BalanceHeader from './BalanceHeader';
 import BalanceCards from './BalanceCards';
-import BalanceTable from './BalanceTable';
 import BalanceDesglose from './BalanceDesglose';
 import { fetchBalanceMock } from './balanceMock';
 import './balance.css';
 
-// ─────────────────────────────────────────────────────────────
-// 🔌 Cuando el backend esté listo, reemplaza fetchBalanceMock
-//    por una llamada real así:
-//
-//  import usuariosAxios from '../../../config/axios';
-//
-//  const { data } = await usuariosAxios.get('/balance', {
-//    params: { asesor, mes },
-//    headers: { Authorization: `Bearer ${auth.token}` }
-//  });
-//  return data;  // misma forma: { items, totales }
-// ─────────────────────────────────────────────────────────────
+const DEFAULT_LIMIT = 10;
 
 const Balance = () => {
   const [auth] = useContext(CRMContext);
+  const history = useHistory();
+  const location = useLocation();
 
   const [items, setItems] = useState([]);
-  const [totales, setTotales] = useState({
-    facturado: 0, cobrado: 0, pendiente: 0,
-    comision_total: 0, bono_total: 0
-  });
-
-  const [asesor, setAsesor] = useState('');
-  const [mes, setMes] = useState('');
+  const [totales, setTotales] = useState({ cobrado: 0, comision_total: 0, bono_total: 0 });
+  const [meta, setMeta] = useState({ page: 1, limit: DEFAULT_LIMIT, totalItems: 0, totalPages: 1 });
+  const [asesores, setAsesores] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchBalance = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  // Leer filtros desde la URL (fuente de verdad)
+  const params = useMemo(() => {
+    const q = new URLSearchParams(location.search);
+    return {
+      search: q.get('search') || '',
+      asesor: q.get('asesor') || '',
+      desde:  q.get('desde')  || '',
+      hasta:  q.get('hasta')  || '',
+      page:   Number(q.get('page'))  || 1,
+      limit:  Number(q.get('limit')) || DEFAULT_LIMIT,
+    };
+  }, [location.search]);
 
-      // 🔥 Mock — reemplazar por llamada axios cuando el backend esté listo
-      const data = await fetchBalanceMock({ asesor, mes });
+  // Actualizar URL con nuevos filtros
+  const pushQuery = next => {
+    const q = new URLSearchParams(location.search);
+    Object.entries(next).forEach(([k, v]) => {
+      if (v === null || v === undefined || v === '' || Number.isNaN(v)) q.delete(k);
+      else q.set(k, String(v));
+    });
+    history.push(`${location.pathname}?${q.toString()}`);
+  };
 
-      setItems(data.items);
-      setTotales(data.totales);
-    } catch (e) {
-      setError(e?.message || 'Error cargando balance');
-    } finally {
-      setLoading(false);
-    }
-  }, [asesor, mes]);
-
+  // ─── PETICIÓN PRINCIPAL DE BALANCE ────────────────────────────────────────────
+  // GET /balance?search=&asesor=&desde=&hasta=&page=1&limit=10
+  // Respuesta: {
+  //   items: [{ id_proceso, cliente, asesor, cobrado, comision_asesora, bono_asesora }],
+  //   totales: { cobrado, comision_total, bono_total },
+  //   meta: { page, limit, totalItems, totalPages }
+  // }
+  // ──────────────────────────────────────────────────────────────────────────────
   useEffect(() => {
-    fetchBalance();
-  }, [fetchBalance]);
+    if (!auth?.token) { history.push('/'); return; }
 
-  // Desglose por asesor (calculado desde items)
+    let mounted = true;
+    (async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // 🔥 Mock temporal — reemplazar bloque completo por la llamada axios de abajo
+        const data = await fetchBalanceMock({
+          search: params.search,
+          asesor: params.asesor,
+          desde:  params.desde,
+          hasta:  params.hasta,
+          page:   params.page,
+          limit:  params.limit,
+        });
+
+        // ── Llamada real (descomentar y borrar el mock de arriba) ──────────────
+        // const { data } = await usuariosAxios.get('/balance', {
+        //   params: {
+        //     search: params.search,
+        //     asesor: params.asesor,
+        //     desde:  params.desde,
+        //     hasta:  params.hasta,
+        //     page:   params.page,
+        //     limit:  params.limit,
+        //   },
+        //   headers: { Authorization: `Bearer ${auth.token}` }
+        // });
+        // ─────────────────────────────────────────────────────────────────────
+
+        if (!mounted) return;
+        setItems(data.items);
+        setTotales(data.totales);
+        setMeta(data.meta);
+      } catch (e) {
+        if (!mounted) return;
+        setError(e?.message || 'Error cargando balance');
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, [auth?.token, params.search, params.asesor, params.desde, params.hasta, params.page, params.limit]);
+
+  // ─── PETICIÓN LISTA DE ASESORES (para el dropdown) ────────────────────────────
+  // GET /asesores
+  // Respuesta: [{ id_asesor, nombre_asesor, apellido_pat_asesor, apellido_mat_asesor }]
+  // useEffect(() => {
+  //   if (!auth?.token) return;
+  //   let mounted = true;
+  //   (async () => {
+  //     try {
+  //       const { data } = await usuariosAxios.get('/asesores', {
+  //         headers: { Authorization: `Bearer ${auth.token}` }
+  //       });
+  //       const list = Array.isArray(data) ? data : (data?.mensaje ?? data?.data ?? []);
+  //       if (mounted) setAsesores(list);
+  //     } catch { /* silencioso: sin asesores el dropdown queda vacío */ }
+  //   })();
+  //   return () => { mounted = false; };
+  // }, [auth?.token]);
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  // Desglose por asesor (agrupado sobre los items de la página actual)
   const desgloseAsesor = Object.values(
     items.reduce((acc, item) => {
-      if (!acc[item.asesor]) {
-        acc[item.asesor] = { label: item.asesor, monto_cobrar: 0, cobrado: 0, comision: 0, bono: 0 };
-      }
-      acc[item.asesor].monto_cobrar += item.monto_cobrar;
-      acc[item.asesor].cobrado += item.cobrado;
-      acc[item.asesor].comision += item.comision_asesora;
-      acc[item.asesor].bono += item.bono_asesora;
+      const key = item.asesor;
+      if (!acc[key]) acc[key] = { label: key, cobrado: 0, comision: 0, bono: 0 };
+      acc[key].cobrado  += item.cobrado;
+      acc[key].comision += item.comision_asesora;
+      acc[key].bono     += item.bono_asesora;
       return acc;
     }, {})
   );
 
-  // Desglose por mes
-  const desgloseMes = Object.values(
-    items.reduce((acc, item) => {
-      if (!acc[item.mes]) {
-        acc[item.mes] = { label: item.mes, monto_cobrar: 0, cobrado: 0 };
-      }
-      acc[item.mes].monto_cobrar += item.monto_cobrar;
-      acc[item.mes].cobrado += item.cobrado;
-      return acc;
-    }, {})
-  ).sort((a, b) => a.label.localeCompare(b.label));
-
-  // Pendientes de cobro
-  const pendientes = items.filter(i => i.pendiente > 0);
+  // Desglose por cliente (tabla paginada)
+  const desgloseCliente = items.map(item => ({
+    label:    item.cliente,
+    asesor:   item.asesor,
+    cobrado:  item.cobrado,
+    comision: item.comision_asesora,
+    bono:     item.bono_asesora,
+  }));
 
   return (
     <div className="balance-container">
       <BalanceHeader
-        asesor={asesor}
-        mes={mes}
-        onAsesorChange={setAsesor}
-        onMesChange={setMes}
+        search={params.search}
+        asesor={params.asesor}
+        desde={params.desde}
+        hasta={params.hasta}
+        asesores={asesores}
         items={items}
+        onSearchChange={val => pushQuery({ search: val, page: 1 })}
+        onAsesorChange={val => pushQuery({ asesor: val, page: 1 })}
+        onDesdeChange={val  => pushQuery({ desde: val,  page: 1 })}
+        onHastaChange={val  => pushQuery({ hasta: val,  page: 1 })}
       />
 
       {error && <div className="balance-alert">{error}</div>}
@@ -101,18 +162,13 @@ const Balance = () => {
       {loading ? (
         <div className="balance-loading">Cargando...</div>
       ) : (
-        <>
-          <BalanceDesglose
-            desgloseAsesor={desgloseAsesor}
-            desgloseMes={desgloseMes}
-          />
-
-          <BalanceTable
-            data={pendientes}
-            titulo="Procesos pendientes de cobro"
-            showComision
-          />
-        </>
+        <BalanceDesglose
+          desgloseAsesor={desgloseAsesor}
+          desgloseCliente={desgloseCliente}
+          meta={meta}
+          onPageChange={page  => pushQuery({ page })}
+          onLimitChange={limit => pushQuery({ limit, page: 1 })}
+        />
       )}
     </div>
   );

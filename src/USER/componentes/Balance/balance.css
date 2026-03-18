@@ -25,6 +25,15 @@
   color: #0f172a;
 }
 
+.libre-text {
+  color: #16a34a;  /* verde */
+  font-weight: 500;
+}
+
+.card.libre p {
+  color: #16a34a;
+}
+
 .balance-actions {
   display: flex;
   gap: 12px;
@@ -233,6 +242,92 @@
   white-space: nowrap;
 }
 
+/* ── SEARCH + DATE FILTERS ───────────────────────────────── */
+.balance-search {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #d1d9f0;
+  background: #fff;
+  font-size: 14px;
+  color: #374151;
+  min-width: 200px;
+}
+
+.balance-search:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.balance-date {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #d1d9f0;
+  background: #fff;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+}
+
+.balance-date:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+/* ── PAGINATION ──────────────────────────────────────────── */
+.balance-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pagination-info {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagination-controls select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #d1d9f0;
+  background: #fff;
+  font-size: 13px;
+  color: #374151;
+  cursor: pointer;
+}
+
+.btn-pag {
+  padding: 7px 14px;
+  border-radius: 6px;
+  border: 1px solid #d1d9f0;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-pag:hover:not(:disabled) {
+  background: #f1f5f9;
+}
+
+.btn-pag:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
 /* ── RESPONSIVE ──────────────────────────────────────────── */
 @media (max-width: 768px) {
   .balance-container { padding: 20px; }
@@ -240,5 +335,8 @@
   .balance-cards     { flex-direction: column; }
   .balance-actions   { flex-direction: column; width: 100%; }
   .balance-actions select,
+  .balance-search,
+  .balance-date,
   .btn-exportar      { width: 100%; }
+  .balance-pagination { flex-direction: column; align-items: flex-start; }
 }

@@ -1,42 +1,43 @@
-import React from "react";
+import React from 'react';
 
-const BalanceTable = ({ data }) => {
-  const formato = (num) =>
-    num.toLocaleString("es-MX", {
-      style: "currency",
-      currency: "MXN",
-    });
+const fmt = num =>
+  (num || 0).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
 
-  return (
-    <div className="balance-table">
-      <table>
-        <thead>
-          <tr>
-            <th>Cliente</th>
-            <th>Asesor</th>
-            <th>Total</th>
-            <th>Cobrado</th>
-            <th>Pendiente</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item, index) => (
-            <tr key={index}>
-              <td>{item.cliente}</td>
-              <td>{item.asesor}</td>
-             <td>{formato(item.monto_cobrar)}</td>
-              <td className="cobrado-text">
-                {formato(item.cobrado)}
-              </td>
-              <td className="pendiente-text">
-                {formato(item.pendiente)}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-};
+// Tabla de detalle — usada como componente auxiliar si se necesita fuera de BalanceDesglose
+const BalanceTable = ({ data = [] }) => (
+  <div className="balance-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Cliente</th>
+          <th>Asesor</th>
+          <th>Total Cobrado</th>
+          <th>Comisión</th>
+          <th>Bono</th>
+          <th>Saldo Libre</th>
+        </tr>
+      </thead>
+      <tbody>
+        {data.length === 0 ? (
+          <tr><td colSpan={6} className="empty">Sin datos</td></tr>
+        ) : (
+          data.map((item, i) => {
+            const libre = (item.cobrado || 0) - (item.comision_asesora || 0) - (item.bono_asesora || 0);
+            return (
+              <tr key={i}>
+                <td>{item.cliente}</td>
+                <td>{item.asesor}</td>
+                <td className="cobrado-text">{fmt(item.cobrado)}</td>
+                <td>{fmt(item.comision_asesora)}</td>
+                <td>{fmt(item.bono_asesora)}</td>
+                <td className="libre-text">{fmt(libre)}</td>
+              </tr>
+            );
+          })
+        )}
+      </tbody>
+    </table>
+  </div>
+);
 
 export default BalanceTable;

@@ -142,12 +142,13 @@ export default function ProcesosDashboard() {
         </KpiCard>
 
         <KpiCard title="Sin Baja IMSS (+10 días activo)" value={k.firma_mas_10_dias} tone="bad">
-          <button className="kpi-mini-btn" onClick={() => history.push('/procesos?f=sin_baja_imss')}>
+          <button className="kpi-mini-btn" onClick={() => history.push('/procesos?f=firma_mas_10_dias&page=1')}>
+            {/* //Modificar filtro para que sea firma_mas_10_dias // */}
             Ver
           </button>
         </KpiCard>
         <KpiCard title="Sin fecha de cobro (+5 días) " value={k.tramite_mas_5_dias} tone="bad">
-          <button className="kpi-mini-btn" onClick={() => history.push('/procesos?f=sin_baja_imss')}>
+          <button className="kpi-mini-btn" onClick={() => history.push('/procesos?f=tramite_mas_5_dias&page=1')}>
             Ver
           </button>
         </KpiCard>

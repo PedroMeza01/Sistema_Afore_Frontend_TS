@@ -1,83 +1,88 @@
-// balanceMock.js
-// 🔥 Datos simulados realistas
-// ------------------------------------------------------------
-// Contrato esperado del endpoint real (para cuando llegue el dev):
-//   GET /balance?id_organizacion=xxx&asesor=xxx&mes=xxx
+// balanceMock.js — TEMPORAL
+// ──────────────────────────────────────────────────────────────────────────────
+// Contrato del endpoint real que reemplazará este mock:
+//
+//   GET /balance?search=&asesor=&desde=&hasta=&page=1&limit=10
+//   Headers: Authorization: Bearer <token>
+//
 //   Response: {
 //     items: [{
-//       id_proceso, cliente, asesor, monto_cobrar, cobrado,
-//       pendiente, listo_para_cobro, fecha_cobro,
-//       comision_asesora, bono_asesora, mes
+//       id_proceso:       string,
+//       cliente:          string,   // nombre completo
+//       asesor:           string,   // nombre completo del asesor
+//       cobrado:          number,
+//       comision_asesora: number,   // 8% del cobrado aprox
+//       bono_asesora:     number,
+//       fecha_cobro:      string    // "YYYY-MM-DD"
 //     }],
-//     totales: { facturado, cobrado, pendiente, comision_total, bono_total }
+//     totales: {
+//       cobrado:        number,
+//       comision_total: number,
+//       bono_total:     number
+//     },
+//     meta: {
+//       page:       number,
+//       limit:      number,
+//       totalItems: number,
+//       totalPages: number
+//     }
 //   }
-// ------------------------------------------------------------
+// ──────────────────────────────────────────────────────────────────────────────
 
-export const MOCK_ASESORES = [
-  'Carlos López',
-  'Andrea Ruiz',
-  'Miguel Torres',
-  'Sofía Méndez',
-  'Roberto Vega'
-];
-
-export const MOCK_MESES = [
-  '2024-10', '2024-11', '2024-12',
-  '2025-01', '2025-02', '2025-03'
+const MOCK_ASESORES = [
+  'Carlos López', 'Andrea Ruiz', 'Miguel Torres', 'Sofía Méndez', 'Roberto Vega'
 ];
 
 const CLIENTES = [
-  'Juan Pérez',     'María Gómez',    'Luis Hernández', 'Ana Martínez',   'Pedro Sánchez',
-  'Laura García',   'Jorge Ramírez',  'Patricia López', 'Ernesto Flores', 'Carmen Díaz',
-  'Roberto Jiménez','Alicia Moreno',  'Fernando Castro','Claudia Ortega', 'Manuel Ruiz',
-  'Verónica Torres','Alejandro Vargas','Sandra Reyes',  'Eduardo Mendoza','Gabriela Cruz'
+  'Juan Pérez',      'María Gómez',     'Luis Hernández',  'Ana Martínez',    'Pedro Sánchez',
+  'Laura García',    'Jorge Ramírez',   'Patricia López',  'Ernesto Flores',  'Carmen Díaz',
+  'Roberto Jiménez', 'Alicia Moreno',   'Fernando Castro', 'Claudia Ortega',  'Manuel Ruiz',
+  'Verónica Torres', 'Alejandro Vargas','Sandra Reyes',    'Eduardo Mendoza', 'Gabriela Cruz'
 ];
 
 const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-// Generamos una vez para que los filtros sean consistentes durante la sesión
 const BASE_DATA = CLIENTES.map((cliente, i) => {
-  const monto_cobrar    = rand(15000, 90000);
-  const listo_para_cobro = Math.random() > 0.3;
-  const cobrado         = listo_para_cobro
-    ? (Math.random() > 0.4 ? monto_cobrar : rand(0, monto_cobrar))
-    : 0;
-  const mes             = MOCK_MESES[i % MOCK_MESES.length];
-  const fecha_cobro     = listo_para_cobro
-    ? `${mes}-${String(rand(1, 28)).padStart(2, '0')}`
-    : null;
-
+  const cobrado = rand(15000, 90000);
+  const mes = String((i % 12) + 1).padStart(2, '0');
   return {
-    id_proceso:        `proc-${i + 1}`,
+    id_proceso:       `proc-${i + 1}`,
     cliente,
-    asesor:            MOCK_ASESORES[i % MOCK_ASESORES.length],
-    monto_cobrar,
+    asesor:           MOCK_ASESORES[i % MOCK_ASESORES.length],
     cobrado,
-    pendiente:         monto_cobrar - cobrado,
-    listo_para_cobro,
-    fecha_cobro,
-    comision_asesora:  Math.round(monto_cobrar * 0.08),
-    bono_asesora:      cobrado === monto_cobrar ? Math.round(monto_cobrar * 0.02) : 0,
-    mes
+    comision_asesora: Math.round(cobrado * 0.08),
+    bono_asesora:     Math.random() > 0.5 ? Math.round(cobrado * 0.02) : 0,
+    fecha_cobro:      `2025-${mes}-${String(rand(1, 28)).padStart(2, '0')}`
   };
 });
 
-export function fetchBalanceMock({ asesor = '', mes = '' } = {}) {
+export function fetchBalanceMock({ search = '', asesor = '', desde = '', hasta = '', page = 1, limit = 10 } = {}) {
   return new Promise(resolve => {
     setTimeout(() => {
       let items = [...BASE_DATA];
-      if (asesor) items = items.filter(i => i.asesor === asesor);
-      if (mes)    items = items.filter(i => i.mes    === mes);
 
-      const facturado      = items.reduce((a, i) => a + i.monto_cobrar,       0);
-      const cobrado        = items.reduce((a, i) => a + i.cobrado,            0);
-      const comision_total = items.reduce((a, i) => a + i.comision_asesora,   0);
-      const bono_total     = items.reduce((a, i) => a + i.bono_asesora,       0);
+      if (search) {
+        const q = search.toLowerCase();
+        items = items.filter(i => i.cliente.toLowerCase().includes(q));
+      }
+      if (asesor) items = items.filter(i => i.asesor === asesor);
+      if (desde)  items = items.filter(i => i.fecha_cobro >= desde);
+      if (hasta)  items = items.filter(i => i.fecha_cobro <= hasta);
+
+      const totalItems  = items.length;
+      const totalPages  = Math.max(1, Math.ceil(totalItems / limit));
+      const safePage    = Math.min(Math.max(1, page), totalPages);
+      const paged       = items.slice((safePage - 1) * limit, safePage * limit);
+
+      const cobrado        = items.reduce((a, i) => a + i.cobrado, 0);
+      const comision_total = items.reduce((a, i) => a + i.comision_asesora, 0);
+      const bono_total     = items.reduce((a, i) => a + i.bono_asesora, 0);
 
       resolve({
-        items,
-        totales: { facturado, cobrado, pendiente: facturado - cobrado, comision_total, bono_total }
+        items: paged,
+        totales: { cobrado, comision_total, bono_total },
+        meta: { page: safePage, limit, totalItems, totalPages }
       });
-    }, 350); // simula latencia de red
+    }, 350);
   });
 }

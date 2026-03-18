@@ -193,7 +193,7 @@ export default function ProcesosList() {
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
-        
+
         <select
           className="pr-select"
           value={filterAsesor}
@@ -230,6 +230,8 @@ export default function ProcesosList() {
             <option value="citas_vencidas">Citas vencidas</option>
             <option value="46_vencidos">46 días vencidos</option>
             <option value="inconsistencia_tramite">Inconsistencia trámite</option>
+            <option value="firma_mas_10_dias">Sin firma (+10 días)</option>
+            <option value="tramite_mas_5_dias">Sin fecha de cobro (+5 días)</option>
             <option value="criticos">Críticos</option>
             <option value="finalizados">Finalizados</option>
             <option value="bloqueados">Bloqueados</option>
