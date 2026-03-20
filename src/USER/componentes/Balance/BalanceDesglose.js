@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const fmt = num =>
   (num || 0).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
@@ -31,22 +32,22 @@ const BalanceDesglose = ({ desgloseAsesor, desgloseCliente, meta, onPageChange, 
                 <th>Asesor</th>
                 <th>Total Cobrado</th>
                 <th>Comisión</th>
-                <th>Bono</th>
                 <th>Saldo Libre</th>
               </tr>
             </thead>
             <tbody>
               {desgloseAsesor.length === 0 ? (
-                <tr><td colSpan={5} className="empty">Sin datos</td></tr>
+                <tr><td colSpan={4} className="empty">Sin datos</td></tr>
               ) : (
                 desgloseAsesor.map((row, i) => {
                   const libre = row.cobrado - row.comision - row.bono;
                   return (
                     <tr key={i}>
-                      <td><b>{row.label}</b></td>
+                      <td>
+                        <Link to={`/procesos?asesor=${row.id_asesor}`}><b>{row.label}</b></Link>
+                      </td>
                       <td className="cobrado-text">{fmt(row.cobrado)}</td>
                       <td>{fmt(row.comision)}</td>
-                      <td>{fmt(row.bono)}</td>
                       <td className="libre-text">{fmt(libre)}</td>
                     </tr>
                   );
@@ -67,13 +68,12 @@ const BalanceDesglose = ({ desgloseAsesor, desgloseCliente, meta, onPageChange, 
                   <th>Asesor</th>
                   <th>Total Cobrado</th>
                   <th>Comisión</th>
-                  <th>Bono</th>
                   <th>Saldo Libre</th>
                 </tr>
               </thead>
               <tbody>
                 {desgloseCliente.length === 0 ? (
-                  <tr><td colSpan={6} className="empty">Sin datos</td></tr>
+                  <tr><td colSpan={5} className="empty">Sin datos</td></tr>
                 ) : (
                   desgloseCliente.map((row, i) => {
                     const libre = row.cobrado - row.comision - row.bono;
@@ -83,7 +83,6 @@ const BalanceDesglose = ({ desgloseAsesor, desgloseCliente, meta, onPageChange, 
                         <td>{row.asesor}</td>
                         <td className="cobrado-text">{fmt(row.cobrado)}</td>
                         <td>{fmt(row.comision)}</td>
-                        <td>{fmt(row.bono)}</td>
                         <td className="libre-text">{fmt(libre)}</td>
                       </tr>
                     );

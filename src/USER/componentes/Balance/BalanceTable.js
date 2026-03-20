@@ -13,13 +13,12 @@ const BalanceTable = ({ data = [] }) => (
           <th>Asesor</th>
           <th>Total Cobrado</th>
           <th>Comisión</th>
-          <th>Bono</th>
           <th>Saldo Libre</th>
         </tr>
       </thead>
       <tbody>
         {data.length === 0 ? (
-          <tr><td colSpan={6} className="empty">Sin datos</td></tr>
+          <tr><td colSpan={5} className="empty">Sin datos</td></tr>
         ) : (
           data.map((item, i) => {
             const libre = (item.cobrado || 0) - (item.comision_asesora || 0) - (item.bono_asesora || 0);
@@ -29,7 +28,6 @@ const BalanceTable = ({ data = [] }) => (
                 <td>{item.asesor}</td>
                 <td className="cobrado-text">{fmt(item.cobrado)}</td>
                 <td>{fmt(item.comision_asesora)}</td>
-                <td>{fmt(item.bono_asesora)}</td>
                 <td className="libre-text">{fmt(libre)}</td>
               </tr>
             );

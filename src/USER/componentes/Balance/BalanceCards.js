@@ -15,15 +15,14 @@ const BalanceCards = ({ totales }) => {
       </div>
 
       <div className="card comision">
-        <h4>Comisiones + Bonos</h4>
+        <h4>Comisiones</h4>
         <p>{fmt(totales.comision_total)}</p>
-        <span className="card-sub">Bonos: {fmt(totales.bono_total)}</span>
       </div>
 
       <div className="card libre">
         <h4>Saldo Libre</h4>
         <p>{fmt(saldoLibre)}</p>
-        <span className="card-sub">Cobrado − comisiones − bonos</span>
+        <span className="card-sub">Cobrado − comisiones</span>
       </div>
     </div>
   );
